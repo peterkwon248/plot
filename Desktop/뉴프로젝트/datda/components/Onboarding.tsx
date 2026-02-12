@@ -56,7 +56,7 @@ export default function Onboarding() {
       </AnimatePresence>
 
       {/* Content - sits in upper portion, away from buttons */}
-      <div className="flex-1 flex items-center justify-center w-full pb-32">
+      <div className="flex-1 flex items-center justify-center w-full pb-52">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
