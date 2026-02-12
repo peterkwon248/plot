@@ -39,7 +39,7 @@ export default function Onboarding() {
 
   return (
     <div
-      className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-[#1a1a1f] px-8"
+      className="fixed inset-0 z-50 flex flex-col items-center bg-[#1a1a1f] px-8"
       onClick={handleNext}
     >
       {/* Animated radial gradient background */}
@@ -55,27 +55,29 @@ export default function Onboarding() {
         />
       </AnimatePresence>
 
-      {/* Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={current}
-          initial={{ opacity: 0, x: 30 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -30 }}
-          transition={{ duration: 0.5, ease: "easeOut" }}
-          className="flex flex-col items-center text-center max-w-sm relative z-10"
-        >
-          <h1 className="text-4xl font-extralight tracking-widest text-[#e8e8f0] mb-8">
-            {slide.title}
-          </h1>
-          <p className="text-sm text-[#9898a8] leading-loose whitespace-pre-line">
-            {slide.body}
-          </p>
-        </motion.div>
-      </AnimatePresence>
+      {/* Content - takes up available space, centered */}
+      <div className="flex-1 flex items-center justify-center w-full">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current}
+            initial={{ opacity: 0, x: 30 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -30 }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
+            className="flex flex-col items-center text-center max-w-sm relative z-10"
+          >
+            <h1 className="text-4xl font-extralight tracking-widest text-[#e8e8f0] mb-8">
+              {slide.title}
+            </h1>
+            <p className="text-base text-[#9898a8] leading-loose whitespace-pre-line">
+              {slide.body}
+            </p>
+          </motion.div>
+        </AnimatePresence>
+      </div>
 
-      {/* Bottom area */}
-      <div className="absolute bottom-16 flex flex-col items-center gap-6 relative z-10">
+      {/* Bottom area - fixed at bottom, never overlaps */}
+      <div className="flex flex-col items-center gap-6 pb-16 relative z-10">
         {/* Dots */}
         <div className="flex items-center gap-1.5">
           {SLIDES.map((_, i) => (
