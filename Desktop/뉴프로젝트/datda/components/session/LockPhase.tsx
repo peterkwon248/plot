@@ -17,20 +17,20 @@ export default function LockPhase() {
     <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
       {/* Title */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-xl font-semibold text-[#e4e4e7]">
+        <h1 className="text-xl font-semibold text-[#e8e8f0]">
           결과 고정
         </h1>
-        <p className="text-sm text-[#71717a]">
+        <p className="text-sm text-[#9898a8]">
           다시 볼 수 있도록 남겨두세요.
         </p>
       </div>
 
       {/* Completed Task */}
-      <p className="text-[#71717a] text-center">{taskTitle}</p>
+      <p className="text-[#9898a8] text-center">{taskTitle}</p>
 
       {/* Location Input */}
       <div className="w-full flex flex-col gap-2">
-        <label className="text-xs text-[#71717a]">
+        <label className="text-xs text-[#9898a8]">
           결과를 어디에 남겼나요?
         </label>
         <input
@@ -38,7 +38,7 @@ export default function LockPhase() {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="링크, 파일명, 폴더..."
-          className="w-full px-4 py-3 bg-[#141416] border border-[#27272a] rounded-xl text-[#e4e4e7] placeholder:text-[#71717a]/50 focus:border-[#a78bfa] transition-colors duration-300"
+          className="w-full px-4 py-3 bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#9898a8]/50 focus:border-[#a78bfa] transition-colors duration-300"
           onKeyDown={(e) => {
             if (e.key === "Enter") handleLock();
           }}

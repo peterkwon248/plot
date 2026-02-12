@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
+import { motion } from "framer-motion";
 
 interface TimerProps {
   durationMinutes: number;
@@ -8,11 +9,7 @@ interface TimerProps {
   onComplete: () => void;
 }
 
-export default function Timer({
-  durationMinutes,
-  startedAt,
-  onComplete,
-}: TimerProps) {
+export default function Timer({ durationMinutes, startedAt, onComplete }: TimerProps) {
   const totalSeconds = durationMinutes * 60;
 
   const calcRemaining = useCallback(() => {
@@ -24,7 +21,6 @@ export default function Timer({
 
   useEffect(() => {
     setRemaining(calcRemaining());
-
     const id = setInterval(() => {
       const next = calcRemaining();
       setRemaining(next);
@@ -33,51 +29,82 @@ export default function Timer({
         onComplete();
       }
     }, 1000);
-
     return () => clearInterval(id);
   }, [calcRemaining, onComplete]);
 
   const minutes = Math.floor(remaining / 60);
   const seconds = remaining % 60;
   const display = `${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
-
   const progress = totalSeconds > 0 ? 1 - remaining / totalSeconds : 1;
 
-  // Color tiers
-  let colorClass: string;
-  let pulse = false;
+  // Visual states
+  const isUrgent = remaining <= 60;
+  const isWarning = remaining > 60 && remaining <= 5 * 60;
 
-  if (remaining > 5 * 60) {
-    // > 5 min: muted
-    colorClass = "text-zinc-500";
-  } else if (remaining > 60) {
-    // 1-5 min: primary accent
-    colorClass = "text-[#a78bfa]";
-  } else {
-    // < 1 min: danger + pulse
-    colorClass = "text-red-400";
-    pulse = true;
-  }
+  const radius = 120;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference * (1 - progress);
+
+  const strokeColor = isUrgent ? "#f87171" : "#a78bfa";
+  const strokeOpacity = isUrgent ? 1 : isWarning ? 1 : 0.35;
+  const textColor = isUrgent ? "text-[#f87171]" : isWarning ? "text-[#a78bfa]" : "text-[#6a6a7a]";
+  const useGlow = isWarning || isUrgent;
 
   return (
-    <div className="flex flex-col items-center gap-6">
-      <span
-        className={[
-          "text-5xl font-light tracking-wider tabular-nums transition-colors duration-500",
-          colorClass,
-          pulse ? "animate-pulse" : "",
-        ].join(" ")}
-      >
-        {display}
-      </span>
+    <motion.div
+      initial={{ opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
+      className={`relative flex items-center justify-center ${isUrgent ? "animate-timer-pulse" : ""}`}
+    >
+      <svg width="260" height="260" viewBox="0 0 260 260">
+        <defs>
+          <filter id="glow">
+            <feGaussianBlur stdDeviation="4" result="blur" />
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
 
-      {/* Progress bar */}
-      <div className="w-64 h-[2px] rounded-full bg-zinc-800 overflow-hidden">
-        <div
-          className="h-full bg-[#a78bfa] rounded-full transition-[width] duration-1000 ease-linear"
-          style={{ width: `${progress * 100}%` }}
+        {/* Track */}
+        <circle
+          cx="130"
+          cy="130"
+          r={radius}
+          fill="none"
+          stroke="rgba(255,255,255,0.04)"
+          strokeWidth="2"
         />
+
+        {/* Progress */}
+        <circle
+          cx="130"
+          cy="130"
+          r={radius}
+          fill="none"
+          stroke={strokeColor}
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          opacity={strokeOpacity}
+          transform="rotate(-90 130 130)"
+          filter={useGlow ? "url(#glow)" : undefined}
+          style={{ transition: "stroke-dashoffset 1s linear, stroke 0.5s ease, opacity 0.5s ease" }}
+        />
+      </svg>
+
+      {/* Center content */}
+      <div className="absolute inset-0 flex flex-col items-center justify-center">
+        <span className={`text-5xl font-extralight tracking-widest tabular-nums transition-colors duration-500 ${textColor}`}>
+          {display}
+        </span>
+        <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-2">
+          남음
+        </span>
       </div>
-    </div>
+    </motion.div>
   );
 }

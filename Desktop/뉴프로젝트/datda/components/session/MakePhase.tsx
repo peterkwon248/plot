@@ -2,25 +2,25 @@
 
 import { useDatdaStore } from "@/lib/store";
 import Timer from "@/components/ui/Timer";
-import Button from "@/components/ui/Button";
+import { motion } from "framer-motion";
 
 export default function MakePhase() {
   const { taskTitle, resultType, timerMinutes, timerStartedAt, goToClose } =
     useDatdaStore();
 
   return (
-    <div className="flex flex-col items-center gap-10 w-full max-w-md mx-auto min-h-[60vh] justify-center">
-      {/* Task Info */}
-      <div className="flex flex-col items-center gap-3">
-        <p className="text-lg text-[#71717a]">{taskTitle}</p>
-        {resultType && (
-          <span className="px-3 py-1 text-xs rounded-full bg-[#141416] border border-[#27272a] text-[#a78bfa]">
-            {resultType}
-          </span>
-        )}
-      </div>
+    <div className="flex flex-col items-center w-full min-h-[80vh] justify-center -mt-8">
+      {/* Task title - very subtle, floating above */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 0.5 }}
+        className="text-xs tracking-[0.15em] text-[#4a4a58] mb-12 text-center max-w-[260px] leading-relaxed"
+      >
+        {taskTitle}
+      </motion.p>
 
-      {/* Timer */}
+      {/* Timer - THE hero. Takes up the center. */}
       {timerStartedAt && (
         <Timer
           durationMinutes={timerMinutes}
@@ -29,15 +29,20 @@ export default function MakePhase() {
         />
       )}
 
-      {/* Complete Button */}
-      <Button variant="primary" onClick={goToClose} className="px-8">
-        형태가 생겼어요
-      </Button>
-
-      {/* Subtle Guidance */}
-      <p className="text-sm text-[#71717a]/60 text-center max-w-xs">
-        앱 밖에서 작업하세요. 형태가 생기면 돌아오세요.
-      </p>
+      {/* Bottom area - minimal */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.8, delay: 1.2 }}
+        className="mt-16 flex flex-col items-center gap-6"
+      >
+        <button
+          onClick={goToClose}
+          className="text-sm text-[#4a4a58] hover:text-[#a78bfa] transition-colors duration-700 cursor-pointer"
+        >
+          닫으러 가기
+        </button>
+      </motion.div>
     </div>
   );
 }

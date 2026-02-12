@@ -12,11 +12,11 @@ const variantStyles: Record<ButtonVariant, string> = {
   primary:
     "bg-[#a78bfa] text-white hover:bg-[#b89dfc] active:bg-[#9676e8]",
   secondary:
-    "bg-[#141416] text-white border border-[#27272a] hover:bg-[#1c1c1f] active:bg-[#111113]",
+    "bg-[#252530] text-white border border-[#2d2d38] hover:bg-[#1c1c1f] active:bg-[#111113]",
   danger:
     "bg-red-500/10 text-red-400 hover:bg-red-500/20 active:bg-red-500/30",
   ghost:
-    "bg-transparent text-white hover:bg-[#141416] active:bg-[#1c1c1f]",
+    "bg-transparent text-white hover:bg-[#252530] active:bg-[#1c1c1f]",
 };
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(

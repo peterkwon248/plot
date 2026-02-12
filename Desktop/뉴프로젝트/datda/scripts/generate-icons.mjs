@@ -11,9 +11,9 @@ const publicDir = resolve(__dirname, "../public");
 
 // datda 아이콘 SVG - 미니멀한 "닫" 글자 + 보라색 악센트
 const iconSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-  <rect width="512" height="512" rx="108" fill="#0a0a0b"/>
+  <rect width="512" height="512" rx="108" fill="#1a1a1f"/>
   <circle cx="256" cy="220" r="8" fill="#a78bfa"/>
-  <text x="256" y="320" text-anchor="middle" font-family="sans-serif" font-weight="600" font-size="200" fill="#e4e4e7">닫</text>
+  <text x="256" y="320" text-anchor="middle" font-family="sans-serif" font-weight="600" font-size="200" fill="#e8e8f0">닫</text>
 </svg>`;
 
 const sizes = [72, 96, 128, 144, 152, 192, 384, 512];

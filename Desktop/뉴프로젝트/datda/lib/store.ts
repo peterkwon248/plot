@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import type { Phase, StatusType, ResultType } from './constants';
-import { VAULT_CONFIG, TIMER_PRESETS, RESULT_TYPES } from './constants';
+import type { Phase, StatusType, ResultType, CloseType } from './constants';
+import { VAULT_CONFIG, TIMER_PRESETS, RESULT_TYPES, OVERLOAD_CONFIG } from './constants';
 
 // ============================================================
 // Types
@@ -17,6 +17,7 @@ export interface CompletedSession {
   resultType: ResultType | '';
   timerMinutes: number;
   closeReason: string;
+  closeType: CloseType;
   lockLocation: string;
   nextAction: string;
   status: StatusType | '';
@@ -29,6 +30,8 @@ export interface GoalStep {
   resultType: string;
   completed: boolean;
   completedAt: number | null;
+  discarded: boolean;
+  discardedAt: number | null;
 }
 
 export interface Goal {
@@ -50,6 +53,7 @@ interface SessionState {
   timerMinutes: number;
   timerStartedAt: number | null;
   closeReason: string;
+  closeType: CloseType | '';
   lockLocation: string;
   nextAction: string;
   status: StatusType | '';
@@ -67,6 +71,7 @@ interface SessionActions {
   completeLock: (location: string) => void;
   setNextAction: (action: string) => void;
   setStatus: (status: StatusType) => void;
+  setCloseType: (type: CloseType) => void;
   finalClose: () => void;
   resetSession: () => void;
   setAiRecommendation: (rec: { action: string; minutes: number; resultType: string } | null) => void;
@@ -88,9 +93,11 @@ interface VaultActions {
   toggleStepComplete: (goalId: string, stepIndex: number) => void;
   getNextStep: (goalId: string) => GoalStep | null;
   getTodaysSuggestion: () => { goalId: string; goalTitle: string; step: GoalStep; stepIndex: number } | null;
+  getAllSuggestions: () => { goalId: string; goalTitle: string; step: GoalStep; stepIndex: number }[];
   canAccessVault: () => boolean;
   recordVaultAccess: () => void;
   getNextAccessTime: () => Date | null;
+  isOverloaded: () => boolean;
 }
 
 // ============================================================
@@ -148,6 +155,7 @@ const initialSessionState: SessionState = {
   timerMinutes: 0,
   timerStartedAt: null,
   closeReason: '',
+  closeType: '',
   lockLocation: '',
   nextAction: '',
   status: '',
@@ -200,6 +208,10 @@ export const useDatdaStore = create<DatdaStore>()(
         set({ status });
       },
 
+      setCloseType: (type: CloseType) => {
+        set({ closeType: type });
+      },
+
       finalClose: () => {
         const state = get();
         const completedSession: CompletedSession = {
@@ -208,18 +220,23 @@ export const useDatdaStore = create<DatdaStore>()(
           resultType: state.resultType,
           timerMinutes: state.timerMinutes,
           closeReason: state.closeReason,
+          closeType: state.closeType as CloseType,
           lockLocation: state.lockLocation,
           nextAction: state.nextAction,
           status: state.status,
           completedAt: Date.now(),
         };
 
-        // Auto-complete matching goal step
+        // Auto-complete or discard matching goal step
         const updatedGoals = state.goals.map((goal) => ({
           ...goal,
           steps: goal.steps.map((step) =>
-            !step.completed && step.action === state.taskTitle
-              ? { ...step, completed: true, completedAt: Date.now() }
+            !step.completed && !step.discarded && step.action === state.taskTitle
+              ? state.closeType === '폐기'
+                ? { ...step, discarded: true, discardedAt: Date.now() }
+                : state.closeType === '완료'
+                ? { ...step, completed: true, completedAt: Date.now() }
+                : step // 보류: keep as-is
               : step
           ),
         }));
@@ -268,7 +285,7 @@ export const useDatdaStore = create<DatdaStore>()(
           id: generateId(),
           title,
           createdAt: Date.now(),
-          steps: steps.map((s) => ({ ...s, completed: false, completedAt: null })),
+          steps: steps.map((s) => ({ ...s, completed: false, completedAt: null, discarded: false, discardedAt: null })),
           round: round ?? 1,
         };
         set((state) => ({ goals: [...state.goals, newGoal] }));
@@ -294,18 +311,30 @@ export const useDatdaStore = create<DatdaStore>()(
       getNextStep: (goalId: string) => {
         const goal = get().goals.find((g) => g.id === goalId);
         if (!goal) return null;
-        return goal.steps.find((s) => !s.completed) || null;
+        return goal.steps.find((s) => !s.completed && !s.discarded) || null;
       },
 
       getTodaysSuggestion: () => {
         const { goals } = get();
         for (const goal of goals) {
-          const stepIndex = goal.steps.findIndex((s) => !s.completed);
+          const stepIndex = goal.steps.findIndex((s) => !s.completed && !s.discarded);
           if (stepIndex !== -1) {
             return { goalId: goal.id, goalTitle: goal.title, step: goal.steps[stepIndex], stepIndex };
           }
         }
         return null;
+      },
+
+      getAllSuggestions: () => {
+        const { goals } = get();
+        const suggestions: { goalId: string; goalTitle: string; step: GoalStep; stepIndex: number }[] = [];
+        for (const goal of goals) {
+          const stepIndex = goal.steps.findIndex((s) => !s.completed && !s.discarded);
+          if (stepIndex !== -1) {
+            suggestions.push({ goalId: goal.id, goalTitle: goal.title, step: goal.steps[stepIndex], stepIndex });
+          }
+        }
+        return suggestions;
       },
 
       canAccessVault: () => {
@@ -324,6 +353,14 @@ export const useDatdaStore = create<DatdaStore>()(
         if (lastVaultAccess === null) return null;
         const cooldownMs = VAULT_CONFIG.accessCooldownHours * 60 * 60 * 1000;
         return new Date(lastVaultAccess + cooldownMs);
+      },
+
+      isOverloaded: () => {
+        const { goals } = get();
+        const activeGoals = goals.filter((g) =>
+          g.steps.some((s) => !s.completed && !s.discarded)
+        );
+        return activeGoals.length >= OVERLOAD_CONFIG.maxActiveGoals;
       },
 
       // --- History State ---

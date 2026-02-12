@@ -48,10 +48,10 @@ export default function OpenPhase() {
     <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
       {/* Title */}
       <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="text-2xl font-semibold text-[#e4e4e7]">
+        <h1 className="text-2xl font-semibold text-[#e8e8f0]">
           지금 닫을 것 하나를 정하세요
         </h1>
-        <p className="text-sm text-[#71717a]">
+        <p className="text-sm text-[#9898a8]">
           시작이 아니라 '제한'입니다.
         </p>
       </div>
@@ -69,7 +69,7 @@ export default function OpenPhase() {
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
         placeholder="이번 세션에서 닫을 것..."
-        className="w-full px-5 py-4 text-lg text-center bg-[#141416] border border-[#27272a] rounded-xl text-[#e4e4e7] placeholder:text-[#71717a]/50 focus:border-[#a78bfa] transition-colors duration-300"
+        className="w-full px-5 py-4 text-lg text-center bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#9898a8]/50 focus:border-[#a78bfa] transition-colors duration-300"
         onKeyDown={(e) => {
           if (e.key === "Enter" && canSubmit) handleOpen();
         }}
@@ -83,10 +83,10 @@ export default function OpenPhase() {
             onClick={() => setSelectedResult(type)}
             className={[
               "px-4 py-1.5 text-sm rounded-full transition-all duration-300 cursor-pointer",
-              "bg-[#141416] border",
+              "bg-[#252530] border",
               selectedResult === type
                 ? "border-[#a78bfa] text-[#a78bfa]"
-                : "border-[#27272a] text-[#71717a] hover:border-[#3f3f46]",
+                : "border-[#2d2d38] text-[#9898a8] hover:border-[#4a4a58]",
             ].join(" ")}
           >
             {type}
@@ -96,7 +96,7 @@ export default function OpenPhase() {
 
       {/* Timer Selector */}
       <div className="flex flex-col items-center gap-3">
-        <span className="text-xs text-[#71717a] tracking-wide">
+        <span className="text-xs text-[#9898a8] tracking-wide">
           세션 시간
         </span>
         <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -108,7 +108,7 @@ export default function OpenPhase() {
                 "px-4 py-2 text-sm rounded-xl transition-all duration-300 cursor-pointer",
                 selectedTimer === minutes
                   ? "bg-[#a78bfa] text-white"
-                  : "bg-[#141416] border border-[#27272a] text-[#71717a] hover:border-[#3f3f46]",
+                  : "bg-[#252530] border border-[#2d2d38] text-[#9898a8] hover:border-[#4a4a58]",
               ].join(" ")}
             >
               {minutes}분

@@ -6,7 +6,6 @@ import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { decomposeGoal } from "@/lib/gemini";
 import { useDatdaStore } from "@/lib/store";
-import Button from "@/components/ui/Button";
 
 interface ChatMessage {
   role: "user" | "ai";
@@ -154,10 +153,10 @@ function ChatContent() {
     <div className="w-full max-w-md mx-auto py-8 flex flex-col min-h-[80vh]">
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl font-semibold text-[#e4e4e7] mb-2">
+        <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-2">
           {goalIdParam ? "프로젝트 심화" : "목표 쪼개기"}
         </h1>
-        <p className="text-sm text-[#71717a]">
+        <p className="text-sm text-[#6a6a7a]">
           {goalIdParam
             ? "이전 단계를 기반으로 더 깊은 단계를 설계합니다."
             : "큰 목표를 말해주세요. 매일 닫을 수 있는 단계로 쪼개드립니다."}
@@ -169,7 +168,7 @@ function ChatContent() {
         <div className="mb-4">
           <button
             onClick={() => setShowGoals((v) => !v)}
-            className="text-xs text-[#71717a] hover:text-[#a78bfa] transition-colors duration-300 flex items-center gap-1 cursor-pointer"
+            className="text-xs text-[#9898a8] hover:text-[#a78bfa] transition-colors duration-300 flex items-center gap-1 cursor-pointer"
           >
             <span
               className="inline-block transition-transform duration-200"
@@ -196,7 +195,7 @@ function ChatContent() {
                     <button
                       key={goal.id}
                       onClick={() => handleGoalClick(goal.title)}
-                      className="px-3 py-1.5 text-xs bg-[#141416] border border-[#27272a] rounded-full text-[#71717a] hover:border-[#a78bfa] hover:text-[#a78bfa] transition-colors duration-300 cursor-pointer"
+                      className="card-glass px-3 py-1.5 text-xs text-[#9898a8] hover:text-[#a78bfa] cursor-pointer rounded-full"
                     >
                       {goal.title}
                     </button>
@@ -212,7 +211,7 @@ function ChatContent() {
       <div className="flex-1 flex flex-col gap-3 overflow-y-auto mb-4 min-h-0">
         {messages.length === 0 && !loading && (
           <div className="flex-1 flex items-center justify-center">
-            <p className="text-sm text-[#71717a]/60 text-center">
+            <p className="text-sm text-[#9898a8]/60 text-center">
               큰 목표를 입력하면 매일 할 수 있는
               <br />
               구체적인 단계로 쪼개드립니다.
@@ -234,8 +233,8 @@ function ChatContent() {
               <div
                 className={`max-w-[85%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   msg.role === "user"
-                    ? "bg-[#a78bfa] text-white rounded-br-sm"
-                    : "bg-[#141416] text-[#e4e4e7] border border-[#27272a] rounded-bl-sm"
+                    ? "bg-[#a78bfa]/90 text-white"
+                    : "card-glass text-[#e8e8f0]"
                 }`}
               >
                 <p className="whitespace-pre-wrap break-words">{msg.content}</p>
@@ -245,13 +244,13 @@ function ChatContent() {
                   <div className="mt-3 flex items-center gap-3">
                     <Link
                       href="/vault"
-                      className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors duration-300"
+                      className="text-xs text-[#a78bfa]/60 hover:text-[#a78bfa] transition-colors duration-300"
                     >
                       서랍함 보기 →
                     </Link>
                     <Link
                       href="/"
-                      className="text-xs text-[#71717a] hover:text-[#a78bfa] transition-colors duration-300"
+                      className="text-xs text-[#a78bfa]/60 hover:text-[#a78bfa] transition-colors duration-300"
                     >
                       홈으로
                     </Link>
@@ -269,10 +268,10 @@ function ChatContent() {
             animate={{ opacity: 1 }}
             className="flex justify-start"
           >
-            <div className="bg-[#141416] border border-[#27272a] rounded-2xl rounded-bl-sm px-4 py-3">
-              <span className="text-sm text-[#71717a] animate-pulse">
-                ...
-              </span>
+            <div className="card-glass rounded-2xl px-4 py-3 flex items-center gap-1">
+              <div className="w-1 h-1 rounded-full bg-[#9898a8] animate-dot-breathe" />
+              <div className="w-1 h-1 rounded-full bg-[#9898a8] animate-dot-breathe delay-200" />
+              <div className="w-1 h-1 rounded-full bg-[#9898a8] animate-dot-breathe delay-300" />
             </div>
           </motion.div>
         )}
@@ -287,7 +286,7 @@ function ChatContent() {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="큰 목표를 입력하세요..."
-          className="flex-1 px-4 py-3 bg-[#141416] border border-[#27272a] rounded-xl text-[#e4e4e7] placeholder:text-[#71717a]/50 text-sm focus:border-[#a78bfa] transition-colors duration-300"
+          className="input-base flex-1"
           onKeyDown={(e) => {
             if (e.key === "Enter" && !e.shiftKey) {
               e.preventDefault();
@@ -296,14 +295,26 @@ function ChatContent() {
           }}
           disabled={loading}
         />
-        <Button
-          variant="primary"
+        <button
           onClick={handleSend}
           disabled={input.trim().length === 0 || loading}
-          className="shrink-0"
+          className="text-[#a78bfa] hover:text-[#b89dfc] disabled:opacity-30 disabled:cursor-not-allowed transition-colors shrink-0 px-3"
+          aria-label="전송"
         >
-          전송
-        </Button>
+          <svg
+            className="w-5 h-5"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M13 7l5 5m0 0l-5 5m5-5H6"
+            />
+          </svg>
+        </button>
       </div>
     </div>
   );

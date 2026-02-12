@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
 import { useDatdaStore } from "@/lib/store";
 import { TIMER_PRESETS, RESULT_TYPES } from "@/lib/constants";
 
@@ -17,9 +17,12 @@ export default function SettingsPage() {
   const removeResultType = useDatdaStore((s) => s.removeResultType);
   const resetSettings = useDatdaStore((s) => s.resetSettings);
 
+  const [showTimerAdd, setShowTimerAdd] = useState(false);
+  const [showResultAdd, setShowResultAdd] = useState(false);
   const [newMinutes, setNewMinutes] = useState("");
   const [newResultType, setNewResultType] = useState("");
   const [backupMessage, setBackupMessage] = useState("");
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!mounted) {
@@ -38,6 +41,7 @@ export default function SettingsPage() {
     if (isNaN(val) || val < 5 || val > 180) return;
     addTimerPreset(val);
     setNewMinutes("");
+    setShowTimerAdd(false);
   };
 
   const handleAddResultType = () => {
@@ -45,10 +49,7 @@ export default function SettingsPage() {
     if (trimmed.length === 0 || trimmed.length > 10) return;
     addResultType(trimmed);
     setNewResultType("");
-  };
-
-  const handleReset = () => {
-    resetSettings();
+    setShowResultAdd(false);
   };
 
   const handleExport = () => {
@@ -64,8 +65,8 @@ export default function SettingsPage() {
     a.download = `datda-backup-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    setBackupMessage("내보내기 완료.");
-    setTimeout(() => setBackupMessage(""), 3000);
+    setBackupMessage("완료");
+    setTimeout(() => setBackupMessage(""), 2000);
   };
 
   const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -77,47 +78,50 @@ export default function SettingsPage() {
         const text = ev.target?.result as string;
         const parsed = JSON.parse(text);
         if (!parsed.state) {
-          setBackupMessage("올바른 백업 파일이 아닙니다.");
+          setBackupMessage("올바른 파일이 아닙니다.");
           return;
         }
         localStorage.setItem("datda-storage", text);
-        setBackupMessage("가져오기 완료. 새로고침합니다.");
+        setBackupMessage("복원 완료. 새로고침합니다.");
         setTimeout(() => window.location.reload(), 1000);
       } catch {
-        setBackupMessage("파일을 읽을 수 없습니다.");
+        setBackupMessage("읽을 수 없는 파일입니다.");
       }
     };
     reader.readAsText(file);
-    // Reset input so same file can be selected again
     e.target.value = "";
   };
 
   return (
     <div className="w-full max-w-md mx-auto py-8 px-4">
-      <div className="mb-10">
-        <h1 className="text-2xl font-semibold text-[#e4e4e7] mb-2">설정</h1>
-        <p className="text-sm text-[#71717a]">
-          세션을 나에게 맞게 조정합니다.
-        </p>
-      </div>
+      <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-10">설정</h1>
 
-      {/* Timer Presets */}
-      <section className="mb-10">
-        <h2 className="text-sm font-medium text-[#e4e4e7] tracking-wide mb-4">
-          세션 시간
-        </h2>
+      {/* ============================================
+          Section 1: Timer Presets
+          ============================================ */}
+      <section className="card-glass rounded-2xl p-6 mb-4">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-sm text-[#e8e8f0]">세션 시간</h2>
+          <button
+            onClick={() => setShowTimerAdd(!showTimerAdd)}
+            className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors cursor-pointer"
+          >
+            {showTimerAdd ? "취소" : "+ 추가"}
+          </button>
+        </div>
+        <p className="text-[11px] text-[#4a4a58] mb-5">세션을 시작할 때 선택할 수 있는 시간</p>
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2">
           {timerPresets.map((minutes) => (
             <div
               key={minutes}
-              className="group flex items-center gap-1.5 px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-[#e4e4e7]"
+              className="group relative flex items-center px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-[#e8e8f0]"
             >
-              <span>{minutes}분</span>
+              {minutes}분
               {timerPresets.length > 1 && (
                 <button
                   onClick={() => removeTimerPreset(minutes)}
-                  className="text-[#52525b] hover:text-red-400/80 transition-colors cursor-pointer ml-1 opacity-40 hover:opacity-100"
+                  className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-white/[0.06] text-[#6a6a7a] hover:bg-[#f87171]/20 hover:text-[#f87171] transition-all text-[10px] cursor-pointer"
                   aria-label={`${minutes}분 삭제`}
                 >
                   ×
@@ -127,46 +131,66 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <div className="flex gap-2">
-          <input
-            type="number"
-            value={newMinutes}
-            onChange={(e) => setNewMinutes(e.target.value)}
-            placeholder="분"
-            min={5}
-            max={180}
-            className="w-24 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[#e4e4e7] placeholder:text-[#71717a]/50 text-sm focus:border-[#a78bfa]/50 focus:outline-none transition-all duration-300"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAddTimer();
-            }}
-          />
-          <button
-            onClick={handleAddTimer}
-            disabled={!newMinutes || isNaN(parseInt(newMinutes, 10))}
-            className="px-4 py-2 text-sm rounded-xl bg-white/[0.03] border border-white/[0.06] text-[#71717a] hover:text-[#e4e4e7] hover:border-white/[0.1] transition-all duration-300 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            추가
-          </button>
-        </div>
+        <AnimatePresence>
+          {showTimerAdd && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="flex gap-2 mt-4 pt-4 border-t border-white/[0.06]">
+                <input
+                  type="number"
+                  value={newMinutes}
+                  onChange={(e) => setNewMinutes(e.target.value)}
+                  placeholder="5 ~ 180"
+                  min={5}
+                  max={180}
+                  className="w-28 input-base"
+                  onKeyDown={(e) => { if (e.key === "Enter") handleAddTimer(); }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleAddTimer}
+                  disabled={!newMinutes || isNaN(parseInt(newMinutes, 10))}
+                  className="px-4 py-2 text-sm rounded-xl bg-[#a78bfa] text-white hover:bg-[#b89dfc] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  추가
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
-      {/* Result Types */}
-      <section className="mb-10">
-        <h2 className="text-sm font-medium text-[#e4e4e7] tracking-wide mb-4">
-          결과 유형
-        </h2>
+      {/* ============================================
+          Section 2: Result Types
+          ============================================ */}
+      <section className="card-glass rounded-2xl p-6 mb-4">
+        <div className="flex items-center justify-between mb-1">
+          <h2 className="text-sm text-[#e8e8f0]">결과 유형</h2>
+          <button
+            onClick={() => setShowResultAdd(!showResultAdd)}
+            className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors cursor-pointer"
+          >
+            {showResultAdd ? "취소" : "+ 추가"}
+          </button>
+        </div>
+        <p className="text-[11px] text-[#4a4a58] mb-5">닫힘의 결과를 분류하는 태그</p>
 
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2">
           {resultTypes.map((type) => (
             <div
               key={type}
-              className="group flex items-center gap-1.5 px-4 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-[#e4e4e7]"
+              className="group relative flex items-center px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-[#e8e8f0]"
             >
-              <span>{type}</span>
+              {type}
               {resultTypes.length > 1 && (
                 <button
                   onClick={() => removeResultType(type)}
-                  className="text-[#52525b] hover:text-red-400/80 transition-colors cursor-pointer ml-1 opacity-40 hover:opacity-100"
+                  className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-white/[0.06] text-[#6a6a7a] hover:bg-[#f87171]/20 hover:text-[#f87171] transition-all text-[10px] cursor-pointer"
                   aria-label={`${type} 삭제`}
                 >
                   ×
@@ -176,50 +200,77 @@ export default function SettingsPage() {
           ))}
         </div>
 
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={newResultType}
-            onChange={(e) => setNewResultType(e.target.value)}
-            placeholder="새 유형"
-            maxLength={10}
-            className="flex-1 px-3 py-2 bg-white/[0.03] border border-white/[0.06] rounded-xl text-[#e4e4e7] placeholder:text-[#71717a]/50 text-sm focus:border-[#a78bfa]/50 focus:outline-none transition-all duration-300"
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAddResultType();
-            }}
-          />
-          <button
-            onClick={handleAddResultType}
-            disabled={newResultType.trim().length === 0}
-            className="px-4 py-2 text-sm rounded-xl bg-white/[0.03] border border-white/[0.06] text-[#71717a] hover:text-[#e4e4e7] hover:border-white/[0.1] transition-all duration-300 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            추가
-          </button>
-        </div>
+        <AnimatePresence>
+          {showResultAdd && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="overflow-hidden"
+            >
+              <div className="flex gap-2 mt-4 pt-4 border-t border-white/[0.06]">
+                <input
+                  type="text"
+                  value={newResultType}
+                  onChange={(e) => setNewResultType(e.target.value)}
+                  placeholder="유형 이름 (10자 이내)"
+                  maxLength={10}
+                  className="flex-1 input-base"
+                  onKeyDown={(e) => { if (e.key === "Enter") handleAddResultType(); }}
+                  autoFocus
+                />
+                <button
+                  onClick={handleAddResultType}
+                  disabled={newResultType.trim().length === 0}
+                  className="px-4 py-2 text-sm rounded-xl bg-[#a78bfa] text-white hover:bg-[#b89dfc] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  추가
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
 
-      {/* Data Backup */}
-      <section className="mb-10">
-        <h2 className="text-sm font-medium text-[#e4e4e7] tracking-wide mb-2">
-          데이터 백업
-        </h2>
-        <p className="text-xs text-[#52525b] mb-4">
-          모든 기록을 파일로 저장하거나 복원합니다.
-        </p>
+      {/* ============================================
+          Section 3: Data
+          ============================================ */}
+      <section className="card-glass rounded-2xl p-6 mb-4">
+        <h2 className="text-sm text-[#e8e8f0] mb-1">데이터</h2>
+        <p className="text-[11px] text-[#4a4a58] mb-5">닫힘 기록과 목표를 백업하거나 복원합니다</p>
 
-        <div className="flex gap-2">
+        <div className="flex flex-col gap-2">
           <button
             onClick={handleExport}
-            className="px-4 py-2.5 text-sm rounded-xl bg-white/[0.03] border border-white/[0.06] text-[#e4e4e7] hover:border-white/[0.1] transition-all duration-300 cursor-pointer"
+            className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.1] transition-all cursor-pointer group"
           >
-            내보내기
+            <div className="flex items-center gap-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#9898a8]">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="7 10 12 15 17 10" />
+                <line x1="12" y1="15" x2="12" y2="3" />
+              </svg>
+              <span className="text-sm text-[#e8e8f0]">내보내기</span>
+            </div>
+            <span className="text-xs text-[#4a4a58] group-hover:text-[#9898a8] transition-colors">.json</span>
           </button>
+
           <button
             onClick={() => fileInputRef.current?.click()}
-            className="px-4 py-2.5 text-sm rounded-xl bg-white/[0.03] border border-white/[0.06] text-[#71717a] hover:text-[#e4e4e7] hover:border-white/[0.1] transition-all duration-300 cursor-pointer"
+            className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.1] transition-all cursor-pointer group"
           >
-            가져오기
+            <div className="flex items-center gap-3">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className="text-[#9898a8]">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+                <polyline points="17 8 12 3 7 8" />
+                <line x1="12" y1="3" x2="12" y2="15" />
+              </svg>
+              <span className="text-sm text-[#e8e8f0]">가져오기</span>
+            </div>
+            <span className="text-xs text-[#4a4a58] group-hover:text-[#9898a8] transition-colors">복원</span>
           </button>
+
           <input
             ref={fileInputRef}
             type="file"
@@ -230,22 +281,57 @@ export default function SettingsPage() {
         </div>
 
         {backupMessage && (
-          <p className="text-xs text-[#a78bfa] mt-3">{backupMessage}</p>
+          <motion.p
+            initial={{ opacity: 0, y: -4 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="text-xs text-[#a78bfa] mt-3"
+          >
+            {backupMessage}
+          </motion.p>
         )}
       </section>
 
-      {/* Reset */}
-      <div className="pt-6 border-t border-white/[0.04]">
-        <button
-          onClick={handleReset}
-          className="text-xs text-[#52525b] hover:text-[#71717a] transition-colors duration-300 cursor-pointer"
-        >
-          기본값으로 되돌리기
-        </button>
-        <p className="text-xs text-[#3f3f46] mt-2">
-          세션 시간: {[...TIMER_PRESETS].join(', ')}분 · 결과 유형: {[...RESULT_TYPES].join(', ')}
-        </p>
-      </div>
+      {/* ============================================
+          Section 4: Reset
+          ============================================ */}
+      <section className="card-glass rounded-2xl p-6">
+        <h2 className="text-sm text-[#e8e8f0] mb-1">초기화</h2>
+        <p className="text-[11px] text-[#4a4a58] mb-5">세션 시간과 결과 유형을 기본값으로 되돌립니다</p>
+
+        {showResetConfirm ? (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex items-center gap-3"
+          >
+            <button
+              onClick={() => {
+                resetSettings();
+                setShowResetConfirm(false);
+              }}
+              className="px-4 py-2 text-sm rounded-xl bg-[#f87171]/10 text-[#f87171] hover:bg-[#f87171]/20 transition-colors cursor-pointer"
+            >
+              확인
+            </button>
+            <button
+              onClick={() => setShowResetConfirm(false)}
+              className="text-xs text-[#6a6a7a] hover:text-[#9898a8] transition-colors cursor-pointer"
+            >
+              취소
+            </button>
+            <span className="text-[10px] text-[#4a4a58]">
+              {[...TIMER_PRESETS].join(', ')}분 / {[...RESULT_TYPES].join(', ')}
+            </span>
+          </motion.div>
+        ) : (
+          <button
+            onClick={() => setShowResetConfirm(true)}
+            className="text-sm text-[#9898a8] hover:text-[#f87171] transition-colors cursor-pointer"
+          >
+            기본값으로 되돌리기
+          </button>
+        )}
+      </section>
     </div>
   );
 }

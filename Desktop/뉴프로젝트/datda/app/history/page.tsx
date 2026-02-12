@@ -1,6 +1,6 @@
 "use client";
 
-import Link from "next/link";
+import { motion } from "framer-motion";
 import { useDatdaStore } from "@/lib/store";
 
 function formatRelativeTime(timestamp: number): string {
@@ -17,6 +17,14 @@ function formatRelativeTime(timestamp: number): string {
   return `${days}일 전`;
 }
 
+function getCloseTypeColor(closeType: string | undefined): string {
+  if (!closeType) return "bg-[#6a6a7a]";
+  if (closeType === "완료") return "bg-[#a78bfa]";
+  if (closeType === "보류") return "bg-[#FFD166]";
+  if (closeType === "폐기") return "bg-[#6a6a7a]";
+  return "bg-[#6a6a7a]";
+}
+
 export default function HistoryPage() {
   const sessions = useDatdaStore((state) => state.sessions);
 
@@ -24,61 +32,71 @@ export default function HistoryPage() {
   const sortedSessions = [...sessions].sort((a, b) => b.completedAt - a.completedAt);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0b] text-[#e4e4e7] p-6">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold">닫힌 것들</h1>
-        </div>
-
-        {/* Empty State */}
-        {sortedSessions.length === 0 && (
-          <div className="text-center py-16">
-            <p className="text-[#71717a] mb-6">아직 닫힌 것이 없습니다.</p>
-            <Link
-              href="/chat"
-              className="inline-block px-6 py-3 bg-white/[0.03] border border-white/[0.06] rounded-xl text-sm text-[#e4e4e7] hover:border-[#a78bfa]/50 hover:text-[#a78bfa] transition-all duration-300"
-            >
-              첫 세션 시작하기 →
-            </Link>
-          </div>
-        )}
-
-        {/* Sessions List */}
-        {sortedSessions.length > 0 && (
-          <div className="space-y-3">
-            {sortedSessions.map((session) => (
-              <div
-                key={session.id}
-                className="bg-[#141416] border border-[#27272a] rounded-xl p-4"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex-1">
-                    <h3 className="font-medium text-[#e4e4e7] mb-1">
-                      {session.taskTitle}
-                    </h3>
-                    <p className="text-sm text-[#71717a]">
-                      {formatRelativeTime(session.completedAt)}
-                    </p>
-                  </div>
-                  {session.resultType && (
-                    <span className="px-3 py-1 rounded-full bg-[#a78bfa]/10 text-[#a78bfa] text-xs font-medium whitespace-nowrap">
-                      {session.resultType}
-                    </span>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Total Count */}
-        {sortedSessions.length > 0 && (
-          <div className="mt-8 text-center text-sm text-[#71717a]">
-            총 {sortedSessions.length}개의 세션을 닫았습니다
-          </div>
-        )}
+    <div className="w-full max-w-md mx-auto py-8 px-4">
+      {/* Header */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-2">
+          닫힌 것들
+        </h1>
+        <p className="text-sm text-[#6a6a7a]">쌓여가는 닫힘의 기록</p>
       </div>
+
+      {/* Empty State */}
+      {sortedSessions.length === 0 && (
+        <div className="text-center py-16">
+          <p className="text-[#6a6a7a]">아직 닫힌 것이 없습니다.</p>
+        </div>
+      )}
+
+      {/* Sessions List */}
+      {sortedSessions.length > 0 && (
+        <div className="space-y-3">
+          {sortedSessions.map((session, i) => (
+            <motion.div
+              key={session.id}
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.4, delay: i * 0.05 }}
+              className="card-glass p-5"
+            >
+              <div className="flex items-start gap-3">
+                {/* Close Type Indicator */}
+                <div className={`w-1.5 h-1.5 rounded-full mt-2 flex-shrink-0 ${getCloseTypeColor(session.resultType)}`} />
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-medium text-[#e8e8f0] mb-1 truncate">
+                    {session.taskTitle}
+                  </h3>
+
+                  <div className="flex items-center gap-2 text-sm text-[#9898a8]">
+                    <span>{formatRelativeTime(session.completedAt)}</span>
+                    {session.timerMinutes && (
+                      <>
+                        <span className="text-[#6a6a7a]">·</span>
+                        <span className="text-[10px] text-[#6a6a7a]">{session.timerMinutes}분</span>
+                      </>
+                    )}
+                  </div>
+                </div>
+
+                {/* Result Type Badge */}
+                {session.resultType && (
+                  <span className="px-2 py-0.5 rounded-full bg-[#a78bfa]/10 text-[#a78bfa] text-[10px] font-medium whitespace-nowrap flex-shrink-0">
+                    {session.resultType}
+                  </span>
+                )}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      {/* Total Count */}
+      {sortedSessions.length > 0 && (
+        <div className="mt-8 text-center text-sm text-[#a78bfa]/50">
+          {sortedSessions.length}번의 닫힘
+        </div>
+      )}
     </div>
   );
 }
