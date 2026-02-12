@@ -55,8 +55,8 @@ export default function Onboarding() {
         />
       </AnimatePresence>
 
-      {/* Content - takes up available space, centered */}
-      <div className="flex-1 flex items-center justify-center w-full">
+      {/* Content - sits in upper portion, away from buttons */}
+      <div className="flex-1 flex items-center justify-center w-full pb-32">
         <AnimatePresence mode="wait">
           <motion.div
             key={current}
@@ -77,7 +77,7 @@ export default function Onboarding() {
       </div>
 
       {/* Bottom area - fixed at bottom, never overlaps */}
-      <div className="flex flex-col items-center gap-6 pb-16 relative z-10">
+      <div className="flex flex-col items-center gap-6 pb-10 relative z-10">
         {/* Dots */}
         <div className="flex items-center gap-1.5">
           {SLIDES.map((_, i) => (
