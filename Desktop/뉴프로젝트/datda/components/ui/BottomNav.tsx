@@ -25,6 +25,16 @@ const TABS = [
     ),
   },
   {
+    href: "/garden",
+    icon: (
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 22V12" />
+        <path d="M12 12C12 12 8 8 8 5a4 4 0 018 0c0 3-4 7-4 7z" />
+        <path d="M7 20c0-2.8 2.2-5 5-5s5 2.2 5 5" />
+      </svg>
+    ),
+  },
+  {
     href: "/history",
     icon: (
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
