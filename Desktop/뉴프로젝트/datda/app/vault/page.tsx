@@ -199,7 +199,7 @@ export default function VaultPage() {
                             / {totalCount}
                           </span>
                           {allCompleted && (
-                            <span className="ml-2 px-2 py-0.5 text-[10px] tracking-wider text-[#a78bfa]/70 bg-[#a78bfa]/8 rounded-full">
+                            <span className="ml-2 px-2 py-0.5 text-xs tracking-wider text-[#a78bfa]/70 bg-[#a78bfa]/8 rounded-full">
                               완료
                             </span>
                           )}
@@ -266,7 +266,7 @@ export default function VaultPage() {
                                     <div className="flex-1 flex items-center gap-2">
                                       <span
                                         className={[
-                                          "text-[13px] leading-relaxed",
+                                          "text-sm leading-relaxed",
                                           isCompleted
                                             ? "text-[#6a6a7a] line-through"
                                             : isNext
@@ -277,7 +277,7 @@ export default function VaultPage() {
                                         {step.action}
                                       </span>
                                       {isNext && (
-                                        <span className="px-2 py-0.5 text-[9px] tracking-wider text-[#a78bfa]/70 bg-[#a78bfa]/8 rounded-full">
+                                        <span className="px-2 py-0.5 text-[11px] tracking-wider text-[#a78bfa]/70 bg-[#a78bfa]/8 rounded-full">
                                           다음
                                         </span>
                                       )}

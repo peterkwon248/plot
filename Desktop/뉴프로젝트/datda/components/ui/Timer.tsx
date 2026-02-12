@@ -101,7 +101,7 @@ export default function Timer({ durationMinutes, startedAt, onComplete }: TimerP
         <span className={`text-5xl font-extralight tracking-widest tabular-nums transition-colors duration-500 ${textColor}`}>
           {display}
         </span>
-        <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-2">
+        <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-2">
           남음
         </span>
       </div>

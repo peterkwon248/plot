@@ -308,7 +308,7 @@ export default function HomePage() {
             </motion.div>
           )}
 
-          <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] uppercase mb-6">{getTimeGreeting()}</span>
+          <span className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-6">{getTimeGreeting()}</span>
 
           <h1 className="text-6xl font-extralight tracking-[0.2em] text-[#e8e8f0] mb-16">
             닫다
@@ -316,7 +316,7 @@ export default function HomePage() {
 
           <div className="mb-6">{goalInputUI}</div>
 
-          <p className="text-[11px] text-[#4a4a58]/50 animate-breathe-subtle text-center mt-4">
+          <p className="text-xs text-[#4a4a58]/50 animate-breathe-subtle text-center mt-4">
             매일 닫을 수 있는 크기로 쪼개드립니다
           </p>
 
@@ -325,7 +325,7 @@ export default function HomePage() {
               <span className="text-4xl font-extralight text-[#a78bfa]/20 tabular-nums">
                 {sessions.length}
               </span>
-              <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-2">
+              <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-2">
                 번의 닫힘
               </span>
             </div>
@@ -344,7 +344,7 @@ export default function HomePage() {
     return (
       <FadeTransition keyValue="state-d">
         <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[80vh] justify-center px-4">
-          <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] uppercase mb-12">{getTimeGreeting()}</span>
+          <span className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-12">{getTimeGreeting()}</span>
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -356,7 +356,7 @@ export default function HomePage() {
               <span className="text-7xl font-extralight text-[#a78bfa]/20 tabular-nums">
                 {sessions.length}
               </span>
-              <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-3">
+              <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-3">
                 번의 닫힘
               </span>
             </div>
@@ -406,9 +406,9 @@ export default function HomePage() {
     return (
       <FadeTransition keyValue="state-b">
         <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[80vh] justify-center px-4">
-          <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] uppercase mb-10">{getTimeGreeting()}</span>
+          <span className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-10">{getTimeGreeting()}</span>
 
-          <p className="text-xs tracking-[0.15em] text-[#6a6a7a] mb-6">오늘 닫을 것</p>
+          <p className="text-sm tracking-[0.15em] text-[#6a6a7a] mb-6">오늘 닫을 것</p>
 
           {/* Accordion cards - all equal, tap to expand */}
           <div className="w-full flex flex-col gap-3">
@@ -443,7 +443,7 @@ export default function HomePage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-[10px] tabular-nums text-[#4a4a58]">
+                      <span className="text-xs tabular-nums text-[#4a4a58]">
                         {completedCount}/{totalCount}
                       </span>
                     </div>
@@ -550,7 +550,7 @@ export default function HomePage() {
               <span className="text-2xl font-extralight text-[#a78bfa]/20 tabular-nums">
                 {sessions.length}
               </span>
-              <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-1">
+              <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-1">
                 번의 닫힘
               </span>
             </div>

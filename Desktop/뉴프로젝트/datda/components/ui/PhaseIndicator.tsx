@@ -20,7 +20,7 @@ export default function PhaseIndicator({ currentPhase }: PhaseIndicatorProps) {
     <div className="flex flex-col items-center gap-2 select-none px-4">
       {/* Step counter + label */}
       <div className="flex items-center gap-2">
-        <span className="text-[10px] text-[#a78bfa] font-medium tabular-nums">
+        <span className="text-xs text-[#a78bfa] font-medium tabular-nums">
           {currentIndex + 1}/{PHASES.length}
         </span>
         <span className="text-xs text-[#e8e8f0] font-light tracking-widest">

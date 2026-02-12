@@ -100,7 +100,7 @@ export default function FinalScreen() {
           <span className="text-6xl font-extralight tabular-nums text-[#a78bfa]/30">
             {sessions.length}
           </span>
-          <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-2">
+          <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-2">
             번째 닫힘
           </span>
         </motion.div>

@@ -390,7 +390,7 @@ export default function GardenPage() {
                 <p className="text-sm text-[#e8e8f0] leading-relaxed mb-1">
                   {selectedSession.taskTitle}
                 </p>
-                <div className="flex items-center gap-2 text-[10px] text-[#4a4a58]">
+                <div className="flex items-center gap-2 text-xs text-[#4a4a58]">
                   <span>{new Date(selectedSession.completedAt).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}</span>
                   <span>·</span>
                   <span>{selectedSession.timerMinutes}분</span>
@@ -417,7 +417,7 @@ export default function GardenPage() {
         <span className="text-3xl font-extralight text-[#a78bfa]/30 tabular-nums">
           {sessions.length}
         </span>
-        <span className="text-[10px] tracking-[0.3em] text-[#4a4a58] mt-1">
+        <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-1">
           번의 닫힘
         </span>
       </div>
@@ -456,7 +456,7 @@ export default function GardenPage() {
       >
         <div className="grid grid-cols-7 gap-1.5 mb-2">
           {WEEKDAY_LABELS.map((label) => (
-            <div key={label} className="text-center text-[9px] text-[#4a4a58] tracking-wider">
+            <div key={label} className="text-center text-xs text-[#4a4a58] tracking-wider">
               {label}
             </div>
           ))}
@@ -480,7 +480,7 @@ export default function GardenPage() {
                 ].join(" ")}
               >
                 <span className={[
-                  "text-[9px] tabular-nums",
+                  "text-xs tabular-nums",
                   isFuture ? "text-[#4a4a58]/30" : count > 0 ? "text-[#e8e8f0]/80" : "text-[#4a4a58]/60",
                 ].join(" ")}>
                   {day}
@@ -501,34 +501,34 @@ export default function GardenPage() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#e8e8f0] tabular-nums">{monthStats.total}</p>
-            <p className="text-[9px] text-[#4a4a58] mt-0.5 tracking-wider">이번 달</p>
+            <p className="text-xs text-[#4a4a58] mt-0.5 tracking-wider">이번 달</p>
           </div>
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#a78bfa] tabular-nums">{monthStats.activeDays}</p>
-            <p className="text-[9px] text-[#4a4a58] mt-0.5 tracking-wider">활동일</p>
+            <p className="text-xs text-[#4a4a58] mt-0.5 tracking-wider">활동일</p>
           </div>
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#FFD166] tabular-nums">{monthStats.maxDay}</p>
-            <p className="text-[9px] text-[#4a4a58] mt-0.5 tracking-wider">최고 기록</p>
+            <p className="text-xs text-[#4a4a58] mt-0.5 tracking-wider">최고 기록</p>
           </div>
         </div>
       )}
 
       {/* Legend */}
       <div className="flex items-center justify-center gap-2 mb-6">
-        <span className="text-[9px] text-[#4a4a58]">적음</span>
+        <span className="text-xs text-[#4a4a58]">적음</span>
         <div className="flex gap-1">
           {[0, 1, 2, 3, 4].map((level) => (
             <div key={level} className={`w-3 h-3 rounded-sm ${getIntensity(level)}`} />
           ))}
         </div>
-        <span className="text-[9px] text-[#4a4a58]">많음</span>
+        <span className="text-xs text-[#4a4a58]">많음</span>
       </div>
 
       {/* Best weekday */}
       {bestWeekday && (
         <div className="text-center">
-          <p className="text-[11px] text-[#6a6a7a]">
+          <p className="text-xs text-[#6a6a7a]">
             <span className="text-[#a78bfa]">{bestWeekday.day}요일</span>에 가장 많이 닫았습니다
           </p>
         </div>

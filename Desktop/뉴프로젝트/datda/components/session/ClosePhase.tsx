@@ -62,7 +62,7 @@ export default function ClosePhase() {
             placeholder="링크, 파일명, 폴더..."
             className="input-base py-4"
           />
-          <p className="text-[10px] text-[#4a4a58]/50 tracking-wider">비워둬도 됩니다</p>
+          <p className="text-xs text-[#4a4a58]/50 tracking-wider">비워둬도 됩니다</p>
         </div>
 
         <button
