@@ -437,9 +437,19 @@ export default function GardenPage() {
   // Filter discarded sessions when showDiscardedRecords is false
   const filteredSessions = useMemo(() => {
     if (showDiscardedRecords) return sessions;
+    // Build set of all task titles from existing goals
+    const activeTaskTitles = new Set<string>();
+    for (const goal of goals) {
+      activeTaskTitles.add(goal.title);
+      goal.steps.forEach((s) => activeTaskTitles.add(s.action));
+    }
     const deletedSet = new Set(deletedGoalTasks);
-    return sessions.filter((s) => s.closeType !== "폐기" && !deletedSet.has(s.taskTitle));
-  }, [sessions, showDiscardedRecords, deletedGoalTasks]);
+    return sessions.filter((s) =>
+      s.closeType !== "폐기" &&
+      !deletedSet.has(s.taskTitle) &&
+      activeTaskTitles.has(s.taskTitle)
+    );
+  }, [sessions, showDiscardedRecords, deletedGoalTasks, goals]);
 
   // Sort sessions oldest-first for fruit ordering
   const sortedSessions = useMemo(() =>
