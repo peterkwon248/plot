@@ -616,7 +616,7 @@ export default function HomePage() {
                         <div className="h-px bg-white/[0.06] mb-5" />
 
                         {/* Step action (session name) */}
-                        <p className="text-base font-light text-[#e8e8f0] leading-relaxed mb-3">
+                        <p className="text-lg font-light text-[#e8e8f0] leading-relaxed mb-3">
                           {sg.step.action}
                         </p>
 
@@ -627,7 +627,7 @@ export default function HomePage() {
                               e.stopPropagation();
                               setShowStepEditor(sg.goalId);
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-[#aea6c0] hover:text-[#e8e8f0] bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-all duration-200"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#aea6c0] hover:text-[#e8e8f0] bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-all duration-200"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
@@ -639,7 +639,7 @@ export default function HomePage() {
                               e.stopPropagation();
                               setShowAiEditor(sg.goalId);
                             }}
-                            className="flex items-center gap-1.5 px-3 py-1.5 text-[13px] text-[#a78bfa]/70 hover:text-[#a78bfa] bg-[#a78bfa]/[0.06] hover:bg-[#a78bfa]/[0.12] rounded-lg transition-all duration-200"
+                            className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[#a78bfa]/70 hover:text-[#a78bfa] bg-[#a78bfa]/[0.06] hover:bg-[#a78bfa]/[0.12] rounded-lg transition-all duration-200"
                           >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                               <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
@@ -652,7 +652,7 @@ export default function HomePage() {
                               setShowReorderSteps(showReorderSteps === sg.goalId ? null : sg.goalId);
                             }}
                             className={[
-                              "flex items-center gap-1.5 px-3 py-1.5 text-[13px] rounded-lg transition-all duration-200",
+                              "flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-lg transition-all duration-200",
                               showReorderSteps === sg.goalId
                                 ? "text-[#a78bfa] bg-[#a78bfa]/10"
                                 : "text-[#9898a8] hover:text-[#e8e8f0] bg-white/[0.04] hover:bg-white/[0.08]",
@@ -711,7 +711,7 @@ export default function HomePage() {
                         </AnimatePresence>
 
                         {/* Time label */}
-                        <p className="text-xs tracking-[0.1em] text-[#9e96b4] mb-2">시간</p>
+                        <p className="text-[13px] tracking-[0.1em] text-[#9e96b4] mb-2">시간</p>
 
                         {/* Minutes selector */}
                         <div className="flex items-center gap-1.5 mb-4 flex-wrap">
@@ -763,7 +763,7 @@ export default function HomePage() {
                                     setEditTimerValue(String(preset));
                                   }}
                                   className={[
-                                    "px-3 py-1.5 rounded-full text-sm transition-all duration-200 cursor-pointer",
+                                    "px-3.5 py-1.5 rounded-full text-[15px] transition-all duration-200 cursor-pointer",
                                     isActive
                                       ? "bg-[#a78bfa]/20 text-[#a78bfa]"
                                       : "bg-white/[0.04] text-[#9e96b4] hover:text-[#aea6c0]",
@@ -848,7 +848,7 @@ export default function HomePage() {
                         </div>
 
                         {/* Result type label */}
-                        <p className="text-xs tracking-[0.1em] text-[#9e96b4] mb-2">완료 유형</p>
+                        <p className="text-[13px] tracking-[0.1em] text-[#9e96b4] mb-2">완료 유형</p>
 
                         {/* Result type selector */}
                         <div className="flex items-center gap-1.5 mb-5 flex-wrap">
@@ -898,7 +898,7 @@ export default function HomePage() {
                                     setEditResultValue(type);
                                   }}
                                   className={[
-                                    "px-3 py-1.5 rounded-full text-sm transition-all duration-200 cursor-pointer",
+                                    "px-3.5 py-1.5 rounded-full text-[15px] transition-all duration-200 cursor-pointer",
                                     isActive
                                       ? "bg-[#a78bfa]/20 text-[#a78bfa]"
                                       : "bg-white/[0.04] text-[#9e96b4] hover:text-[#aea6c0]",
