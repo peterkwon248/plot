@@ -1,9 +1,154 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, Reorder } from "framer-motion";
 import { useDatdaStore } from "@/lib/store";
+import type { Goal, GoalStep } from "@/lib/store";
+import StepEditor from "@/components/vault/StepEditor";
+import AiStepEditor from "@/components/vault/AiStepEditor";
+
+// ─── Draggable Step List (separate component for local state during drag) ───
+
+function DraggableStepList({ goal }: { goal: Goal }) {
+  const moveGoalStep = useDatdaStore((s) => s.moveGoalStep);
+  const reorderGoalSteps = useDatdaStore((s) => s.reorderGoalSteps);
+
+  const [localSteps, setLocalSteps] = useState<GoalStep[]>(goal.steps);
+  const isDragging = useRef(false);
+  const idMap = useRef(new WeakMap<GoalStep, string>());
+
+  // Stable ID per step object (survives reorder, breaks on store update = correct)
+  const getStepId = useCallback((step: GoalStep) => {
+    if (!idMap.current.has(step)) {
+      idMap.current.set(step, Math.random().toString(36).slice(2));
+    }
+    return idMap.current.get(step)!;
+  }, []);
+
+  // Sync local state with store when NOT dragging
+  useEffect(() => {
+    if (!isDragging.current) {
+      setLocalSteps(goal.steps);
+    }
+  }, [goal.steps]);
+
+  const nextStepIndex = localSteps.findIndex((s) => !s.completed && !s.discarded);
+
+  return (
+    <Reorder.Group
+      axis="y"
+      values={localSteps}
+      onReorder={setLocalSteps}
+      className="flex flex-col gap-1"
+    >
+      {localSteps.map((step, i) => {
+        const isNext = i === nextStepIndex;
+        const isCompleted = step.completed;
+        const isFirst = i === 0;
+        const isLast = i === localSteps.length - 1;
+
+        return (
+          <Reorder.Item
+            key={getStepId(step)}
+            value={step}
+            onDragStart={() => { isDragging.current = true; }}
+            onDragEnd={() => {
+              isDragging.current = false;
+              reorderGoalSteps(goal.id, localSteps);
+            }}
+            className="flex items-center gap-2 py-1.5 group/step cursor-grab active:cursor-grabbing list-none"
+            whileDrag={{
+              scale: 1.02,
+              backgroundColor: "rgba(167, 139, 250, 0.08)",
+              borderRadius: "8px",
+              boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
+              zIndex: 50,
+            }}
+          >
+            {/* Drag handle */}
+            <div className="text-[#4a4a58] group-hover/step:text-[#6a6a7a] transition-colors touch-none">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                <circle cx="9" cy="6" r="1.5" />
+                <circle cx="15" cy="6" r="1.5" />
+                <circle cx="9" cy="12" r="1.5" />
+                <circle cx="15" cy="12" r="1.5" />
+                <circle cx="9" cy="18" r="1.5" />
+                <circle cx="15" cy="18" r="1.5" />
+              </svg>
+            </div>
+
+            {/* Step dot */}
+            <div className="mt-0.5">
+              {isCompleted ? (
+                <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa]" />
+              ) : isNext ? (
+                <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-dot-breathe" />
+              ) : (
+                <div className="w-1.5 h-1.5 rounded-full bg-[#2d2d38]" />
+              )}
+            </div>
+
+            {/* Step text */}
+            <div className="flex-1 flex items-center gap-2">
+              <span
+                className={[
+                  "text-sm leading-relaxed",
+                  isCompleted
+                    ? "text-[#6a6a7a] line-through"
+                    : isNext
+                    ? "text-[#e8e8f0]"
+                    : "text-[#9898a8]",
+                ].join(" ")}
+              >
+                {step.action}
+              </span>
+              {isNext && (
+                <span className="px-2 py-0.5 text-[11px] tracking-wider text-[#a78bfa]/70 bg-[#a78bfa]/8 rounded-full">
+                  다음
+                </span>
+              )}
+            </div>
+
+            {/* Top/Bottom quick buttons */}
+            <div className="flex gap-0.5 opacity-0 group-hover/step:opacity-100 transition-opacity duration-200">
+              {!isFirst && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    moveGoalStep(goal.id, i, 0);
+                  }}
+                  className="w-6 h-6 flex items-center justify-center text-[#6a6a7a] hover:text-[#a78bfa] rounded transition-colors"
+                  title="제일 위로"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l7.5-7.5 7.5 7.5m-15 6l7.5-7.5 7.5 7.5" />
+                  </svg>
+                </button>
+              )}
+              {!isLast && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    moveGoalStep(goal.id, i, localSteps.length - 1);
+                  }}
+                  className="w-6 h-6 flex items-center justify-center text-[#6a6a7a] hover:text-[#a78bfa] rounded transition-colors"
+                  title="제일 아래로"
+                >
+                  <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 5.25l-7.5 7.5-7.5-7.5m15 6l-7.5 7.5-7.5-7.5" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </Reorder.Item>
+        );
+      })}
+    </Reorder.Group>
+  );
+}
+
+// ─── Helpers ───
 
 function formatKoreanTime(date: Date): string {
   const hours = date.getHours();
@@ -24,10 +169,13 @@ export default function VaultPage() {
   const canAccessVault = useDatdaStore((s) => s.canAccessVault);
   const recordVaultAccess = useDatdaStore((s) => s.recordVaultAccess);
   const getNextAccessTime = useDatdaStore((s) => s.getNextAccessTime);
+  const shuffleGoalSteps = useDatdaStore((s) => s.shuffleGoalSteps);
 
   const [newGoalTitle, setNewGoalTitle] = useState("");
   const [vaultUnlocked, setVaultUnlocked] = useState(false);
   const [expandedGoalId, setExpandedGoalId] = useState<string | null>(null);
+  const [showStepEditor, setShowStepEditor] = useState<string | null>(null);
+  const [showAiEditor, setShowAiEditor] = useState<string | null>(null);
   const accessRecorded = useRef(false);
 
   // Check vault access on mount
@@ -121,7 +269,7 @@ export default function VaultPage() {
                 목표를 넣어두면, 매일 하나씩 꺼내드립니다.
               </p>
               <Link href="/chat" className="text-sm text-[#a78bfa] hover:text-[#b89dfc] cursor-pointer inline-block">
-                AI로 목표 쪼개기 →
+                채팅으로 쪼개기 →
               </Link>
             </motion.div>
           ) : (
@@ -130,7 +278,6 @@ export default function VaultPage() {
               const completedCount = goal.steps.filter((s) => s.completed).length;
               const totalCount = goal.steps.length;
               const allCompleted = totalCount > 0 && completedCount === totalCount;
-              const nextStepIndex = goal.steps.findIndex((s) => !s.completed);
               const progressPercent = totalCount > 0 ? (completedCount / totalCount) * 100 : 0;
 
               return (
@@ -242,49 +389,50 @@ export default function VaultPage() {
                         className="overflow-hidden"
                       >
                         <div className="mt-6 pt-5 border-t border-white/[0.08]">
-                          {/* Goal with steps */}
+                          {/* Goal with steps - drag & drop */}
                           {totalCount > 0 && !allCompleted && (
-                            <div className="flex flex-col gap-2.5">
-                              {goal.steps.map((step, i) => {
-                                const isNext = i === nextStepIndex;
-                                const isCompleted = step.completed;
+                            <DraggableStepList goal={goal} />
+                          )}
 
-                                return (
-                                  <div
-                                    key={i}
-                                    className="flex items-start gap-3 py-1.5"
-                                  >
-                                    <div className="mt-1.5">
-                                      {isCompleted ? (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa]" />
-                                      ) : isNext ? (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-dot-breathe" />
-                                      ) : (
-                                        <div className="w-1.5 h-1.5 rounded-full bg-[#2d2d38]" />
-                                      )}
-                                    </div>
-                                    <div className="flex-1 flex items-center gap-2">
-                                      <span
-                                        className={[
-                                          "text-sm leading-relaxed",
-                                          isCompleted
-                                            ? "text-[#6a6a7a] line-through"
-                                            : isNext
-                                            ? "text-[#e8e8f0]"
-                                            : "text-[#9898a8]",
-                                        ].join(" ")}
-                                      >
-                                        {step.action}
-                                      </span>
-                                      {isNext && (
-                                        <span className="px-2 py-0.5 text-[11px] tracking-wider text-[#a78bfa]/70 bg-[#a78bfa]/8 rounded-full">
-                                          다음
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                );
-                              })}
+                          {/* Edit buttons - only for active goals with steps */}
+                          {totalCount > 0 && !allCompleted && (
+                            <div className="flex gap-2 mt-4 pt-3 border-t border-white/[0.06]">
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowStepEditor(goal.id);
+                                }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#9898a8] hover:text-[#e8e8f0] bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-all duration-200"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                                </svg>
+                                직접 수정
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setShowAiEditor(goal.id);
+                                }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#a78bfa]/70 hover:text-[#a78bfa] bg-[#a78bfa]/[0.06] hover:bg-[#a78bfa]/[0.12] rounded-lg transition-all duration-200"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.455 2.456L21.75 6l-1.036.259a3.375 3.375 0 00-2.455 2.456z" />
+                                </svg>
+                                AI 수정
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  shuffleGoalSteps(goal.id);
+                                }}
+                                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-[#9898a8] hover:text-[#e8e8f0] bg-white/[0.04] hover:bg-white/[0.08] rounded-lg transition-all duration-200"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                                  <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
+                                </svg>
+                                섞기
+                              </button>
                             </div>
                           )}
 
@@ -316,7 +464,7 @@ export default function VaultPage() {
                                 href="/chat"
                                 className="text-sm text-[#a78bfa]/60 hover:text-[#a78bfa] transition-colors"
                               >
-                                AI로 로드맵 만들기 →
+                                채팅으로 쪼개기 →
                               </Link>
                             </div>
                           )}
@@ -353,7 +501,7 @@ export default function VaultPage() {
           </button>
         </div>
         <Link href="/chat" className="shrink-0 text-sm text-[#a78bfa] hover:text-[#b89dfc] cursor-pointer px-4 py-3">
-          AI로 쪼개기 →
+          채팅으로 쪼개기 →
         </Link>
       </div>
 
@@ -364,6 +512,40 @@ export default function VaultPage() {
       >
         설정
       </Link>
+
+      {/* Step Editor Modal */}
+      <AnimatePresence>
+        {showStepEditor && (() => {
+          const goal = goals.find((g) => g.id === showStepEditor);
+          if (!goal) return null;
+          return (
+            <StepEditor
+              key="step-editor"
+              steps={goal.steps}
+              goalId={goal.id}
+              onClose={() => setShowStepEditor(null)}
+            />
+          );
+        })()}
+      </AnimatePresence>
+
+      {/* AI Step Editor Modal */}
+      <AnimatePresence>
+        {showAiEditor && (() => {
+          const goal = goals.find((g) => g.id === showAiEditor);
+          if (!goal) return null;
+          return (
+            <AiStepEditor
+              key="ai-step-editor"
+              goalId={goal.id}
+              goalTitle={goal.title}
+              steps={goal.steps}
+              onClose={() => setShowAiEditor(null)}
+              onStepsReplaced={() => setShowAiEditor(null)}
+            />
+          );
+        })()}
+      </AnimatePresence>
     </div>
   );
 }

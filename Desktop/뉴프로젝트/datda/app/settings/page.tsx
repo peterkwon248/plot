@@ -16,6 +16,9 @@ export default function SettingsPage() {
   const addResultType = useDatdaStore((s) => s.addResultType);
   const removeResultType = useDatdaStore((s) => s.removeResultType);
   const resetSettings = useDatdaStore((s) => s.resetSettings);
+  // Subscribe to actual data to trigger re-renders
+  useDatdaStore((s) => s.userTimerPresets);
+  useDatdaStore((s) => s.userResultTypes);
 
   const [showTimerAdd, setShowTimerAdd] = useState(false);
   const [showResultAdd, setShowResultAdd] = useState(false);
@@ -23,6 +26,8 @@ export default function SettingsPage() {
   const [newResultType, setNewResultType] = useState("");
   const [backupMessage, setBackupMessage] = useState("");
   const [showResetConfirm, setShowResetConfirm] = useState(false);
+  const [editingTimer, setEditingTimer] = useState<number | null>(null);
+  const [editTimerValue, setEditTimerValue] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!mounted) {
@@ -38,7 +43,8 @@ export default function SettingsPage() {
 
   const handleAddTimer = () => {
     const val = parseInt(newMinutes, 10);
-    if (isNaN(val) || val < 5 || val > 180) return;
+    if (isNaN(val) || val < 1 || val > 180) return;
+    if (timerPresets.length >= 8) return;
     addTimerPreset(val);
     setNewMinutes("");
     setShowTimerAdd(false);
@@ -100,35 +106,85 @@ export default function SettingsPage() {
           Section 1: Timer Presets
           ============================================ */}
       <section className="card-glass rounded-2xl p-6 mb-4">
-        <div className="flex items-center justify-between mb-1">
-          <h2 className="text-sm text-[#e8e8f0]">세션 시간</h2>
-          <button
-            onClick={() => setShowTimerAdd(!showTimerAdd)}
-            className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors cursor-pointer"
-          >
-            {showTimerAdd ? "취소" : "+ 추가"}
-          </button>
-        </div>
-        <p className="text-xs text-[#4a4a58] mb-5">세션을 시작할 때 선택할 수 있는 시간</p>
-
-        <div className="flex flex-wrap gap-2">
-          {timerPresets.map((minutes) => (
-            <div
-              key={minutes}
-              className="group relative flex items-center px-4 py-2.5 rounded-xl bg-white/[0.04] border border-white/[0.06] text-sm text-[#e8e8f0]"
+        <div className="flex items-center gap-3 mb-1">
+          <div className="w-0.5 h-4 bg-gradient-to-b from-[#a78bfa] to-transparent rounded-full" />
+          <h2 className="text-sm text-[#e8e8f0] font-light tracking-wide">세션 시간</h2>
+          <div className="flex-1" />
+          {timerPresets.length >= 8 ? (
+            <span className="text-xs text-[#6a6a7a] font-light">최대 8개</span>
+          ) : (
+            <button
+              onClick={() => setShowTimerAdd(!showTimerAdd)}
+              className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors cursor-pointer font-light"
             >
-              {minutes}분
-              {timerPresets.length > 1 && (
-                <button
-                  onClick={() => removeTimerPreset(minutes)}
-                  className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-white/[0.06] text-[#6a6a7a] hover:bg-[#f87171]/20 hover:text-[#f87171] transition-all text-xs cursor-pointer"
-                  aria-label={`${minutes}분 삭제`}
-                >
-                  ×
-                </button>
-              )}
-            </div>
-          ))}
+              {showTimerAdd ? "취소" : "+ 추가"}
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-[#4a4a58] mb-6 ml-5">세션을 시작할 때 선택할 수 있는 시간 ({timerPresets.length}/8)</p>
+
+        <div className="flex flex-wrap gap-2.5">
+          <AnimatePresence mode="popLayout">
+            {timerPresets.map((minutes) => (
+              <motion.div
+                key={minutes}
+                layout
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 0.85, opacity: 0 }}
+                transition={{ duration: 0.2, layout: { duration: 0.3 } }}
+              >
+                {editingTimer === minutes ? (
+                  <div className="flex items-center gap-1.5 px-3 py-2 rounded-full bg-white/[0.08] border border-[#a78bfa]/30">
+                    <input
+                      type="number"
+                      value={editTimerValue}
+                      onChange={(e) => setEditTimerValue(e.target.value)}
+                      className="w-12 bg-transparent text-sm text-[#e8e8f0] text-center focus:outline-none"
+                      min={1}
+                      max={999}
+                      autoFocus
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          const val = parseInt(editTimerValue, 10);
+                          if (!isNaN(val) && val > 0 && val <= 999) {
+                            removeTimerPreset(minutes);
+                            addTimerPreset(val);
+                          }
+                          setEditingTimer(null);
+                        }
+                        if (e.key === "Escape") setEditingTimer(null);
+                      }}
+                      onBlur={() => setEditingTimer(null)}
+                    />
+                    <span className="text-xs text-[#9898a8]">분</span>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1 px-4 py-2.5 rounded-full bg-gradient-to-br from-white/[0.08] to-white/[0.04] border border-white/[0.08]">
+                    <button
+                      onClick={() => {
+                        setEditingTimer(minutes);
+                        setEditTimerValue(String(minutes));
+                      }}
+                      className="flex items-baseline gap-0.5 cursor-pointer"
+                    >
+                      <span className="text-base font-medium text-[#e8e8f0] tracking-tight">{minutes}</span>
+                      <span className="text-xs text-[#9898a8] font-light">분</span>
+                    </button>
+                    {timerPresets.length > 1 && (
+                      <button
+                        onClick={() => removeTimerPreset(minutes)}
+                        className="ml-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-white/[0.06] text-[#6a6a7a] hover:bg-[#f87171]/20 hover:text-[#f87171] active:bg-[#f87171]/30 transition-all text-xs cursor-pointer"
+                        aria-label={`${minutes}분 삭제`}
+                      >
+                        ×
+                      </button>
+                    )}
+                  </div>
+                )}
+              </motion.div>
+            ))}
+          </AnimatePresence>
         </div>
 
         <AnimatePresence>
@@ -137,28 +193,35 @@ export default function SettingsPage() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
+              transition={{ duration: 0.25, ease: "easeInOut" }}
               className="overflow-hidden"
             >
-              <div className="flex gap-2 mt-4 pt-4 border-t border-white/[0.06]">
-                <input
-                  type="number"
-                  value={newMinutes}
-                  onChange={(e) => setNewMinutes(e.target.value)}
-                  placeholder="5 ~ 180"
-                  min={5}
-                  max={180}
-                  className="w-28 input-base"
-                  onKeyDown={(e) => { if (e.key === "Enter") handleAddTimer(); }}
-                  autoFocus
-                />
-                <button
-                  onClick={handleAddTimer}
-                  disabled={!newMinutes || isNaN(parseInt(newMinutes, 10))}
-                  className="px-4 py-2 text-sm rounded-xl bg-[#a78bfa] text-white hover:bg-[#b89dfc] transition-colors cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed"
-                >
-                  추가
-                </button>
+              <div className="flex flex-col gap-2 mt-5 pt-5 border-t border-white/[0.06]">
+                <div className="flex gap-2">
+                  <input
+                    type="number"
+                    value={newMinutes}
+                    onChange={(e) => setNewMinutes(e.target.value)}
+                    placeholder="1 ~ 180"
+                    min={1}
+                    max={180}
+                    className="w-28 input-base"
+                    onKeyDown={(e) => { if (e.key === "Enter") handleAddTimer(); }}
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleAddTimer}
+                    disabled={!newMinutes || isNaN(parseInt(newMinutes, 10))}
+                    className="px-5 py-2 text-sm rounded-full bg-[#a78bfa] text-white hover:bg-[#b89dfc] transition-all cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed font-light tracking-wide"
+                  >
+                    추가
+                  </button>
+                </div>
+                {newMinutes && parseInt(newMinutes, 10) > 180 ? (
+                  <p className="text-xs text-[#f87171]/70 font-light">최대 180분까지 설정할 수 있어요</p>
+                ) : newMinutes && parseInt(newMinutes, 10) > 60 ? (
+                  <p className="text-xs text-[#a78bfa]/60 font-light">작게 닫는 게 더 효과적이에요</p>
+                ) : null}
               </div>
             </motion.div>
           )}
@@ -171,14 +234,18 @@ export default function SettingsPage() {
       <section className="card-glass rounded-2xl p-6 mb-4">
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-sm text-[#e8e8f0]">결과 유형</h2>
-          <button
-            onClick={() => setShowResultAdd(!showResultAdd)}
-            className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors cursor-pointer"
-          >
-            {showResultAdd ? "취소" : "+ 추가"}
-          </button>
+          {resultTypes.length >= 8 ? (
+            <span className="text-xs text-[#6a6a7a] font-light">최대 8개</span>
+          ) : (
+            <button
+              onClick={() => setShowResultAdd(!showResultAdd)}
+              className="text-xs text-[#a78bfa] hover:text-[#b89dfc] transition-colors cursor-pointer"
+            >
+              {showResultAdd ? "취소" : "+ 추가"}
+            </button>
+          )}
         </div>
-        <p className="text-xs text-[#4a4a58] mb-5">닫힘의 결과를 분류하는 태그</p>
+        <p className="text-xs text-[#4a4a58] mb-5">닫힘의 결과를 분류하는 태그 ({resultTypes.length}/8)</p>
 
         <div className="flex flex-wrap gap-2">
           {resultTypes.map((type) => (

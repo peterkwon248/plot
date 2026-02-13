@@ -60,3 +60,31 @@ export async function decomposeGoal(
     return FALLBACK;
   }
 }
+
+export async function modifySteps(
+  goalTitle: string,
+  currentSteps: StepRecommendation[],
+  userMessage: string,
+): Promise<DecomposeResult> {
+  try {
+    const response = await fetch('/api/modify-steps', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ goalTitle, currentSteps, userMessage }),
+    });
+
+    if (!response.ok) return FALLBACK;
+
+    const data = await response.json();
+    if (data.error) return FALLBACK;
+
+    if (Array.isArray(data.steps) && data.steps.length > 0) {
+      return { steps: data.steps };
+    }
+
+    return FALLBACK;
+  } catch (error) {
+    console.error('[datda] Failed to modify steps:', error);
+    return FALLBACK;
+  }
+}

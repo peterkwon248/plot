@@ -91,6 +91,11 @@ interface VaultActions {
   removeGoal: (id: string) => void;
   addGoalWithSteps: (title: string, steps: { action: string; minutes: number; resultType: string }[], round?: number) => void;
   toggleStepComplete: (goalId: string, stepIndex: number) => void;
+  updateGoalStep: (goalId: string, stepIndex: number, updates: Partial<Pick<GoalStep, 'action' | 'minutes' | 'resultType'>>) => void;
+  replaceGoalSteps: (goalId: string, steps: { action: string; minutes: number; resultType: string }[]) => void;
+  moveGoalStep: (goalId: string, fromIndex: number, toIndex: number) => void;
+  reorderGoalSteps: (goalId: string, newSteps: GoalStep[]) => void;
+  shuffleGoalSteps: (goalId: string) => void;
   getNextStep: (goalId: string) => GoalStep | null;
   getTodaysSuggestion: () => { goalId: string; goalTitle: string; step: GoalStep; stepIndex: number } | null;
   getAllSuggestions: () => { goalId: string; goalTitle: string; step: GoalStep; stepIndex: number }[];
@@ -308,6 +313,74 @@ export const useDatdaStore = create<DatdaStore>()(
         }));
       },
 
+      updateGoalStep: (goalId: string, stepIndex: number, updates) => {
+        set((state) => ({
+          goals: state.goals.map((g) =>
+            g.id === goalId
+              ? {
+                  ...g,
+                  steps: g.steps.map((s, i) =>
+                    i === stepIndex ? { ...s, ...updates } : s
+                  ),
+                }
+              : g
+          ),
+        }));
+      },
+
+      replaceGoalSteps: (goalId: string, steps) => {
+        set((state) => ({
+          goals: state.goals.map((g) =>
+            g.id === goalId
+              ? {
+                  ...g,
+                  steps: steps.map((s) => ({
+                    ...s,
+                    completed: false,
+                    completedAt: null,
+                    discarded: false,
+                    discardedAt: null,
+                  })),
+                }
+              : g
+          ),
+        }));
+      },
+
+      moveGoalStep: (goalId: string, fromIndex: number, toIndex: number) => {
+        set((state) => ({
+          goals: state.goals.map((g) => {
+            if (g.id !== goalId) return g;
+            const steps = [...g.steps];
+            const [moved] = steps.splice(fromIndex, 1);
+            steps.splice(toIndex, 0, moved);
+            return { ...g, steps };
+          }),
+        }));
+      },
+
+      reorderGoalSteps: (goalId: string, newSteps: GoalStep[]) => {
+        set((state) => ({
+          goals: state.goals.map((g) =>
+            g.id === goalId ? { ...g, steps: newSteps } : g
+          ),
+        }));
+      },
+
+      shuffleGoalSteps: (goalId: string) => {
+        set((state) => ({
+          goals: state.goals.map((g) => {
+            if (g.id !== goalId) return g;
+            const steps = [...g.steps];
+            for (let i = steps.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [steps[i], steps[j]] = [steps[j], steps[i]];
+            }
+            return { ...g, steps };
+          }),
+        }));
+      },
+
       getNextStep: (goalId: string) => {
         const goal = get().goals.find((g) => g.id === goalId);
         if (!goal) return null;
@@ -401,7 +474,7 @@ export const useDatdaStore = create<DatdaStore>()(
 
       addTimerPreset: (minutes: number) => {
         const current = get().getTimerPresets();
-        if (current.includes(minutes)) return;
+        if (current.includes(minutes) || current.length >= 8) return;
         const updated = [...current, minutes].sort((a, b) => a - b);
         set({ userTimerPresets: updated });
       },
@@ -414,7 +487,7 @@ export const useDatdaStore = create<DatdaStore>()(
 
       addResultType: (type: string) => {
         const current = get().getResultTypes();
-        if (current.includes(type)) return;
+        if (current.includes(type) || current.length >= 8) return;
         set({ userResultTypes: [...current, type] });
       },
 
