@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDatdaStore } from "@/lib/store";
 import type { CompletedSession } from "@/lib/store";
@@ -419,6 +419,9 @@ function YearView({
 // ============================================================
 
 export default function GardenPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const sessions = useDatdaStore((s) => s.sessions);
   const goals = useDatdaStore((s) => s.goals);
   const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
@@ -582,6 +585,14 @@ export default function GardenPage() {
   }, []);
 
   const canGoNext = calendarView === "year" ? !isCurrentYear : !isCurrentMonth;
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-pulse" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto py-8 px-4">

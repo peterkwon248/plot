@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useDatdaStore } from "@/lib/store";
 import type { CloseType } from "@/lib/constants";
@@ -50,6 +50,9 @@ type FilterType = "전체" | CloseType;
 // ============================================================
 
 export default function HistoryPage() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const sessions = useDatdaStore((s) => s.sessions);
   const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
   const [filter, setFilter] = useState<FilterType>("전체");
@@ -113,6 +116,14 @@ export default function HistoryPage() {
   const totalFiltered = grouped.reduce((sum, g) => sum + g.sessions.length, 0);
 
   const filters: FilterType[] = ["전체", "완료", "보류", "폐기"];
+
+  if (!mounted) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh]">
+        <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-pulse" />
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-md mx-auto py-8 px-4">
