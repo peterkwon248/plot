@@ -232,19 +232,33 @@ export const useDatdaStore = create<DatdaStore>()(
           completedAt: Date.now(),
         };
 
-        // Auto-complete or discard matching goal step
-        const updatedGoals = state.goals.map((goal) => ({
-          ...goal,
-          steps: goal.steps.map((step) =>
+        // Auto-complete, discard, or defer matching goal step
+        const updatedGoals = state.goals.map((goal) => {
+          let steps = goal.steps.map((step) =>
             !step.completed && !step.discarded && step.action === state.taskTitle
               ? state.closeType === '폐기'
                 ? { ...step, discarded: true, discardedAt: Date.now() }
                 : state.closeType === '완료'
                 ? { ...step, completed: true, completedAt: Date.now() }
-                : step // 보류: keep as-is
+                : step
               : step
-          ),
-        }));
+          );
+
+          // 보류: move matching step to end of active queue (before finished)
+          if (state.closeType === '보류') {
+            const idx = steps.findIndex(
+              (s) => !s.completed && !s.discarded && s.action === state.taskTitle
+            );
+            if (idx !== -1) {
+              const [deferred] = steps.splice(idx, 1);
+              const active = steps.filter((s) => !s.completed && !s.discarded);
+              const finished = steps.filter((s) => s.completed || s.discarded);
+              steps = [...active, deferred, ...finished];
+            }
+          }
+
+          return { ...goal, steps };
+        });
 
         // Save to history, update goals, reset current session, set final phase
         set({
