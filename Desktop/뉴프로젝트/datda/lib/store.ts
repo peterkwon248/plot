@@ -125,6 +125,7 @@ interface SettingsState {
   userTimerPresets: number[] | null;
   userResultTypes: string[] | null;
   hasSeenOnboarding: boolean;
+  showDiscardedRecords: boolean;
 }
 
 interface SettingsActions {
@@ -138,6 +139,7 @@ interface SettingsActions {
   removeResultType: (type: string) => void;
   resetSettings: () => void;
   completeOnboarding: () => void;
+  toggleShowDiscardedRecords: () => void;
 }
 
 // ============================================================
@@ -471,6 +473,7 @@ export const useDatdaStore = create<DatdaStore>()(
       userTimerPresets: null,
       userResultTypes: null,
       hasSeenOnboarding: false,
+      showDiscardedRecords: true,
 
       // --- Settings Actions ---
       getTimerPresets: () => {
@@ -524,6 +527,10 @@ export const useDatdaStore = create<DatdaStore>()(
 
       completeOnboarding: () => {
         set({ hasSeenOnboarding: true });
+      },
+
+      toggleShowDiscardedRecords: () => {
+        set((state) => ({ showDiscardedRecords: !state.showDiscardedRecords }));
       },
     }),
     {

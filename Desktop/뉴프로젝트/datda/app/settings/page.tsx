@@ -16,6 +16,8 @@ export default function SettingsPage() {
   const addResultType = useDatdaStore((s) => s.addResultType);
   const removeResultType = useDatdaStore((s) => s.removeResultType);
   const resetSettings = useDatdaStore((s) => s.resetSettings);
+  const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
+  const toggleShowDiscardedRecords = useDatdaStore((s) => s.toggleShowDiscardedRecords);
   // Subscribe to actual data to trigger re-renders
   useDatdaStore((s) => s.userTimerPresets);
   useDatdaStore((s) => s.userResultTypes);
@@ -359,7 +361,42 @@ export default function SettingsPage() {
       </section>
 
       {/* ============================================
-          Section 4: Reset
+          Section 4: Display Options
+          ============================================ */}
+      <section className="card-glass rounded-2xl p-6 mb-4">
+        <h2 className="text-sm text-[#e8e8f0] mb-1">표시 설정</h2>
+        <p className="text-xs text-[#66667a] mb-5">기록 표시 방식을 조정합니다</p>
+
+        <button
+          onClick={toggleShowDiscardedRecords}
+          className="w-full flex items-center justify-between px-4 py-3.5 rounded-xl bg-white/[0.04] border border-white/[0.06] hover:border-white/[0.1] transition-all cursor-pointer group"
+        >
+          <div className="flex flex-col gap-0.5">
+            <span className="text-sm text-[#e8e8f0]">폐기된 기록 표시</span>
+            <span className="text-xs text-[#66667a] group-hover:text-[#9898a8] transition-colors">
+              정원과 기록에서 폐기된 세션을 표시합니다
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div
+              className={`relative w-10 h-5 rounded-full transition-colors ${
+                showDiscardedRecords ? "bg-[#a78bfa]" : "bg-white/[0.1]"
+              }`}
+            >
+              <motion.div
+                className="absolute top-0.5 w-4 h-4 rounded-full bg-white"
+                animate={{
+                  left: showDiscardedRecords ? "calc(100% - 18px)" : "2px",
+                }}
+                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+              />
+            </div>
+          </div>
+        </button>
+      </section>
+
+      {/* ============================================
+          Section 5: Reset
           ============================================ */}
       <section className="card-glass rounded-2xl p-6">
         <h2 className="text-sm text-[#e8e8f0] mb-1">초기화</h2>
