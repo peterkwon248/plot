@@ -209,6 +209,9 @@ export default function HomePage() {
   const [customMinutes, setCustomMinutes] = useState<Record<string, number>>({});
   const [customResultType, setCustomResultType] = useState<Record<string, string>>({});
   const getTimerPresets = useDatdaStore((s) => s.getTimerPresets);
+  // Subscribe to underlying state so component re-renders when presets change
+  useDatdaStore((s) => s.userTimerPresets);
+  useDatdaStore((s) => s.userResultTypes);
   const [showStepEditor, setShowStepEditor] = useState<string | null>(null);
   const [showAiEditor, setShowAiEditor] = useState<string | null>(null);
   const [showReorderSteps, setShowReorderSteps] = useState<string | null>(null);
