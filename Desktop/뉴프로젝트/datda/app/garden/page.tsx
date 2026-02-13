@@ -12,7 +12,7 @@ import type { CompletedSession } from "@/lib/store";
 const WEEKDAY_LABELS = ["일", "월", "화", "수", "목", "금", "토"];
 const MONTH_LABELS = ["1월", "2월", "3월", "4월", "5월", "6월", "7월", "8월", "9월", "10월", "11월", "12월"];
 
-type CalendarViewMode = "year" | "month" | "day";
+type CalendarViewMode = "year" | "month";
 
 function getMonthGrid(year: number, month: number) {
   const firstDay = new Date(year, month, 1);
@@ -50,7 +50,7 @@ function getGrowthMessage(total: number): string {
 function getCloseTypeColor(closeType: string): string {
   if (closeType === "완료") return "text-[#a78bfa]";
   if (closeType === "보류") return "text-[#FFD166]";
-  return "text-[#8888a0]";
+  return "text-[#9e96b4]";
 }
 
 function formatTime(ts: number): string {
@@ -115,7 +115,7 @@ function GardenTree({ count, fruitRipeness, selectedFruit, onFruitTap }: {
       {stage >= 1 && (
         <motion.line
           x1="120" y1="220" x2="120" y2={trunkTop}
-          stroke="#8888a0"
+          stroke="#9e96b4"
           strokeWidth={stage <= 2 ? 1.5 : stage <= 3 ? 2 : 2.5}
           strokeLinecap="round"
           initial={{ y2: 220 }}
@@ -139,13 +139,13 @@ function GardenTree({ count, fruitRipeness, selectedFruit, onFruitTap }: {
         <g>
           <motion.path
             d={`M120 ${trunkTop + 20} Q100 ${trunkTop + 5} 85 ${trunkTop - 10}`}
-            stroke="#8888a0" strokeWidth="1.5" fill="none" strokeLinecap="round"
+            stroke="#9e96b4" strokeWidth="1.5" fill="none" strokeLinecap="round"
             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
           />
           <motion.path
             d={`M120 ${trunkTop + 20} Q140 ${trunkTop + 5} 160 ${trunkTop - 5}`}
-            stroke="#8888a0" strokeWidth="1.5" fill="none" strokeLinecap="round"
+            stroke="#9e96b4" strokeWidth="1.5" fill="none" strokeLinecap="round"
             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
           />
@@ -153,13 +153,13 @@ function GardenTree({ count, fruitRipeness, selectedFruit, onFruitTap }: {
             <>
               <motion.path
                 d={`M120 ${trunkTop + 35} Q90 ${trunkTop + 20} 70 ${trunkTop + 5}`}
-                stroke="#8888a0" strokeWidth="1" fill="none" strokeLinecap="round"
+                stroke="#9e96b4" strokeWidth="1" fill="none" strokeLinecap="round"
                 initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
                 transition={{ duration: 1, delay: 0.7 }}
               />
               <motion.path
                 d={`M120 ${trunkTop + 35} Q150 ${trunkTop + 15} 175 ${trunkTop + 5}`}
-                stroke="#8888a0" strokeWidth="1" fill="none" strokeLinecap="round"
+                stroke="#9e96b4" strokeWidth="1" fill="none" strokeLinecap="round"
                 initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
                 transition={{ duration: 1, delay: 0.9 }}
               />
@@ -282,7 +282,7 @@ function MiniTree({ count }: { count: number }) {
         <line
           x1="40" y1="70" x2="40"
           y2={stage === 1 ? 50 : stage === 2 ? 38 : 32}
-          stroke="#8888a0"
+          stroke="#9e96b4"
           strokeWidth={stage === 1 ? 1 : 1.5}
           strokeLinecap="round"
         />
@@ -315,13 +315,13 @@ function SessionCard({ session, showTime }: { session: CompletedSession; showTim
     <div className="card-glass rounded-xl p-3">
       <div className="flex items-start gap-3">
         <div className={`w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${
-          session.closeType === "완료" ? "bg-[#a78bfa]" : session.closeType === "보류" ? "bg-[#FFD166]" : "bg-[#8888a0]/40"
+          session.closeType === "완료" ? "bg-[#a78bfa]" : session.closeType === "보류" ? "bg-[#FFD166]" : "bg-[#9e96b4]/40"
         }`} />
         <div className="flex-1 min-w-0">
           <p className="text-sm text-[#e8e8f0] leading-relaxed mb-1 truncate">
             {session.taskTitle}
           </p>
-          <div className="flex items-center gap-2 text-xs text-[#66667a] flex-wrap">
+          <div className="flex items-center gap-2 text-xs text-[#807898] flex-wrap">
             {showTime && (
               <>
                 <span>{formatTime(session.completedAt)}</span>
@@ -415,71 +415,6 @@ function YearView({
 }
 
 // ============================================================
-// DayView - full session list for a day
-// ============================================================
-
-function DayView({
-  year,
-  month,
-  day,
-  sessions,
-  onBack,
-}: {
-  year: number;
-  month: number;
-  day: number;
-  sessions: CompletedSession[];
-  onBack: () => void;
-}) {
-  const daySessions = useMemo(() => {
-    return sessions.filter((s) => {
-      const d = new Date(s.completedAt);
-      return d.getFullYear() === year && d.getMonth() === month && d.getDate() === day;
-    }).sort((a, b) => a.completedAt - b.completedAt);
-  }, [sessions, year, month, day]);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: 20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -20 }}
-      transition={{ duration: 0.3 }}
-    >
-      <button
-        onClick={onBack}
-        className="flex items-center gap-1.5 text-sm text-[#aea6c0] hover:text-[#b89dfc] transition-colors mb-4 cursor-pointer"
-      >
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <polyline points="15 18 9 12 15 6" />
-        </svg>
-        돌아가기
-      </button>
-
-      <div className="text-center mb-4">
-        <p className="text-lg text-[#e8e8f0]">
-          {year}년 {month + 1}월 {day}일
-        </p>
-        <p className="text-xs text-[#66667a] mt-1">
-          {daySessions.length}개의 기록
-        </p>
-      </div>
-
-      {daySessions.length === 0 ? (
-        <div className="card-glass rounded-xl p-6 text-center">
-          <p className="text-sm text-[#66667a]">이 날의 기록이 없습니다</p>
-        </div>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {daySessions.map((session) => (
-            <SessionCard key={session.id} session={session} showTime />
-          ))}
-        </div>
-      )}
-    </motion.div>
-  );
-}
-
-// ============================================================
 // Page Component
 // ============================================================
 
@@ -493,7 +428,6 @@ export default function GardenPage() {
   const [viewMonth, setViewMonth] = useState(now.getMonth());
   const [selectedFruit, setSelectedFruit] = useState<number | null>(null);
   const [calendarView, setCalendarView] = useState<CalendarViewMode>("month");
-  const [selectedDay, setSelectedDay] = useState<number | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedProjectGoalId, setSelectedProjectGoalId] = useState<string | null>(null);
 
@@ -647,11 +581,6 @@ export default function GardenPage() {
     setSelectedDate(null);
   }, []);
 
-  const handleBackFromDay = useCallback(() => {
-    setCalendarView("month");
-    setSelectedDay(null);
-  }, []);
-
   const canGoNext = calendarView === "year" ? !isCurrentYear : !isCurrentMonth;
 
   return (
@@ -660,7 +589,7 @@ export default function GardenPage() {
       <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-2">
         정원
       </h1>
-      <p className="text-xs text-[#8888a0] mb-6">
+      <p className="text-xs text-[#9e96b4] mb-6">
         {getGrowthMessage(filteredSessions.length)}
       </p>
 
@@ -698,7 +627,7 @@ export default function GardenPage() {
                 <p className="text-sm text-[#e8e8f0] leading-relaxed mb-1">
                   {selectedSession.taskTitle}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-[#66667a]">
+                <div className="flex items-center gap-2 text-xs text-[#807898]">
                   <span>{new Date(selectedSession.completedAt).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}</span>
                   <span>·</span>
                   <span>{selectedSession.timerMinutes}분</span>
@@ -721,7 +650,7 @@ export default function GardenPage() {
         <span className="text-3xl font-extralight text-[#a78bfa]/30 tabular-nums">
           {filteredSessions.length}
         </span>
-        <span className="text-xs tracking-[0.3em] text-[#66667a] mt-1">
+        <span className="text-xs tracking-[0.3em] text-[#807898] mt-1">
           번의 닫힘
         </span>
       </div>
@@ -752,7 +681,7 @@ export default function GardenPage() {
                   <p className="text-xs text-[#e8e8f0] mt-1 truncate w-full text-center">
                     {pt.goalTitle}
                   </p>
-                  <p className="text-[10px] text-[#66667a] mt-0.5 tabular-nums">
+                  <p className="text-[10px] text-[#807898] mt-0.5 tabular-nums">
                     {pt.count}회
                   </p>
                 </motion.button>
@@ -762,7 +691,7 @@ export default function GardenPage() {
           {selectedProjectGoalId && (
             <button
               onClick={() => { setSelectedProjectGoalId(null); setSelectedFruit(null); }}
-              className="text-xs text-[#8888a0] hover:text-[#b89dfc] mt-2 cursor-pointer transition-colors"
+              className="text-xs text-[#9e96b4] hover:text-[#b89dfc] mt-2 cursor-pointer transition-colors"
             >
               전체 보기
             </button>
@@ -772,26 +701,21 @@ export default function GardenPage() {
 
       {/* Calendar View Mode Tabs */}
       <div className="flex items-center justify-center gap-1 mb-4">
-        {(["year", "month", "day"] as CalendarViewMode[]).map((mode) => {
-          const label = mode === "year" ? "연도" : mode === "month" ? "월" : "일";
+        {(["year", "month"] as CalendarViewMode[]).map((mode) => {
+          const label = mode === "year" ? "연도" : "월";
           const isActive = calendarView === mode;
-          const isDisabled = mode === "day" && selectedDay === null;
           return (
             <button
               key={mode}
               onClick={() => {
-                if (isDisabled) return;
                 setCalendarView(mode);
                 setSelectedDate(null);
               }}
-              disabled={isDisabled}
               className={[
                 "px-4 py-1.5 rounded-lg text-xs transition-all cursor-pointer",
                 isActive
                   ? "bg-[#a78bfa]/20 text-[#a78bfa]"
-                  : isDisabled
-                  ? "text-[#66667a]/30 cursor-not-allowed"
-                  : "text-[#8888a0] hover:text-[#aea6c0] hover:bg-white/[0.03]",
+                  : "text-[#9e96b4] hover:text-[#aea6c0] hover:bg-white/[0.03]",
               ].join(" ")}
             >
               {label}
@@ -800,12 +724,11 @@ export default function GardenPage() {
         })}
       </div>
 
-      {/* Navigator (hide in day view) */}
-      {calendarView !== "day" && (
-        <div className="flex items-center justify-between mb-5">
+      {/* Navigator */}
+      <div className="flex items-center justify-between mb-5">
           <button
             onClick={goToPrev}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9e96b4] hover:text-[#aea6c0] transition-colors cursor-pointer"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="15 18 9 12 15 6" />
@@ -817,14 +740,13 @@ export default function GardenPage() {
           <button
             onClick={goToNext}
             disabled={!canGoNext}
-            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+            className="w-8 h-8 flex items-center justify-center rounded-lg text-[#9e96b4] hover:text-[#aea6c0] transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <polyline points="9 18 15 12 9 6" />
             </svg>
-          </button>
-        </div>
-      )}
+        </button>
+      </div>
 
       {/* Calendar Content */}
       <AnimatePresence mode="wait">
@@ -856,7 +778,7 @@ export default function GardenPage() {
             <div className="card-glass rounded-2xl p-5 mb-4">
               <div className="grid grid-cols-7 gap-1.5 mb-2">
                 {WEEKDAY_LABELS.map((label) => (
-                  <div key={label} className="text-center text-xs text-[#66667a] tracking-wider">
+                  <div key={label} className="text-center text-xs text-[#807898] tracking-wider">
                     {label}
                   </div>
                 ))}
@@ -893,7 +815,7 @@ export default function GardenPage() {
                     >
                       <span className={[
                         "text-xs tabular-nums",
-                        isFuture ? "text-[#66667a]/30" : count > 0 ? "text-[#e8e8f0]/80" : "text-[#66667a]/60",
+                        isFuture ? "text-[#807898]/30" : count > 0 ? "text-[#e8e8f0]/80" : "text-[#807898]/60",
                       ].join(" ")}>
                         {day}
                       </span>
@@ -921,17 +843,8 @@ export default function GardenPage() {
                   <div className="flex items-center justify-between mb-2">
                     <p className="text-xs text-[#aea6c0]">
                       {selectedDate.getMonth() + 1}월 {selectedDate.getDate()}일
-                      <span className="text-[#66667a] ml-1.5">{selectedDateSessions.length}개</span>
+                      <span className="text-[#807898] ml-1.5">{selectedDateSessions.length}개</span>
                     </p>
-                    <button
-                      onClick={() => {
-                        setSelectedDay(selectedDate.getDate());
-                        setCalendarView("day");
-                      }}
-                      className="text-xs text-[#8888a0] hover:text-[#b89dfc] cursor-pointer transition-colors"
-                    >
-                      상세 보기
-                    </button>
                   </div>
                   <div className="flex flex-col gap-2">
                     {selectedDateSessions.map((session) => (
@@ -944,24 +857,6 @@ export default function GardenPage() {
           </motion.div>
         )}
 
-        {calendarView === "day" && selectedDay !== null && (
-          <motion.div
-            key={`day-${viewYear}-${viewMonth}-${selectedDay}`}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="mb-6"
-          >
-            <DayView
-              year={viewYear}
-              month={viewMonth}
-              day={selectedDay}
-              sessions={filteredSessions}
-              onBack={handleBackFromDay}
-            />
-          </motion.div>
-        )}
       </AnimatePresence>
 
       {/* Month stats (show for month view) */}
@@ -969,36 +864,34 @@ export default function GardenPage() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#e8e8f0] tabular-nums">{monthStats.total}</p>
-            <p className="text-xs text-[#66667a] mt-0.5 tracking-wider">이번 달</p>
+            <p className="text-xs text-[#807898] mt-0.5 tracking-wider">이번 달</p>
           </div>
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#a78bfa] tabular-nums">{monthStats.activeDays}</p>
-            <p className="text-xs text-[#66667a] mt-0.5 tracking-wider">활동일</p>
+            <p className="text-xs text-[#807898] mt-0.5 tracking-wider">활동일</p>
           </div>
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#FFD166] tabular-nums">{monthStats.maxDay}</p>
-            <p className="text-xs text-[#66667a] mt-0.5 tracking-wider">최고 기록</p>
+            <p className="text-xs text-[#807898] mt-0.5 tracking-wider">최고 기록</p>
           </div>
         </div>
       )}
 
       {/* Legend */}
-      {calendarView !== "day" && (
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <span className="text-xs text-[#66667a]">적음</span>
-          <div className="flex gap-1">
-            {[0, 1, 2, 3, 4].map((level) => (
-              <div key={level} className={`w-3 h-3 rounded-sm ${getIntensity(level)}`} />
-            ))}
-          </div>
-          <span className="text-xs text-[#66667a]">많음</span>
+      <div className="flex items-center justify-center gap-2 mb-6">
+        <span className="text-xs text-[#807898]">적음</span>
+        <div className="flex gap-1">
+          {[0, 1, 2, 3, 4].map((level) => (
+            <div key={level} className={`w-3 h-3 rounded-sm ${getIntensity(level)}`} />
+          ))}
         </div>
-      )}
+        <span className="text-xs text-[#807898]">많음</span>
+      </div>
 
       {/* Best weekday */}
       {bestWeekday && (
         <div className="text-center">
-          <p className="text-xs text-[#8888a0]">
+          <p className="text-xs text-[#9e96b4]">
             <span className="text-[#a78bfa]">{bestWeekday.day}요일</span>에 가장 많이 닫았습니다
           </p>
         </div>

@@ -40,7 +40,7 @@ function getDateKey(timestamp: number): string {
 const CLOSE_TYPE_STYLE: Record<string, { dot: string; text: string }> = {
   "완료": { dot: "bg-[#a78bfa]", text: "text-[#a78bfa]" },
   "보류": { dot: "bg-[#FFD166]", text: "text-[#FFD166]" },
-  "폐기": { dot: "bg-[#8888a0]", text: "text-[#8888a0]" },
+  "폐기": { dot: "bg-[#9e96b4]", text: "text-[#9e96b4]" },
 };
 
 type FilterType = "전체" | CloseType;
@@ -51,7 +51,14 @@ type FilterType = "전체" | CloseType;
 
 export default function HistoryPage() {
   const sessions = useDatdaStore((s) => s.sessions);
+  const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
   const [filter, setFilter] = useState<FilterType>("전체");
+
+  // Filter out discarded sessions when setting is off
+  const visibleSessions = useMemo(() => {
+    if (showDiscardedRecords) return sessions;
+    return sessions.filter((s) => s.closeType !== "폐기");
+  }, [sessions, showDiscardedRecords]);
 
   // --- Stats ---
   const stats = useMemo(() => {
@@ -59,14 +66,14 @@ export default function HistoryPage() {
     const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
     const weekStart = todayStart - 6 * 86400000;
 
-    const thisWeek = sessions.filter((s) => s.completedAt >= weekStart).length;
+    const thisWeek = visibleSessions.filter((s) => s.completedAt >= weekStart).length;
 
     // Streak: consecutive days with at least one closure (from today backward)
     let streak = 0;
     let checkDate = todayStart;
     while (true) {
       const dayEnd = checkDate + 86400000;
-      const hasSession = sessions.some((s) => s.completedAt >= checkDate && s.completedAt < dayEnd);
+      const hasSession = visibleSessions.some((s) => s.completedAt >= checkDate && s.completedAt < dayEnd);
       if (hasSession) {
         streak++;
         checkDate -= 86400000;
@@ -76,16 +83,16 @@ export default function HistoryPage() {
     }
 
     // Completion rate
-    const completedCount = sessions.filter((s) => s.closeType === "완료").length;
+    const completedCount = visibleSessions.filter((s) => s.closeType === "완료").length;
 
-    return { total: sessions.length, thisWeek, streak, completedCount };
-  }, [sessions]);
+    return { total: visibleSessions.length, thisWeek, streak, completedCount };
+  }, [visibleSessions]);
 
   // --- Filtered + grouped ---
   const grouped = useMemo(() => {
     const filtered = filter === "전체"
-      ? sessions
-      : sessions.filter((s) => s.closeType === filter);
+      ? visibleSessions
+      : visibleSessions.filter((s) => s.closeType === filter);
 
     const sorted = [...filtered].sort((a, b) => b.completedAt - a.completedAt);
 
@@ -101,7 +108,7 @@ export default function HistoryPage() {
       }
     }
     return groups;
-  }, [sessions, filter]);
+  }, [visibleSessions, filter]);
 
   const totalFiltered = grouped.reduce((sum, g) => sum + g.sessions.length, 0);
 
@@ -115,25 +122,25 @@ export default function HistoryPage() {
       </h1>
 
       {/* Stats */}
-      {sessions.length > 0 && (
+      {visibleSessions.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-glass rounded-xl p-4 text-center">
             <p className="text-2xl font-extralight text-[#e8e8f0] tabular-nums">{stats.total}</p>
-            <p className="text-xs text-[#66667a] mt-1 tracking-wider">전체</p>
+            <p className="text-xs text-[#807898] mt-1 tracking-wider">전체</p>
           </div>
           <div className="card-glass rounded-xl p-4 text-center">
             <p className="text-2xl font-extralight text-[#a78bfa] tabular-nums">{stats.thisWeek}</p>
-            <p className="text-xs text-[#66667a] mt-1 tracking-wider">이번 주</p>
+            <p className="text-xs text-[#807898] mt-1 tracking-wider">이번 주</p>
           </div>
           <div className="card-glass rounded-xl p-4 text-center">
             <p className="text-2xl font-extralight text-[#FFD166] tabular-nums">{stats.streak}</p>
-            <p className="text-xs text-[#66667a] mt-1 tracking-wider">연속일</p>
+            <p className="text-xs text-[#807898] mt-1 tracking-wider">연속일</p>
           </div>
         </div>
       )}
 
       {/* Filter */}
-      {sessions.length > 0 && (
+      {visibleSessions.length > 0 && (
         <div className="flex gap-1.5 mb-6">
           {filters.map((f) => (
             <button
@@ -143,7 +150,7 @@ export default function HistoryPage() {
                 "px-3 py-1.5 rounded-full text-xs transition-all duration-200 cursor-pointer",
                 filter === f
                   ? "bg-[#a78bfa]/20 text-[#a78bfa]"
-                  : "bg-white/[0.04] text-[#8888a0] hover:text-[#9898a8]",
+                  : "bg-white/[0.04] text-[#9e96b4] hover:text-[#aea6c0]",
               ].join(" ")}
             >
               {f}
@@ -153,17 +160,17 @@ export default function HistoryPage() {
       )}
 
       {/* Empty State */}
-      {sessions.length === 0 && (
+      {visibleSessions.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa]/30 animate-breathe-subtle mb-6" />
-          <p className="text-sm text-[#8888a0]">아직 닫힌 것이 없습니다</p>
+          <p className="text-sm text-[#9e96b4]">아직 닫힌 것이 없습니다</p>
         </div>
       )}
 
       {/* Filtered empty */}
-      {sessions.length > 0 && totalFiltered === 0 && (
+      {visibleSessions.length > 0 && totalFiltered === 0 && (
         <div className="text-center py-12">
-          <p className="text-sm text-[#66667a]">{filter} 기록이 없습니다</p>
+          <p className="text-sm text-[#807898]">{filter} 기록이 없습니다</p>
         </div>
       )}
 
@@ -180,7 +187,7 @@ export default function HistoryPage() {
           {grouped.map((group) => (
             <div key={group.label}>
               {/* Date label */}
-              <p className="text-xs tracking-[0.2em] text-[#66667a] uppercase mb-3 pl-1">
+              <p className="text-xs tracking-[0.2em] text-[#807898] uppercase mb-3 pl-1">
                 {group.label}
               </p>
 
@@ -208,11 +215,11 @@ export default function HistoryPage() {
 
                           {/* Meta row */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs text-[#66667a]">
+                            <span className="text-xs text-[#807898]">
                               {formatTime(session.completedAt)}
                             </span>
-                            <span className="text-xs text-[#66667a]">·</span>
-                            <span className="text-xs text-[#66667a]">
+                            <span className="text-xs text-[#807898]">·</span>
+                            <span className="text-xs text-[#807898]">
                               {session.timerMinutes}분
                             </span>
                             <span className={`text-xs ${style.text}`}>
@@ -222,7 +229,7 @@ export default function HistoryPage() {
 
                           {/* Close reason (if exists) */}
                           {session.closeReason && (
-                            <p className="text-xs text-[#8888a0] mt-2 leading-relaxed">
+                            <p className="text-xs text-[#9e96b4] mt-2 leading-relaxed">
                               {session.closeReason}
                             </p>
                           )}
@@ -239,7 +246,7 @@ export default function HistoryPage() {
 
       {/* Bottom count */}
       {totalFiltered > 0 && (
-        <p className="text-center text-xs text-[#66667a] mt-8 tracking-wider">
+        <p className="text-center text-xs text-[#807898] mt-8 tracking-wider">
           {totalFiltered}개의 기록
         </p>
       )}
