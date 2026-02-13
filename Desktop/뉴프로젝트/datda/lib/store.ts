@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import type { Phase, StatusType, ResultType, CloseType } from './constants';
@@ -538,3 +539,15 @@ export const useDatdaStore = create<DatdaStore>()(
     }
   )
 );
+
+// Hook to wait for Zustand persist hydration (safe for SSR/Next.js)
+export function useStoreHydrated() {
+  const [hydrated, setHydrated] = useState(false);
+  useEffect(() => {
+    // Check if already hydrated
+    const unsub = useDatdaStore.persist.onFinishHydration(() => setHydrated(true));
+    if (useDatdaStore.persist.hasHydrated()) setHydrated(true);
+    return unsub;
+  }, []);
+  return hydrated;
+}
