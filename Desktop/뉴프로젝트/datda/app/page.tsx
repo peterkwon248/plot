@@ -103,13 +103,19 @@ function InlineReorderList({ goal, onShuffle }: { goal: Goal; onShuffle: () => v
             <Reorder.Item
               key={getStepId(step)}
               value={step}
+              dragListener={!isCompleted && !isDiscarded}
               onDragStart={() => { isDragging.current = true; }}
               onDragEnd={() => {
                 isDragging.current = false;
                 reorderGoalSteps(goal.id, localSteps);
               }}
-              className="flex items-center gap-2 py-1.5 px-2 rounded-lg cursor-grab active:cursor-grabbing list-none"
-              whileDrag={{
+              className={[
+                "flex items-center gap-2 py-1.5 px-2 rounded-lg list-none",
+                isCompleted || isDiscarded
+                  ? "opacity-40 cursor-default"
+                  : "cursor-grab active:cursor-grabbing",
+              ].join(" ")}
+              whileDrag={isCompleted || isDiscarded ? undefined : {
                 scale: 1.02,
                 backgroundColor: "rgba(167, 139, 250, 0.08)",
                 boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
@@ -117,7 +123,7 @@ function InlineReorderList({ goal, onShuffle }: { goal: Goal; onShuffle: () => v
               }}
             >
               {/* Drag handle */}
-              <div className="text-[#4a4a58] shrink-0">
+              <div className={`${isCompleted || isDiscarded ? "text-[#2d2d38]" : "text-[#4a4a58]"} shrink-0`}>
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <circle cx="9" cy="7" r="1.5" />
                   <circle cx="15" cy="7" r="1.5" />

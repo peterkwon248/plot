@@ -361,9 +361,13 @@ export const useDatdaStore = create<DatdaStore>()(
 
       reorderGoalSteps: (goalId: string, newSteps: GoalStep[]) => {
         set((state) => ({
-          goals: state.goals.map((g) =>
-            g.id === goalId ? { ...g, steps: newSteps } : g
-          ),
+          goals: state.goals.map((g) => {
+            if (g.id !== goalId) return g;
+            // Keep finished steps pinned at bottom
+            const active = newSteps.filter((s) => !s.completed && !s.discarded);
+            const finished = newSteps.filter((s) => s.completed || s.discarded);
+            return { ...g, steps: [...active, ...finished] };
+          }),
         }));
       },
 
@@ -371,12 +375,15 @@ export const useDatdaStore = create<DatdaStore>()(
         set((state) => ({
           goals: state.goals.map((g) => {
             if (g.id !== goalId) return g;
-            const steps = [...g.steps];
-            for (let i = steps.length - 1; i > 0; i--) {
+            // Separate active vs finished steps
+            const active = g.steps.filter((s) => !s.completed && !s.discarded);
+            const finished = g.steps.filter((s) => s.completed || s.discarded);
+            // Only shuffle active steps
+            for (let i = active.length - 1; i > 0; i--) {
               const j = Math.floor(Math.random() * (i + 1));
-              [steps[i], steps[j]] = [steps[j], steps[i]];
+              [active[i], active[j]] = [active[j], active[i]];
             }
-            return { ...g, steps };
+            return { ...g, steps: [...active, ...finished] };
           }),
         }));
       },

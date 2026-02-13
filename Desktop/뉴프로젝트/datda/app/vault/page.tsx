@@ -45,6 +45,8 @@ function DraggableStepList({ goal }: { goal: Goal }) {
       {localSteps.map((step, i) => {
         const isNext = i === nextStepIndex;
         const isCompleted = step.completed;
+        const isDiscarded = step.discarded;
+        const isFinished = isCompleted || isDiscarded;
         const isFirst = i === 0;
         const isLast = i === localSteps.length - 1;
 
@@ -52,13 +54,17 @@ function DraggableStepList({ goal }: { goal: Goal }) {
           <Reorder.Item
             key={getStepId(step)}
             value={step}
+            dragListener={!isFinished}
             onDragStart={() => { isDragging.current = true; }}
             onDragEnd={() => {
               isDragging.current = false;
               reorderGoalSteps(goal.id, localSteps);
             }}
-            className="flex items-center gap-2 py-1.5 group/step cursor-grab active:cursor-grabbing list-none"
-            whileDrag={{
+            className={[
+              "flex items-center gap-2 py-1.5 list-none",
+              isFinished ? "opacity-40 cursor-default" : "group/step cursor-grab active:cursor-grabbing",
+            ].join(" ")}
+            whileDrag={isFinished ? undefined : {
               scale: 1.02,
               backgroundColor: "rgba(167, 139, 250, 0.08)",
               borderRadius: "8px",
@@ -67,7 +73,7 @@ function DraggableStepList({ goal }: { goal: Goal }) {
             }}
           >
             {/* Drag handle */}
-            <div className="text-[#4a4a58] group-hover/step:text-[#6a6a7a] transition-colors touch-none">
+            <div className={isFinished ? "text-[#2d2d38]" : "text-[#4a4a58] group-hover/step:text-[#6a6a7a] transition-colors touch-none"}>
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <circle cx="9" cy="6" r="1.5" />
                 <circle cx="15" cy="6" r="1.5" />
@@ -110,8 +116,8 @@ function DraggableStepList({ goal }: { goal: Goal }) {
               )}
             </div>
 
-            {/* Top/Bottom quick buttons */}
-            <div className="flex gap-0.5 opacity-0 group-hover/step:opacity-100 transition-opacity duration-200">
+            {/* Top/Bottom quick buttons - hidden for finished steps */}
+            {!isFinished && <div className="flex gap-0.5 opacity-0 group-hover/step:opacity-100 transition-opacity duration-200">
               {!isFirst && (
                 <button
                   onClick={(e) => {
@@ -140,7 +146,7 @@ function DraggableStepList({ goal }: { goal: Goal }) {
                   </svg>
                 </button>
               )}
-            </div>
+            </div>}
           </Reorder.Item>
         );
       })}
