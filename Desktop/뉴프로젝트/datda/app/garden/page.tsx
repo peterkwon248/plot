@@ -424,6 +424,7 @@ export default function GardenPage() {
   const sessions = useDatdaStore((s) => s.sessions);
   const goals = useDatdaStore((s) => s.goals);
   const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
+  const deletedGoalTasks = useDatdaStore((s) => s.deletedGoalTasks);
 
   const now = new Date();
   const [viewYear, setViewYear] = useState(now.getFullYear());
@@ -436,8 +437,9 @@ export default function GardenPage() {
   // Filter discarded sessions when showDiscardedRecords is false
   const filteredSessions = useMemo(() => {
     if (showDiscardedRecords) return sessions;
-    return sessions.filter((s) => s.closeType !== "폐기");
-  }, [sessions, showDiscardedRecords]);
+    const deletedSet = new Set(deletedGoalTasks);
+    return sessions.filter((s) => s.closeType !== "폐기" && !deletedSet.has(s.taskTitle));
+  }, [sessions, showDiscardedRecords, deletedGoalTasks]);
 
   // Sort sessions oldest-first for fruit ordering
   const sortedSessions = useMemo(() =>

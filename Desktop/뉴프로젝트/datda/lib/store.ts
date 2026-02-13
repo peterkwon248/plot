@@ -127,6 +127,7 @@ interface SettingsState {
   userResultTypes: string[] | null;
   hasSeenOnboarding: boolean;
   showDiscardedRecords: boolean;
+  deletedGoalTasks: string[];
 }
 
 interface SettingsActions {
@@ -297,9 +298,17 @@ export const useDatdaStore = create<DatdaStore>()(
       },
 
       removeGoal: (id: string) => {
-        set((state) => ({
+        const state = get();
+        const goal = state.goals.find((g) => g.id === id);
+        const newDeletedTasks: string[] = [];
+        if (goal) {
+          newDeletedTasks.push(goal.title);
+          goal.steps.forEach((s) => newDeletedTasks.push(s.action));
+        }
+        set({
           goals: state.goals.filter((g) => g.id !== id),
-        }));
+          deletedGoalTasks: [...state.deletedGoalTasks, ...newDeletedTasks],
+        });
       },
 
       addGoalWithSteps: (title: string, steps: { action: string; minutes: number; resultType: string }[], round?: number) => {
@@ -475,6 +484,7 @@ export const useDatdaStore = create<DatdaStore>()(
       userResultTypes: null,
       hasSeenOnboarding: false,
       showDiscardedRecords: true,
+      deletedGoalTasks: [],
 
       // --- Settings Actions ---
       getTimerPresets: () => {

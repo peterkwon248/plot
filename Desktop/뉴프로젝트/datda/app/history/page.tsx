@@ -54,13 +54,15 @@ export default function HistoryPage() {
 
   const sessions = useDatdaStore((s) => s.sessions);
   const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
+  const deletedGoalTasks = useDatdaStore((s) => s.deletedGoalTasks);
   const [filter, setFilter] = useState<FilterType>("전체");
 
   // Filter out discarded sessions when setting is off
   const visibleSessions = useMemo(() => {
     if (showDiscardedRecords) return sessions;
-    return sessions.filter((s) => s.closeType !== "폐기");
-  }, [sessions, showDiscardedRecords]);
+    const deletedSet = new Set(deletedGoalTasks);
+    return sessions.filter((s) => s.closeType !== "폐기" && !deletedSet.has(s.taskTitle));
+  }, [sessions, showDiscardedRecords, deletedGoalTasks]);
 
   // --- Stats ---
   const stats = useMemo(() => {

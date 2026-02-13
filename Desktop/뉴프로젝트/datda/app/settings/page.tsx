@@ -374,7 +374,7 @@ export default function SettingsPage() {
           <div className="flex flex-col gap-0.5">
             <span className="text-sm text-[#e8e8f0]">폐기된 기록 표시</span>
             <span className="text-xs text-[#66667a] group-hover:text-[#9898a8] transition-colors">
-              정원과 기록에서 폐기된 세션을 표시합니다
+              삭제한 프로젝트의 기록을 정원과 기록에서 표시합니다
             </span>
           </div>
           <div className="flex items-center gap-2">
