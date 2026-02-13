@@ -156,7 +156,7 @@ function ChatContent() {
         <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-2">
           {goalIdParam ? "프로젝트 심화" : "목표 쪼개기"}
         </h1>
-        <p className="text-sm text-[#6a6a7a]">
+        <p className="text-sm text-[#8888a0]">
           {goalIdParam
             ? "이전 단계를 기반으로 더 깊은 단계를 설계합니다."
             : "큰 목표를 말해주세요. 매일 닫을 수 있는 단계로 쪼개드립니다."}

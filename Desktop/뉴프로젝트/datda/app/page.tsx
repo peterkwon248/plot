@@ -77,7 +77,7 @@ function InlineReorderList({ goal, onShuffle }: { goal: Goal; onShuffle: () => v
   return (
     <div>
       <div className="flex items-center justify-between mb-2">
-        <p className="text-[11px] tracking-[0.1em] text-[#6a6a7a]">세션 순서</p>
+        <p className="text-[11px] tracking-[0.1em] text-[#8888a0]">세션 순서</p>
         <button
           onClick={onShuffle}
           className="flex items-center gap-1 px-2 py-1 text-[11px] text-[#9898a8] hover:text-[#a78bfa] bg-white/[0.04] hover:bg-white/[0.08] rounded-md transition-all duration-200"
@@ -123,7 +123,7 @@ function InlineReorderList({ goal, onShuffle }: { goal: Goal; onShuffle: () => v
               }}
             >
               {/* Drag handle */}
-              <div className={`${isCompleted || isDiscarded ? "text-[#2d2d38]" : "text-[#4a4a58]"} shrink-0`}>
+              <div className={`${isCompleted || isDiscarded ? "text-[#2d2d38]" : "text-[#66667a]"} shrink-0`}>
                 <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
                   <circle cx="9" cy="7" r="1.5" />
                   <circle cx="15" cy="7" r="1.5" />
@@ -139,7 +139,7 @@ function InlineReorderList({ goal, onShuffle }: { goal: Goal; onShuffle: () => v
                 {isCompleted ? (
                   <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa]" />
                 ) : isDiscarded ? (
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#6a6a7a]" />
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#8888a0]" />
                 ) : isNext ? (
                   <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa] animate-dot-breathe" />
                 ) : (
@@ -151,8 +151,8 @@ function InlineReorderList({ goal, onShuffle }: { goal: Goal; onShuffle: () => v
               <span
                 className={[
                   "text-xs leading-relaxed flex-1 truncate",
-                  isCompleted ? "text-[#6a6a7a] line-through" :
-                  isDiscarded ? "text-[#4a4a58] line-through" :
+                  isCompleted ? "text-[#8888a0] line-through" :
+                  isDiscarded ? "text-[#66667a] line-through" :
                   isNext ? "text-[#e8e8f0]" : "text-[#9898a8]",
                 ].join(" ")}
               >
@@ -451,7 +451,7 @@ export default function HomePage() {
                   </Link>
                   <button
                     onClick={handleGoalSubmitForce}
-                    className="w-full rounded-xl px-6 py-3 text-sm text-[#6a6a7a] hover:text-[#9898a8] transition-colors duration-300 cursor-pointer"
+                    className="w-full rounded-xl px-6 py-3 text-sm text-[#8888a0] hover:text-[#9898a8] transition-colors duration-300 cursor-pointer"
                   >
                     그래도 추가하기
                   </button>
@@ -460,7 +460,7 @@ export default function HomePage() {
             </motion.div>
           )}
 
-          <span className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-6">{getTimeGreeting()}</span>
+          <span className="text-xs tracking-[0.3em] text-[#66667a] uppercase mb-6">{getTimeGreeting()}</span>
 
           <h1 className="text-6xl font-extralight tracking-[0.2em] text-[#e8e8f0] mb-16">
             닫다
@@ -468,7 +468,7 @@ export default function HomePage() {
 
           <div className="mb-6">{goalInputUI}</div>
 
-          <p className="text-xs text-[#4a4a58]/50 animate-breathe-subtle text-center mt-4">
+          <p className="text-xs text-[#66667a]/50 animate-breathe-subtle text-center mt-4">
             매일 닫을 수 있는 크기로 쪼개드립니다
           </p>
 
@@ -477,7 +477,7 @@ export default function HomePage() {
               <span className="text-4xl font-extralight text-[#a78bfa]/20 tabular-nums">
                 {sessions.length}
               </span>
-              <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-2">
+              <span className="text-xs tracking-[0.3em] text-[#66667a] mt-2">
                 번의 닫힘
               </span>
             </div>
@@ -496,7 +496,7 @@ export default function HomePage() {
     return (
       <FadeTransition keyValue="state-d">
         <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[80vh] justify-center px-4">
-          <span className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-12">{getTimeGreeting()}</span>
+          <span className="text-xs tracking-[0.3em] text-[#66667a] uppercase mb-12">{getTimeGreeting()}</span>
 
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -508,7 +508,7 @@ export default function HomePage() {
               <span className="text-7xl font-extralight text-[#a78bfa]/20 tabular-nums">
                 {sessions.length}
               </span>
-              <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-3">
+              <span className="text-xs tracking-[0.3em] text-[#66667a] mt-3">
                 번의 닫힘
               </span>
             </div>
@@ -517,7 +517,7 @@ export default function HomePage() {
               모두 닫았습니다
             </p>
 
-            <p className="text-xs text-[#4a4a58]/60 text-center leading-loose mt-6">
+            <p className="text-xs text-[#66667a]/60 text-center leading-loose mt-6">
               매일 하나를 닫으면,<br />어느 날 당신은 이미 그 안에 있습니다.
             </p>
           </motion.div>
@@ -531,7 +531,7 @@ export default function HomePage() {
               {goalInputUI}
               <button
                 onClick={() => { setShowGoalInput(false); setGoalInput(""); }}
-                className="text-xs text-[#6a6a7a] hover:text-[#9898a8] transition-colors cursor-pointer"
+                className="text-xs text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer"
               >
                 취소
               </button>
@@ -558,9 +558,9 @@ export default function HomePage() {
     return (
       <FadeTransition keyValue="state-b">
         <div className="flex flex-col items-center w-full max-w-md mx-auto min-h-[80vh] justify-center px-4">
-          <span className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-10">{getTimeGreeting()}</span>
+          <span className="text-xs tracking-[0.3em] text-[#66667a] uppercase mb-10">{getTimeGreeting()}</span>
 
-          <p className="text-sm tracking-[0.15em] text-[#6a6a7a] mb-6">오늘 닫을 것</p>
+          <p className="text-sm tracking-[0.15em] text-[#8888a0] mb-6">오늘 닫을 것</p>
 
           {/* Accordion cards - all equal, tap to expand */}
           <div className="w-full flex flex-col gap-3">
@@ -595,7 +595,7 @@ export default function HomePage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
-                      <span className="text-xs tabular-nums text-[#4a4a58]">
+                      <span className="text-xs tabular-nums text-[#66667a]">
                         {completedCount}/{totalCount}
                       </span>
                     </div>
@@ -672,7 +672,7 @@ export default function HomePage() {
                             }}
                             className={[
                               "ml-auto p-1.5 transition-colors duration-200",
-                              editingPresets ? "text-[#a78bfa]" : "text-[#4a4a58] hover:text-[#6a6a7a]",
+                              editingPresets ? "text-[#a78bfa]" : "text-[#66667a] hover:text-[#8888a0]",
                             ].join(" ")}
                             title={editingPresets ? "편집 완료" : "프리셋 편집"}
                           >
@@ -708,7 +708,7 @@ export default function HomePage() {
                         </AnimatePresence>
 
                         {/* Time label */}
-                        <p className="text-[11px] tracking-[0.1em] text-[#6a6a7a] mb-2">시간</p>
+                        <p className="text-[11px] tracking-[0.1em] text-[#8888a0] mb-2">시간</p>
 
                         {/* Minutes selector */}
                         <div className="flex items-center gap-1.5 mb-4 flex-wrap">
@@ -763,7 +763,7 @@ export default function HomePage() {
                                     "px-2.5 py-1 rounded-full text-xs transition-all duration-200 cursor-pointer",
                                     isActive
                                       ? "bg-[#a78bfa]/20 text-[#a78bfa]"
-                                      : "bg-white/[0.04] text-[#6a6a7a] hover:text-[#9898a8]",
+                                      : "bg-white/[0.04] text-[#8888a0] hover:text-[#9898a8]",
                                   ].join(" ")}
                                 >
                                   {preset}분
@@ -774,7 +774,7 @@ export default function HomePage() {
                                       e.stopPropagation();
                                       removeTimerPreset(preset);
                                     }}
-                                    className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#6a6a7a] hover:bg-[#a78bfa] text-white flex items-center justify-center transition-colors duration-200"
+                                    className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#8888a0] hover:bg-[#a78bfa] text-white flex items-center justify-center transition-colors duration-200"
                                     title="삭제"
                                   >
                                     <svg className="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -792,7 +792,7 @@ export default function HomePage() {
                                 setAddingMinute(true);
                                 setNewMinuteInput("");
                               }}
-                              className="px-2.5 py-1 rounded-full text-xs border border-dashed border-white/[0.12] text-[#6a6a7a] hover:text-[#a78bfa] hover:border-[#a78bfa]/30 transition-all duration-200 cursor-pointer"
+                              className="px-2.5 py-1 rounded-full text-xs border border-dashed border-white/[0.12] text-[#8888a0] hover:text-[#a78bfa] hover:border-[#a78bfa]/30 transition-all duration-200 cursor-pointer"
                             >
                               +
                             </button>
@@ -833,7 +833,7 @@ export default function HomePage() {
                                   setNewMinuteInput("");
                                   setAddingMinute(false);
                                 }}
-                                className="p-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-[#6a6a7a] transition-colors duration-200"
+                                className="p-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-[#8888a0] transition-colors duration-200"
                                 title="취소"
                               >
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -845,7 +845,7 @@ export default function HomePage() {
                         </div>
 
                         {/* Result type label */}
-                        <p className="text-[11px] tracking-[0.1em] text-[#6a6a7a] mb-2">완료 유형</p>
+                        <p className="text-[11px] tracking-[0.1em] text-[#8888a0] mb-2">완료 유형</p>
 
                         {/* Result type selector */}
                         <div className="flex items-center gap-1.5 mb-5 flex-wrap">
@@ -898,7 +898,7 @@ export default function HomePage() {
                                     "px-2.5 py-1 rounded-full text-xs transition-all duration-200 cursor-pointer",
                                     isActive
                                       ? "bg-[#a78bfa]/20 text-[#a78bfa]"
-                                      : "bg-white/[0.04] text-[#6a6a7a] hover:text-[#9898a8]",
+                                      : "bg-white/[0.04] text-[#8888a0] hover:text-[#9898a8]",
                                   ].join(" ")}
                                 >
                                   {type}
@@ -909,7 +909,7 @@ export default function HomePage() {
                                       e.stopPropagation();
                                       removeResultType(type);
                                     }}
-                                    className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#6a6a7a] hover:bg-[#a78bfa] text-white flex items-center justify-center transition-colors duration-200"
+                                    className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#8888a0] hover:bg-[#a78bfa] text-white flex items-center justify-center transition-colors duration-200"
                                     title="삭제"
                                   >
                                     <svg className="w-2 h-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
@@ -927,7 +927,7 @@ export default function HomePage() {
                                 setAddingResult(true);
                                 setNewResultInput("");
                               }}
-                              className="px-2.5 py-1 rounded-full text-xs border border-dashed border-white/[0.12] text-[#6a6a7a] hover:text-[#a78bfa] hover:border-[#a78bfa]/30 transition-all duration-200 cursor-pointer"
+                              className="px-2.5 py-1 rounded-full text-xs border border-dashed border-white/[0.12] text-[#8888a0] hover:text-[#a78bfa] hover:border-[#a78bfa]/30 transition-all duration-200 cursor-pointer"
                             >
                               +
                             </button>
@@ -967,7 +967,7 @@ export default function HomePage() {
                                   setNewResultInput("");
                                   setAddingResult(false);
                                 }}
-                                className="p-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-[#6a6a7a] transition-colors duration-200"
+                                className="p-1 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] text-[#8888a0] transition-colors duration-200"
                                 title="취소"
                               >
                                 <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
@@ -1018,7 +1018,7 @@ export default function HomePage() {
                 {goalInputUI}
                 <button
                   onClick={() => { setShowGoalInput(false); setGoalInput(""); }}
-                  className="text-xs text-[#6a6a7a] hover:text-[#9898a8] transition-colors cursor-pointer"
+                  className="text-xs text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer"
                 >
                   취소
                 </button>
@@ -1026,7 +1026,7 @@ export default function HomePage() {
             ) : (
               <button
                 onClick={() => setShowGoalInput(true)}
-                className="w-full py-3 text-xs tracking-[0.1em] text-[#4a4a58] hover:text-[#9898a8] transition-colors duration-300 cursor-pointer text-center"
+                className="w-full py-3 text-xs tracking-[0.1em] text-[#66667a] hover:text-[#9898a8] transition-colors duration-300 cursor-pointer text-center"
               >
                 + 새 목표
               </button>
@@ -1038,7 +1038,7 @@ export default function HomePage() {
               <span className="text-2xl font-extralight text-[#a78bfa]/20 tabular-nums">
                 {sessions.length}
               </span>
-              <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-1">
+              <span className="text-xs tracking-[0.3em] text-[#66667a] mt-1">
                 번의 닫힘
               </span>
             </div>

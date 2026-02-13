@@ -40,7 +40,7 @@ function getDateKey(timestamp: number): string {
 const CLOSE_TYPE_STYLE: Record<string, { dot: string; text: string }> = {
   "완료": { dot: "bg-[#a78bfa]", text: "text-[#a78bfa]" },
   "보류": { dot: "bg-[#FFD166]", text: "text-[#FFD166]" },
-  "폐기": { dot: "bg-[#6a6a7a]", text: "text-[#6a6a7a]" },
+  "폐기": { dot: "bg-[#8888a0]", text: "text-[#8888a0]" },
 };
 
 type FilterType = "전체" | CloseType;
@@ -119,15 +119,15 @@ export default function HistoryPage() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-glass rounded-xl p-4 text-center">
             <p className="text-2xl font-extralight text-[#e8e8f0] tabular-nums">{stats.total}</p>
-            <p className="text-xs text-[#4a4a58] mt-1 tracking-wider">전체</p>
+            <p className="text-xs text-[#66667a] mt-1 tracking-wider">전체</p>
           </div>
           <div className="card-glass rounded-xl p-4 text-center">
             <p className="text-2xl font-extralight text-[#a78bfa] tabular-nums">{stats.thisWeek}</p>
-            <p className="text-xs text-[#4a4a58] mt-1 tracking-wider">이번 주</p>
+            <p className="text-xs text-[#66667a] mt-1 tracking-wider">이번 주</p>
           </div>
           <div className="card-glass rounded-xl p-4 text-center">
             <p className="text-2xl font-extralight text-[#FFD166] tabular-nums">{stats.streak}</p>
-            <p className="text-xs text-[#4a4a58] mt-1 tracking-wider">연속일</p>
+            <p className="text-xs text-[#66667a] mt-1 tracking-wider">연속일</p>
           </div>
         </div>
       )}
@@ -143,7 +143,7 @@ export default function HistoryPage() {
                 "px-3 py-1.5 rounded-full text-xs transition-all duration-200 cursor-pointer",
                 filter === f
                   ? "bg-[#a78bfa]/20 text-[#a78bfa]"
-                  : "bg-white/[0.04] text-[#6a6a7a] hover:text-[#9898a8]",
+                  : "bg-white/[0.04] text-[#8888a0] hover:text-[#9898a8]",
               ].join(" ")}
             >
               {f}
@@ -156,14 +156,14 @@ export default function HistoryPage() {
       {sessions.length === 0 && (
         <div className="flex flex-col items-center justify-center py-24">
           <div className="w-1.5 h-1.5 rounded-full bg-[#a78bfa]/30 animate-breathe-subtle mb-6" />
-          <p className="text-sm text-[#6a6a7a]">아직 닫힌 것이 없습니다</p>
+          <p className="text-sm text-[#8888a0]">아직 닫힌 것이 없습니다</p>
         </div>
       )}
 
       {/* Filtered empty */}
       {sessions.length > 0 && totalFiltered === 0 && (
         <div className="text-center py-12">
-          <p className="text-sm text-[#4a4a58]">{filter} 기록이 없습니다</p>
+          <p className="text-sm text-[#66667a]">{filter} 기록이 없습니다</p>
         </div>
       )}
 
@@ -180,7 +180,7 @@ export default function HistoryPage() {
           {grouped.map((group) => (
             <div key={group.label}>
               {/* Date label */}
-              <p className="text-xs tracking-[0.2em] text-[#4a4a58] uppercase mb-3 pl-1">
+              <p className="text-xs tracking-[0.2em] text-[#66667a] uppercase mb-3 pl-1">
                 {group.label}
               </p>
 
@@ -208,11 +208,11 @@ export default function HistoryPage() {
 
                           {/* Meta row */}
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs text-[#4a4a58]">
+                            <span className="text-xs text-[#66667a]">
                               {formatTime(session.completedAt)}
                             </span>
-                            <span className="text-xs text-[#4a4a58]">·</span>
-                            <span className="text-xs text-[#4a4a58]">
+                            <span className="text-xs text-[#66667a]">·</span>
+                            <span className="text-xs text-[#66667a]">
                               {session.timerMinutes}분
                             </span>
                             <span className={`text-xs ${style.text}`}>
@@ -222,7 +222,7 @@ export default function HistoryPage() {
 
                           {/* Close reason (if exists) */}
                           {session.closeReason && (
-                            <p className="text-xs text-[#6a6a7a] mt-2 leading-relaxed">
+                            <p className="text-xs text-[#8888a0] mt-2 leading-relaxed">
                               {session.closeReason}
                             </p>
                           )}
@@ -239,7 +239,7 @@ export default function HistoryPage() {
 
       {/* Bottom count */}
       {totalFiltered > 0 && (
-        <p className="text-center text-xs text-[#4a4a58] mt-8 tracking-wider">
+        <p className="text-center text-xs text-[#66667a] mt-8 tracking-wider">
           {totalFiltered}개의 기록
         </p>
       )}

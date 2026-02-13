@@ -100,7 +100,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
               섞기
             </button>
           </div>
-          <p className="text-sm text-[#6a6a7a] mt-1">각 스텝의 내용과 설정을 수정할 수 있습니다</p>
+          <p className="text-sm text-[#8888a0] mt-1">각 스텝의 내용과 설정을 수정할 수 있습니다</p>
         </div>
 
         {/* Step List */}
@@ -126,7 +126,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                       "w-6 h-6 rounded-lg transition-all duration-200 flex items-center justify-center",
                       i === 0
                         ? "opacity-20 cursor-not-allowed bg-white/[0.04]"
-                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#6a6a7a] hover:text-[#9898a8]"
+                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#8888a0] hover:text-[#9898a8]"
                     ].join(" ")}
                     title="위로 이동"
                   >
@@ -141,7 +141,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                       "w-6 h-6 rounded-lg transition-all duration-200 flex items-center justify-center",
                       i === editingSteps.length - 1
                         ? "opacity-20 cursor-not-allowed bg-white/[0.04]"
-                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#6a6a7a] hover:text-[#9898a8]"
+                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#8888a0] hover:text-[#9898a8]"
                     ].join(" ")}
                     title="아래로 이동"
                   >
@@ -156,7 +156,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
               <textarea
                 value={step.action}
                 onChange={(e) => handleActionChange(step.index, e.target.value)}
-                className="w-full mb-3 px-3 py-2 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#6a6a7a] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
+                className="w-full mb-3 px-3 py-2 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#8888a0] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
                 rows={2}
                 placeholder="행동을 입력하세요..."
                 disabled={step.completed || step.discarded}

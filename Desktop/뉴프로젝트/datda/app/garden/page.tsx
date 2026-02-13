@@ -113,7 +113,7 @@ function GardenTree({ count, fruitRipeness, selectedFruit, onFruitTap }: {
       {stage >= 1 && (
         <motion.line
           x1="120" y1="220" x2="120" y2={trunkTop}
-          stroke="#6a6a7a"
+          stroke="#8888a0"
           strokeWidth={stage <= 2 ? 1.5 : stage <= 3 ? 2 : 2.5}
           strokeLinecap="round"
           initial={{ y2: 220 }}
@@ -139,13 +139,13 @@ function GardenTree({ count, fruitRipeness, selectedFruit, onFruitTap }: {
         <g>
           <motion.path
             d={`M120 ${trunkTop + 20} Q100 ${trunkTop + 5} 85 ${trunkTop - 10}`}
-            stroke="#6a6a7a" strokeWidth="1.5" fill="none" strokeLinecap="round"
+            stroke="#8888a0" strokeWidth="1.5" fill="none" strokeLinecap="round"
             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             transition={{ duration: 1, delay: 0.3 }}
           />
           <motion.path
             d={`M120 ${trunkTop + 20} Q140 ${trunkTop + 5} 160 ${trunkTop - 5}`}
-            stroke="#6a6a7a" strokeWidth="1.5" fill="none" strokeLinecap="round"
+            stroke="#8888a0" strokeWidth="1.5" fill="none" strokeLinecap="round"
             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
             transition={{ duration: 1, delay: 0.5 }}
           />
@@ -153,13 +153,13 @@ function GardenTree({ count, fruitRipeness, selectedFruit, onFruitTap }: {
             <>
               <motion.path
                 d={`M120 ${trunkTop + 35} Q90 ${trunkTop + 20} 70 ${trunkTop + 5}`}
-                stroke="#6a6a7a" strokeWidth="1" fill="none" strokeLinecap="round"
+                stroke="#8888a0" strokeWidth="1" fill="none" strokeLinecap="round"
                 initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
                 transition={{ duration: 1, delay: 0.7 }}
               />
               <motion.path
                 d={`M120 ${trunkTop + 35} Q150 ${trunkTop + 15} 175 ${trunkTop + 5}`}
-                stroke="#6a6a7a" strokeWidth="1" fill="none" strokeLinecap="round"
+                stroke="#8888a0" strokeWidth="1" fill="none" strokeLinecap="round"
                 initial={{ pathLength: 0 }} animate={{ pathLength: 1 }}
                 transition={{ duration: 1, delay: 0.9 }}
               />
@@ -352,7 +352,7 @@ export default function GardenPage() {
       <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-2">
         정원
       </h1>
-      <p className="text-xs text-[#6a6a7a] mb-6">
+      <p className="text-xs text-[#8888a0] mb-6">
         {getGrowthMessage(sessions.length)}
       </p>
 
@@ -390,7 +390,7 @@ export default function GardenPage() {
                 <p className="text-sm text-[#e8e8f0] leading-relaxed mb-1">
                   {selectedSession.taskTitle}
                 </p>
-                <div className="flex items-center gap-2 text-xs text-[#4a4a58]">
+                <div className="flex items-center gap-2 text-xs text-[#66667a]">
                   <span>{new Date(selectedSession.completedAt).toLocaleDateString("ko-KR", { month: "short", day: "numeric" })}</span>
                   <span>·</span>
                   <span>{selectedSession.timerMinutes}분</span>
@@ -398,7 +398,7 @@ export default function GardenPage() {
                   <span className={
                     selectedSession.closeType === "완료" ? "text-[#a78bfa]" :
                     selectedSession.closeType === "보류" ? "text-[#FFD166]" :
-                    "text-[#6a6a7a]"
+                    "text-[#8888a0]"
                   }>
                     {selectedSession.closeType}
                   </span>
@@ -417,7 +417,7 @@ export default function GardenPage() {
         <span className="text-3xl font-extralight text-[#a78bfa]/30 tabular-nums">
           {sessions.length}
         </span>
-        <span className="text-xs tracking-[0.3em] text-[#4a4a58] mt-1">
+        <span className="text-xs tracking-[0.3em] text-[#66667a] mt-1">
           번의 닫힘
         </span>
       </div>
@@ -426,7 +426,7 @@ export default function GardenPage() {
       <div className="flex items-center justify-between mb-5">
         <button
           onClick={goToPrev}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6a6a7a] hover:text-[#9898a8] transition-colors cursor-pointer"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="15 18 9 12 15 6" />
@@ -438,7 +438,7 @@ export default function GardenPage() {
         <button
           onClick={goToNext}
           disabled={isCurrentMonth}
-          className="w-8 h-8 flex items-center justify-center rounded-lg text-[#6a6a7a] hover:text-[#9898a8] transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
+          className="w-8 h-8 flex items-center justify-center rounded-lg text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer disabled:opacity-20 disabled:cursor-not-allowed"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9 18 15 12 9 6" />
@@ -456,7 +456,7 @@ export default function GardenPage() {
       >
         <div className="grid grid-cols-7 gap-1.5 mb-2">
           {WEEKDAY_LABELS.map((label) => (
-            <div key={label} className="text-center text-xs text-[#4a4a58] tracking-wider">
+            <div key={label} className="text-center text-xs text-[#66667a] tracking-wider">
               {label}
             </div>
           ))}
@@ -481,7 +481,7 @@ export default function GardenPage() {
               >
                 <span className={[
                   "text-xs tabular-nums",
-                  isFuture ? "text-[#4a4a58]/30" : count > 0 ? "text-[#e8e8f0]/80" : "text-[#4a4a58]/60",
+                  isFuture ? "text-[#66667a]/30" : count > 0 ? "text-[#e8e8f0]/80" : "text-[#66667a]/60",
                 ].join(" ")}>
                   {day}
                 </span>
@@ -501,34 +501,34 @@ export default function GardenPage() {
         <div className="grid grid-cols-3 gap-3 mb-6">
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#e8e8f0] tabular-nums">{monthStats.total}</p>
-            <p className="text-xs text-[#4a4a58] mt-0.5 tracking-wider">이번 달</p>
+            <p className="text-xs text-[#66667a] mt-0.5 tracking-wider">이번 달</p>
           </div>
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#a78bfa] tabular-nums">{monthStats.activeDays}</p>
-            <p className="text-xs text-[#4a4a58] mt-0.5 tracking-wider">활동일</p>
+            <p className="text-xs text-[#66667a] mt-0.5 tracking-wider">활동일</p>
           </div>
           <div className="card-glass rounded-xl p-3 text-center">
             <p className="text-lg font-extralight text-[#FFD166] tabular-nums">{monthStats.maxDay}</p>
-            <p className="text-xs text-[#4a4a58] mt-0.5 tracking-wider">최고 기록</p>
+            <p className="text-xs text-[#66667a] mt-0.5 tracking-wider">최고 기록</p>
           </div>
         </div>
       )}
 
       {/* Legend */}
       <div className="flex items-center justify-center gap-2 mb-6">
-        <span className="text-xs text-[#4a4a58]">적음</span>
+        <span className="text-xs text-[#66667a]">적음</span>
         <div className="flex gap-1">
           {[0, 1, 2, 3, 4].map((level) => (
             <div key={level} className={`w-3 h-3 rounded-sm ${getIntensity(level)}`} />
           ))}
         </div>
-        <span className="text-xs text-[#4a4a58]">많음</span>
+        <span className="text-xs text-[#66667a]">많음</span>
       </div>
 
       {/* Best weekday */}
       {bestWeekday && (
         <div className="text-center">
-          <p className="text-xs text-[#6a6a7a]">
+          <p className="text-xs text-[#8888a0]">
             <span className="text-[#a78bfa]">{bestWeekday.day}요일</span>에 가장 많이 닫았습니다
           </p>
         </div>

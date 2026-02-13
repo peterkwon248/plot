@@ -111,7 +111,7 @@ export default function SettingsPage() {
           <h2 className="text-sm text-[#e8e8f0] font-light tracking-wide">세션 시간</h2>
           <div className="flex-1" />
           {timerPresets.length >= 8 ? (
-            <span className="text-xs text-[#6a6a7a] font-light">최대 8개</span>
+            <span className="text-xs text-[#8888a0] font-light">최대 8개</span>
           ) : (
             <button
               onClick={() => setShowTimerAdd(!showTimerAdd)}
@@ -121,7 +121,7 @@ export default function SettingsPage() {
             </button>
           )}
         </div>
-        <p className="text-xs text-[#4a4a58] mb-6 ml-5">세션을 시작할 때 선택할 수 있는 시간 ({timerPresets.length}/8)</p>
+        <p className="text-xs text-[#66667a] mb-6 ml-5">세션을 시작할 때 선택할 수 있는 시간 ({timerPresets.length}/8)</p>
 
         <div className="flex flex-wrap gap-2.5">
           <AnimatePresence mode="popLayout">
@@ -174,7 +174,7 @@ export default function SettingsPage() {
                     {timerPresets.length > 1 && (
                       <button
                         onClick={() => removeTimerPreset(minutes)}
-                        className="ml-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-white/[0.06] text-[#6a6a7a] hover:bg-[#f87171]/20 hover:text-[#f87171] active:bg-[#f87171]/30 transition-all text-xs cursor-pointer"
+                        className="ml-1.5 w-5 h-5 flex items-center justify-center rounded-full bg-white/[0.06] text-[#8888a0] hover:bg-[#f87171]/20 hover:text-[#f87171] active:bg-[#f87171]/30 transition-all text-xs cursor-pointer"
                         aria-label={`${minutes}분 삭제`}
                       >
                         ×
@@ -235,7 +235,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between mb-1">
           <h2 className="text-sm text-[#e8e8f0]">결과 유형</h2>
           {resultTypes.length >= 8 ? (
-            <span className="text-xs text-[#6a6a7a] font-light">최대 8개</span>
+            <span className="text-xs text-[#8888a0] font-light">최대 8개</span>
           ) : (
             <button
               onClick={() => setShowResultAdd(!showResultAdd)}
@@ -245,7 +245,7 @@ export default function SettingsPage() {
             </button>
           )}
         </div>
-        <p className="text-xs text-[#4a4a58] mb-5">닫힘의 결과를 분류하는 태그 ({resultTypes.length}/8)</p>
+        <p className="text-xs text-[#66667a] mb-5">닫힘의 결과를 분류하는 태그 ({resultTypes.length}/8)</p>
 
         <div className="flex flex-wrap gap-2">
           {resultTypes.map((type) => (
@@ -257,7 +257,7 @@ export default function SettingsPage() {
               {resultTypes.length > 1 && (
                 <button
                   onClick={() => removeResultType(type)}
-                  className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-white/[0.06] text-[#6a6a7a] hover:bg-[#f87171]/20 hover:text-[#f87171] transition-all text-xs cursor-pointer"
+                  className="ml-2 w-4 h-4 flex items-center justify-center rounded-full bg-white/[0.06] text-[#8888a0] hover:bg-[#f87171]/20 hover:text-[#f87171] transition-all text-xs cursor-pointer"
                   aria-label={`${type} 삭제`}
                 >
                   ×
@@ -305,7 +305,7 @@ export default function SettingsPage() {
           ============================================ */}
       <section className="card-glass rounded-2xl p-6 mb-4">
         <h2 className="text-sm text-[#e8e8f0] mb-1">데이터</h2>
-        <p className="text-xs text-[#4a4a58] mb-5">닫힘 기록과 목표를 백업하거나 복원합니다</p>
+        <p className="text-xs text-[#66667a] mb-5">닫힘 기록과 목표를 백업하거나 복원합니다</p>
 
         <div className="flex flex-col gap-2">
           <button
@@ -320,7 +320,7 @@ export default function SettingsPage() {
               </svg>
               <span className="text-sm text-[#e8e8f0]">내보내기</span>
             </div>
-            <span className="text-xs text-[#4a4a58] group-hover:text-[#9898a8] transition-colors">.json</span>
+            <span className="text-xs text-[#66667a] group-hover:text-[#9898a8] transition-colors">.json</span>
           </button>
 
           <button
@@ -335,7 +335,7 @@ export default function SettingsPage() {
               </svg>
               <span className="text-sm text-[#e8e8f0]">가져오기</span>
             </div>
-            <span className="text-xs text-[#4a4a58] group-hover:text-[#9898a8] transition-colors">복원</span>
+            <span className="text-xs text-[#66667a] group-hover:text-[#9898a8] transition-colors">복원</span>
           </button>
 
           <input
@@ -363,7 +363,7 @@ export default function SettingsPage() {
           ============================================ */}
       <section className="card-glass rounded-2xl p-6">
         <h2 className="text-sm text-[#e8e8f0] mb-1">초기화</h2>
-        <p className="text-xs text-[#4a4a58] mb-5">세션 시간과 결과 유형을 기본값으로 되돌립니다</p>
+        <p className="text-xs text-[#66667a] mb-5">세션 시간과 결과 유형을 기본값으로 되돌립니다</p>
 
         {showResetConfirm ? (
           <motion.div
@@ -382,11 +382,11 @@ export default function SettingsPage() {
             </button>
             <button
               onClick={() => setShowResetConfirm(false)}
-              className="text-xs text-[#6a6a7a] hover:text-[#9898a8] transition-colors cursor-pointer"
+              className="text-xs text-[#8888a0] hover:text-[#9898a8] transition-colors cursor-pointer"
             >
               취소
             </button>
-            <span className="text-xs text-[#4a4a58]">
+            <span className="text-xs text-[#66667a]">
               {[...TIMER_PRESETS].join(', ')}분 / {[...RESULT_TYPES].join(', ')}
             </span>
           </motion.div>

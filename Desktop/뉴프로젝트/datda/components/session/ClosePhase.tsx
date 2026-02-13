@@ -48,7 +48,7 @@ export default function ClosePhase() {
       >
         <div className="flex flex-col items-center gap-3 text-center mb-8">
           <h1 className="text-2xl font-extralight tracking-wide text-[#e8e8f0]">형태가 남았다</h1>
-          <p className="text-xs text-[#4a4a58] tracking-wider">{taskTitle}</p>
+          <p className="text-xs text-[#66667a] tracking-wider">{taskTitle}</p>
         </div>
 
         <div className="w-full flex flex-col gap-2 mb-8">
@@ -62,7 +62,7 @@ export default function ClosePhase() {
             placeholder="링크, 파일명, 폴더..."
             className="input-base py-4"
           />
-          <p className="text-xs text-[#4a4a58]/50 tracking-wider">비워둬도 됩니다</p>
+          <p className="text-xs text-[#66667a]/50 tracking-wider">비워둬도 됩니다</p>
         </div>
 
         <button
@@ -86,7 +86,7 @@ export default function ClosePhase() {
       >
         <div className="flex flex-col items-center text-center mb-12">
           <p className="text-xl font-light text-[#e8e8f0]">정말 내려놓으시겠습니까?</p>
-          <p className="text-xs text-[#4a4a58] tracking-wider mt-2">{taskTitle}</p>
+          <p className="text-xs text-[#66667a] tracking-wider mt-2">{taskTitle}</p>
         </div>
 
         <div className="flex flex-col gap-3 w-full">
@@ -98,7 +98,7 @@ export default function ClosePhase() {
           </button>
           <button
             onClick={() => setSelectedType(null)}
-            className="text-xs text-[#4a4a58] hover:text-[#9898a8] cursor-pointer mt-4 transition-colors duration-300"
+            className="text-xs text-[#66667a] hover:text-[#9898a8] cursor-pointer mt-4 transition-colors duration-300"
           >
             돌아가기
           </button>
@@ -111,7 +111,7 @@ export default function ClosePhase() {
   const borderColors = {
     '완료': 'border-[#a78bfa]',
     '보류': 'border-[#FFD166]',
-    '폐기': 'border-[#6a6a7a]',
+    '폐기': 'border-[#8888a0]',
   };
 
   const hoverBorderColors = {
@@ -128,7 +128,7 @@ export default function ClosePhase() {
       className="flex flex-col items-center justify-center min-h-[70vh] w-full max-w-md mx-auto"
     >
       <div className="flex flex-col items-center text-center mb-12">
-        <p className="text-xs tracking-[0.3em] text-[#4a4a58] uppercase mb-4">닫는 방법</p>
+        <p className="text-xs tracking-[0.3em] text-[#66667a] uppercase mb-4">닫는 방법</p>
         <h1 className="text-xl font-light text-[#e8e8f0]">{taskTitle}</h1>
       </div>
 
@@ -148,7 +148,7 @@ export default function ClosePhase() {
                 <p className="text-lg font-light text-[#e8e8f0]">
                   {config.label}
                 </p>
-                <p className="text-xs text-[#4a4a58]">
+                <p className="text-xs text-[#66667a]">
                   {config.description}
                 </p>
               </div>

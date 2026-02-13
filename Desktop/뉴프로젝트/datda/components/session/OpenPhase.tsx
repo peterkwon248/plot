@@ -86,7 +86,7 @@ export default function OpenPhase() {
               "bg-[#252530] border",
               selectedResult === type
                 ? "border-[#a78bfa] text-[#a78bfa]"
-                : "border-[#2d2d38] text-[#9898a8] hover:border-[#4a4a58]",
+                : "border-[#2d2d38] text-[#9898a8] hover:border-[#66667a]",
             ].join(" ")}
           >
             {type}
@@ -108,7 +108,7 @@ export default function OpenPhase() {
                 "px-4 py-2 text-sm rounded-xl transition-all duration-300 cursor-pointer",
                 selectedTimer === minutes
                   ? "bg-[#a78bfa] text-white"
-                  : "bg-[#252530] border border-[#2d2d38] text-[#9898a8] hover:border-[#4a4a58]",
+                  : "bg-[#252530] border border-[#2d2d38] text-[#9898a8] hover:border-[#66667a]",
               ].join(" ")}
             >
               {minutes}분

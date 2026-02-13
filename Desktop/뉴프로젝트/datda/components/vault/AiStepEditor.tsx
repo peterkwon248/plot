@@ -100,7 +100,7 @@ export default function AiStepEditor({
         {/* Header */}
         <div className="mb-6 pb-4 border-b border-white/[0.08]">
           <h2 className="text-lg font-light text-[#e8e8f0]">AI 스텝 수정</h2>
-          <p className="text-sm text-[#6a6a7a] mt-1">
+          <p className="text-sm text-[#8888a0] mt-1">
             AI가 목표를 다시 분해해드립니다 (1일 1회)
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function AiStepEditor({
             </div>
             <p className="text-sm text-[#e8e8f0] mb-2">오늘은 이미 AI 수정을 사용했습니다</p>
             {nextTime && (
-              <p className="text-xs text-[#6a6a7a]">
+              <p className="text-xs text-[#8888a0]">
                 다음 사용 가능 시간: {formatKoreanTime(nextTime)}
               </p>
             )}
@@ -144,12 +144,12 @@ export default function AiStepEditor({
               <div className="flex flex-col gap-1.5">
                 {steps.slice(0, 3).map((step, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <span className="text-xs text-[#6a6a7a] mt-0.5">{i + 1}.</span>
+                    <span className="text-xs text-[#8888a0] mt-0.5">{i + 1}.</span>
                     <span className="text-xs text-[#e8e8f0] line-clamp-1">{step.action}</span>
                   </div>
                 ))}
                 {steps.length > 3 && (
-                  <span className="text-xs text-[#6a6a7a]">외 {steps.length - 3}개...</span>
+                  <span className="text-xs text-[#8888a0]">외 {steps.length - 3}개...</span>
                 )}
               </div>
             </div>
@@ -165,7 +165,7 @@ export default function AiStepEditor({
                     value={userMessage}
                     onChange={(e) => setUserMessage(e.target.value)}
                     placeholder="예: 스텝을 더 구체적으로 나눠줘, 시간을 줄여줘, 불필요한 스텝 제거해줘"
-                    className="w-full px-3 py-2.5 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#6a6a7a] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
+                    className="w-full px-3 py-2.5 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#8888a0] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
                     rows={4}
                     disabled={isLoading}
                   />
@@ -221,8 +221,8 @@ export default function AiStepEditor({
                           <p className="text-sm text-[#e8e8f0] leading-relaxed">{step.action}</p>
                         </div>
                         <div className="flex items-center gap-3 ml-7">
-                          <span className="text-xs text-[#6a6a7a]">{step.minutes}분</span>
-                          <span className="text-xs text-[#6a6a7a]">·</span>
+                          <span className="text-xs text-[#8888a0]">{step.minutes}분</span>
+                          <span className="text-xs text-[#8888a0]">·</span>
                           <span className="text-xs text-[#9898a8]">{step.resultType}</span>
                         </div>
                       </div>

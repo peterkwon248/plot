@@ -73,7 +73,7 @@ function DraggableStepList({ goal }: { goal: Goal }) {
             }}
           >
             {/* Drag handle */}
-            <div className={isFinished ? "text-[#2d2d38]" : "text-[#4a4a58] group-hover/step:text-[#6a6a7a] transition-colors touch-none"}>
+            <div className={isFinished ? "text-[#2d2d38]" : "text-[#66667a] group-hover/step:text-[#8888a0] transition-colors touch-none"}>
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                 <circle cx="9" cy="6" r="1.5" />
                 <circle cx="15" cy="6" r="1.5" />
@@ -101,7 +101,7 @@ function DraggableStepList({ goal }: { goal: Goal }) {
                 className={[
                   "text-sm leading-relaxed",
                   isCompleted
-                    ? "text-[#6a6a7a] line-through"
+                    ? "text-[#8888a0] line-through"
                     : isNext
                     ? "text-[#e8e8f0]"
                     : "text-[#9898a8]",
@@ -124,7 +124,7 @@ function DraggableStepList({ goal }: { goal: Goal }) {
                     e.stopPropagation();
                     moveGoalStep(goal.id, i, 0);
                   }}
-                  className="w-6 h-6 flex items-center justify-center text-[#6a6a7a] hover:text-[#a78bfa] rounded transition-colors"
+                  className="w-6 h-6 flex items-center justify-center text-[#8888a0] hover:text-[#a78bfa] rounded transition-colors"
                   title="제일 위로"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -138,7 +138,7 @@ function DraggableStepList({ goal }: { goal: Goal }) {
                     e.stopPropagation();
                     moveGoalStep(goal.id, i, localSteps.length - 1);
                   }}
-                  className="w-6 h-6 flex items-center justify-center text-[#6a6a7a] hover:text-[#a78bfa] rounded transition-colors"
+                  className="w-6 h-6 flex items-center justify-center text-[#8888a0] hover:text-[#a78bfa] rounded transition-colors"
                   title="제일 아래로"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -234,7 +234,7 @@ export default function VaultPage() {
             서랍이 잠겨 있습니다
           </h2>
           {nextTime && (
-            <p className="text-sm text-[#6a6a7a]">
+            <p className="text-sm text-[#8888a0]">
               다음 열기: {formatKoreanTime(nextTime)}
             </p>
           )}
@@ -252,7 +252,7 @@ export default function VaultPage() {
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl font-light tracking-wide text-[#e8e8f0] mb-2">서랍함</h1>
-        <p className="text-sm text-[#6a6a7a]">
+        <p className="text-sm text-[#8888a0]">
           큰 목표를 넣어두는 곳. 꺼내는 건 앱이 합니다.
         </p>
       </div>
@@ -271,7 +271,7 @@ export default function VaultPage() {
               <p className="text-2xl font-light text-[#9898a8] mb-3">
                 서랍이 비어 있습니다
               </p>
-              <p className="text-sm text-[#6a6a7a] mb-6">
+              <p className="text-sm text-[#8888a0] mb-6">
                 목표를 넣어두면, 매일 하나씩 꺼내드립니다.
               </p>
               <Link href="/chat" className="text-sm text-[#a78bfa] hover:text-[#b89dfc] cursor-pointer inline-block">
@@ -348,7 +348,7 @@ export default function VaultPage() {
                           <span className="text-2xl font-light text-[#a78bfa] tabular-nums">
                             {completedCount}
                           </span>
-                          <span className="text-sm text-[#4a4a58]/60 tabular-nums">
+                          <span className="text-sm text-[#66667a]/60 tabular-nums">
                             / {totalCount}
                           </span>
                           {allCompleted && (
@@ -452,7 +452,7 @@ export default function VaultPage() {
                                 <Link href="/chat" className="text-sm text-[#a78bfa] hover:text-[#b89dfc] cursor-pointer">
                                   새 프로젝트 시작 →
                                 </Link>
-                                <span className="text-[#4a4a58]">·</span>
+                                <span className="text-[#66667a]">·</span>
                                 <Link
                                   href={`/chat?goalId=${goal.id}`}
                                   className="text-sm text-[#9898a8] hover:text-[#a78bfa] cursor-pointer"
@@ -514,7 +514,7 @@ export default function VaultPage() {
       {/* Settings link */}
       <Link
         href="/settings"
-        className="text-xs tracking-wider text-[#6a6a7a] hover:text-[#9898a8] transition-colors mt-4 block text-center py-2"
+        className="text-xs tracking-wider text-[#8888a0] hover:text-[#9898a8] transition-colors mt-4 block text-center py-2"
       >
         설정
       </Link>

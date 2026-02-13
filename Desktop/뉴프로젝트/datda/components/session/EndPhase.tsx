@@ -60,7 +60,7 @@ export default function EndPhase() {
                 "border",
                 selectedStatus === status
                   ? "bg-[#a78bfa]/10 border-[#a78bfa] text-[#a78bfa]"
-                  : "bg-[#252530] border-[#2d2d38] text-[#9898a8] hover:border-[#4a4a58]",
+                  : "bg-[#252530] border-[#2d2d38] text-[#9898a8] hover:border-[#66667a]",
               ].join(" ")}
             >
               <span>{STATUS_EMOJI[status]}</span>
