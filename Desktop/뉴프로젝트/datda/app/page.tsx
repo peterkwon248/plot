@@ -179,6 +179,8 @@ export default function HomePage() {
   const phase = useDatdaStore((s) => s.phase);
   const sessions = useDatdaStore((s) => s.sessions);
   const goals = useDatdaStore((s) => s.goals);
+  const showDiscardedRecords = useDatdaStore((s) => s.showDiscardedRecords);
+  const deletedGoalTasks = useDatdaStore((s) => s.deletedGoalTasks);
   const getTodaysSuggestion = useDatdaStore((s) => s.getTodaysSuggestion);
   const getAllSuggestions = useDatdaStore((s) => s.getAllSuggestions);
   const setAiRecommendation = useDatdaStore((s) => s.setAiRecommendation);
@@ -236,6 +238,20 @@ export default function HomePage() {
     if (!mounted) return [];
     return getAllSuggestions();
   }, [mounted, getAllSuggestions, goals]);
+
+  // Filtered session count (respects "폐기된 기록 표시" setting)
+  const filteredSessionCount = useMemo(() => {
+    if (showDiscardedRecords) return sessions.length;
+    const activeTaskTitles = new Set<string>();
+    for (const goal of goals) {
+      activeTaskTitles.add(goal.title);
+      goal.steps.forEach((s) => activeTaskTitles.add(s.action));
+    }
+    const deletedSet = new Set(deletedGoalTasks);
+    return sessions.filter((s) =>
+      s.closeType !== "폐기" && !deletedSet.has(s.taskTitle) && activeTaskTitles.has(s.taskTitle)
+    ).length;
+  }, [sessions, showDiscardedRecords, deletedGoalTasks, goals]);
 
   // Last session
   const lastSession = useMemo(() => {
@@ -475,10 +491,10 @@ export default function HomePage() {
             매일 닫을 수 있는 크기로 쪼개드립니다
           </p>
 
-          {sessions.length > 0 && (
+          {filteredSessionCount > 0 && (
             <div className="flex flex-col items-center mt-16">
               <span className="text-4xl font-extralight text-[#a78bfa]/20 tabular-nums">
-                {sessions.length}
+                {filteredSessionCount}
               </span>
               <span className="text-xs tracking-[0.3em] text-[#66667a] mt-2">
                 번의 닫힘
@@ -509,7 +525,7 @@ export default function HomePage() {
           >
             <div className="flex flex-col items-center">
               <span className="text-7xl font-extralight text-[#a78bfa]/20 tabular-nums">
-                {sessions.length}
+                {filteredSessionCount}
               </span>
               <span className="text-xs tracking-[0.3em] text-[#66667a] mt-3">
                 번의 닫힘
@@ -1036,10 +1052,10 @@ export default function HomePage() {
             )}
           </div>
 
-          {sessions.length > 0 && (
+          {filteredSessionCount > 0 && (
             <div className="flex flex-col items-center mt-12">
               <span className="text-2xl font-extralight text-[#a78bfa]/20 tabular-nums">
-                {sessions.length}
+                {filteredSessionCount}
               </span>
               <span className="text-xs tracking-[0.3em] text-[#66667a] mt-1">
                 번의 닫힘
