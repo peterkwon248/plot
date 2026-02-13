@@ -69,7 +69,7 @@ export default function Onboarding() {
             <h1 className="text-4xl font-extralight tracking-widest text-[#e8e8f0] mb-8">
               {slide.title}
             </h1>
-            <p className="text-base text-[#a098b4] leading-loose whitespace-pre-line">
+            <p className="text-base text-[#aea6c0] leading-loose whitespace-pre-line">
               {slide.body}
             </p>
           </motion.div>
@@ -101,7 +101,7 @@ export default function Onboarding() {
             "px-8 py-3 rounded-xl text-sm font-medium transition-all duration-300 cursor-pointer relative",
             isLast
               ? "bg-[#a78bfa] text-white hover:bg-[#b89dfc] animate-glow-pulse"
-              : "text-[#a098b4] hover:underline underline-offset-4",
+              : "text-[#aea6c0] hover:underline underline-offset-4",
           ].join(" ")}
         >
           {isLast ? "시작하기" : "다음"}

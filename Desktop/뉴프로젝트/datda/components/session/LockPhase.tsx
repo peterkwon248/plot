@@ -20,17 +20,17 @@ export default function LockPhase() {
         <h1 className="text-xl font-semibold text-[#e8e8f0]">
           결과 고정
         </h1>
-        <p className="text-sm text-[#a098b4]">
+        <p className="text-sm text-[#aea6c0]">
           다시 볼 수 있도록 남겨두세요.
         </p>
       </div>
 
       {/* Completed Task */}
-      <p className="text-[#a098b4] text-center">{taskTitle}</p>
+      <p className="text-[#aea6c0] text-center">{taskTitle}</p>
 
       {/* Location Input */}
       <div className="w-full flex flex-col gap-2">
-        <label className="text-xs text-[#a098b4]">
+        <label className="text-xs text-[#aea6c0]">
           결과를 어디에 남겼나요?
         </label>
         <input
@@ -38,7 +38,7 @@ export default function LockPhase() {
           value={location}
           onChange={(e) => setLocation(e.target.value)}
           placeholder="링크, 파일명, 폴더..."
-          className="w-full px-4 py-3 bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#a098b4]/50 focus:border-[#a78bfa] transition-colors duration-300"
+          className="w-full px-4 py-3 bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#aea6c0]/50 focus:border-[#a78bfa] transition-colors duration-300"
           onKeyDown={(e) => {
             if (e.key === "Enter") handleLock();
           }}

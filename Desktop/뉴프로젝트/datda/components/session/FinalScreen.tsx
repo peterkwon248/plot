@@ -81,7 +81,7 @@ export default function FinalScreen() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1.5 }}
-          className="mt-6 text-sm text-[#9088a5] text-center tracking-wide"
+          className="mt-6 text-sm text-[#9e96b4] text-center tracking-wide"
         >
           {projectContext.closeType === '완료' && projectContext.goalTitle
             ? `${projectContext.goalTitle} — ${projectContext.closeCount}번째`
@@ -100,7 +100,7 @@ export default function FinalScreen() {
           <span className="text-6xl font-extralight tabular-nums text-[#a78bfa]/30">
             {sessions.length}
           </span>
-          <span className="text-xs tracking-[0.3em] text-[#706884] mt-2">
+          <span className="text-xs tracking-[0.3em] text-[#807898] mt-2">
             번째 닫힘
           </span>
         </motion.div>
@@ -113,7 +113,7 @@ export default function FinalScreen() {
           animate={{ opacity: 1 }}
           transition={{ duration: 1 }}
           onClick={resetSession}
-          className="mt-16 text-xs tracking-[0.2em] text-[#706884] hover:text-[#a098b4] transition-colors duration-700 cursor-pointer"
+          className="mt-16 text-xs tracking-[0.2em] text-[#807898] hover:text-[#aea6c0] transition-colors duration-700 cursor-pointer"
         >
           돌아가기
         </motion.button>
