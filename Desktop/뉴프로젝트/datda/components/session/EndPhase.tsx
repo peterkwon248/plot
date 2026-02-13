@@ -31,7 +31,7 @@ export default function EndPhase() {
       <div className="w-full flex flex-col gap-3">
         <div className="flex flex-col gap-1">
           <span className="text-sm text-[#e8e8f0]">내일 첫 행동</span>
-          <span className="text-xs text-[#9898a8]">
+          <span className="text-xs text-[#a098b4]">
             실행만 허용. 조사/공부/생각 금지.
           </span>
         </div>
@@ -40,7 +40,7 @@ export default function EndPhase() {
           value={nextActionInput}
           onChange={(e) => setNextActionInput(e.target.value)}
           placeholder="업로드하기, 보내기, 만들기..."
-          className="w-full px-4 py-3 bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#9898a8]/50 focus:border-[#a78bfa] transition-colors duration-300"
+          className="w-full px-4 py-3 bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#a098b4]/50 focus:border-[#a78bfa] transition-colors duration-300"
         />
       </div>
 
@@ -60,7 +60,7 @@ export default function EndPhase() {
                 "border",
                 selectedStatus === status
                   ? "bg-[#a78bfa]/10 border-[#a78bfa] text-[#a78bfa]"
-                  : "bg-[#252530] border-[#2d2d38] text-[#9898a8] hover:border-[#66667a]",
+                  : "bg-[#252530] border-[#2d2d38] text-[#a098b4] hover:border-[#66667a]",
               ].join(" ")}
             >
               <span>{STATUS_EMOJI[status]}</span>

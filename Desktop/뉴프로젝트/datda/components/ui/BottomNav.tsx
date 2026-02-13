@@ -66,7 +66,7 @@ export default function BottomNav() {
               href={tab.href}
               className="flex flex-col items-center justify-center gap-1.5 w-16 h-10 transition-colors duration-200"
             >
-              <div className={isActive ? "text-[#a78bfa]" : "text-[#66667a] hover:text-[#9898a8]"}>
+              <div className={isActive ? "text-[#a78bfa]" : "text-[#706884] hover:text-[#a098b4]"}>
                 {tab.icon}
               </div>
               {isActive && (

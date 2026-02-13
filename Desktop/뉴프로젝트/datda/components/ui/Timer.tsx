@@ -47,7 +47,7 @@ export default function Timer({ durationMinutes, startedAt, onComplete }: TimerP
 
   const strokeColor = isUrgent ? "#f87171" : "#a78bfa";
   const strokeOpacity = isUrgent ? 1 : isWarning ? 1 : 0.35;
-  const textColor = isUrgent ? "text-[#f87171]" : isWarning ? "text-[#a78bfa]" : "text-[#8888a0]";
+  const textColor = isUrgent ? "text-[#f87171]" : isWarning ? "text-[#a78bfa]" : "text-[#9088a5]";
   const useGlow = isWarning || isUrgent;
 
   return (
@@ -101,7 +101,7 @@ export default function Timer({ durationMinutes, startedAt, onComplete }: TimerP
         <span className={`text-5xl font-extralight tracking-widest tabular-nums transition-colors duration-500 ${textColor}`}>
           {display}
         </span>
-        <span className="text-xs tracking-[0.3em] text-[#66667a] mt-2">
+        <span className="text-xs tracking-[0.3em] text-[#706884] mt-2">
           남음
         </span>
       </div>

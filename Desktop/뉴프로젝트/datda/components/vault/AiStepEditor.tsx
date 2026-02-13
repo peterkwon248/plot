@@ -100,7 +100,7 @@ export default function AiStepEditor({
         {/* Header */}
         <div className="mb-6 pb-4 border-b border-white/[0.08]">
           <h2 className="text-lg font-light text-[#e8e8f0]">AI 스텝 수정</h2>
-          <p className="text-sm text-[#8888a0] mt-1">
+          <p className="text-sm text-[#9088a5] mt-1">
             AI가 목표를 다시 분해해드립니다 (1일 1회)
           </p>
         </div>
@@ -125,13 +125,13 @@ export default function AiStepEditor({
             </div>
             <p className="text-sm text-[#e8e8f0] mb-2">오늘은 이미 AI 수정을 사용했습니다</p>
             {nextTime && (
-              <p className="text-xs text-[#8888a0]">
+              <p className="text-xs text-[#9088a5]">
                 다음 사용 가능 시간: {formatKoreanTime(nextTime)}
               </p>
             )}
             <button
               onClick={onClose}
-              className="mt-6 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-[#9898a8] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200"
+              className="mt-6 px-4 py-2 bg-white/[0.04] hover:bg-white/[0.08] text-[#a098b4] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200"
             >
               닫기
             </button>
@@ -140,16 +140,16 @@ export default function AiStepEditor({
           <>
             {/* Current Steps Summary */}
             <div className="mb-4 p-3 bg-white/[0.03] border border-white/[0.08] rounded-lg">
-              <p className="text-xs text-[#9898a8] mb-2">현재 스텝 ({steps.length}개)</p>
+              <p className="text-xs text-[#a098b4] mb-2">현재 스텝 ({steps.length}개)</p>
               <div className="flex flex-col gap-1.5">
                 {steps.slice(0, 3).map((step, i) => (
                   <div key={i} className="flex items-start gap-2">
-                    <span className="text-xs text-[#8888a0] mt-0.5">{i + 1}.</span>
+                    <span className="text-xs text-[#9088a5] mt-0.5">{i + 1}.</span>
                     <span className="text-xs text-[#e8e8f0] line-clamp-1">{step.action}</span>
                   </div>
                 ))}
                 {steps.length > 3 && (
-                  <span className="text-xs text-[#8888a0]">외 {steps.length - 3}개...</span>
+                  <span className="text-xs text-[#9088a5]">외 {steps.length - 3}개...</span>
                 )}
               </div>
             </div>
@@ -158,14 +158,14 @@ export default function AiStepEditor({
             {!newSteps && (
               <>
                 <div className="mb-4">
-                  <label className="text-xs text-[#9898a8] block mb-2">
+                  <label className="text-xs text-[#a098b4] block mb-2">
                     어떻게 수정할까요?
                   </label>
                   <textarea
                     value={userMessage}
                     onChange={(e) => setUserMessage(e.target.value)}
                     placeholder="예: 스텝을 더 구체적으로 나눠줘, 시간을 줄여줘, 불필요한 스텝 제거해줘"
-                    className="w-full px-3 py-2.5 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#8888a0] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
+                    className="w-full px-3 py-2.5 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#9088a5] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
                     rows={4}
                     disabled={isLoading}
                   />
@@ -181,7 +181,7 @@ export default function AiStepEditor({
                   <button
                     onClick={onClose}
                     disabled={isLoading}
-                    className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-[#9898a8] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-[#a098b4] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
                     취소
                   </button>
@@ -207,7 +207,7 @@ export default function AiStepEditor({
             {newSteps && (
               <>
                 <div className="mb-4">
-                  <p className="text-xs text-[#9898a8] mb-3">수정된 스텝 미리보기</p>
+                  <p className="text-xs text-[#a098b4] mb-3">수정된 스텝 미리보기</p>
                   <div className="flex flex-col gap-2.5 max-h-[40vh] overflow-y-auto">
                     {newSteps.map((step, i) => (
                       <div
@@ -221,9 +221,9 @@ export default function AiStepEditor({
                           <p className="text-sm text-[#e8e8f0] leading-relaxed">{step.action}</p>
                         </div>
                         <div className="flex items-center gap-3 ml-7">
-                          <span className="text-xs text-[#8888a0]">{step.minutes}분</span>
-                          <span className="text-xs text-[#8888a0]">·</span>
-                          <span className="text-xs text-[#9898a8]">{step.resultType}</span>
+                          <span className="text-xs text-[#9088a5]">{step.minutes}분</span>
+                          <span className="text-xs text-[#9088a5]">·</span>
+                          <span className="text-xs text-[#a098b4]">{step.resultType}</span>
                         </div>
                       </div>
                     ))}
@@ -233,7 +233,7 @@ export default function AiStepEditor({
                 <div className="flex gap-3 pt-4 border-t border-white/[0.08]">
                   <button
                     onClick={handleCancel}
-                    className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-[#9898a8] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200"
+                    className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-[#a098b4] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200"
                   >
                     다시 입력
                   </button>

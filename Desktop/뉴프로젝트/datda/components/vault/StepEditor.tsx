@@ -100,7 +100,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
               섞기
             </button>
           </div>
-          <p className="text-sm text-[#8888a0] mt-1">각 스텝의 내용과 설정을 수정할 수 있습니다</p>
+          <p className="text-sm text-[#9088a5] mt-1">각 스텝의 내용과 설정을 수정할 수 있습니다</p>
         </div>
 
         {/* Step List */}
@@ -115,7 +115,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                 <div className="w-6 h-6 rounded-full bg-[#a78bfa]/10 border border-[#a78bfa]/20 flex items-center justify-center">
                   <span className="text-xs text-[#a78bfa]">{i + 1}</span>
                 </div>
-                <span className="text-xs text-[#9898a8]">
+                <span className="text-xs text-[#a098b4]">
                   {step.completed ? "완료됨" : step.discarded ? "폐기됨" : "대기 중"}
                 </span>
                 <div className="ml-auto flex items-center gap-1">
@@ -126,7 +126,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                       "w-6 h-6 rounded-lg transition-all duration-200 flex items-center justify-center",
                       i === 0
                         ? "opacity-20 cursor-not-allowed bg-white/[0.04]"
-                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#8888a0] hover:text-[#9898a8]"
+                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#9088a5] hover:text-[#a098b4]"
                     ].join(" ")}
                     title="위로 이동"
                   >
@@ -141,7 +141,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                       "w-6 h-6 rounded-lg transition-all duration-200 flex items-center justify-center",
                       i === editingSteps.length - 1
                         ? "opacity-20 cursor-not-allowed bg-white/[0.04]"
-                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#8888a0] hover:text-[#9898a8]"
+                        : "bg-white/[0.04] hover:bg-white/[0.08] text-[#9088a5] hover:text-[#a098b4]"
                     ].join(" ")}
                     title="아래로 이동"
                   >
@@ -156,7 +156,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
               <textarea
                 value={step.action}
                 onChange={(e) => handleActionChange(step.index, e.target.value)}
-                className="w-full mb-3 px-3 py-2 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#8888a0] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
+                className="w-full mb-3 px-3 py-2 bg-[#1a1a1f] border border-white/[0.08] rounded-lg text-sm text-[#e8e8f0] placeholder:text-[#9088a5] resize-none focus:border-[#a78bfa]/30 focus:outline-none transition-colors"
                 rows={2}
                 placeholder="행동을 입력하세요..."
                 disabled={step.completed || step.discarded}
@@ -164,7 +164,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
 
               {/* Time Selection */}
               <div className="mb-3">
-                <label className="text-xs text-[#9898a8] block mb-2">소요 시간</label>
+                <label className="text-xs text-[#a098b4] block mb-2">소요 시간</label>
                 <div className="flex gap-2 flex-wrap">
                   {TIME_OPTIONS.map((time) => (
                     <button
@@ -175,7 +175,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                         "px-3 py-1.5 text-xs rounded-lg transition-all duration-200",
                         step.minutes === time
                           ? "bg-[#a78bfa] text-white"
-                          : "bg-white/[0.04] text-[#9898a8] hover:bg-white/[0.08] hover:text-[#e8e8f0]",
+                          : "bg-white/[0.04] text-[#a098b4] hover:bg-white/[0.08] hover:text-[#e8e8f0]",
                         step.completed || step.discarded ? "opacity-40 cursor-not-allowed" : "",
                       ].join(" ")}
                     >
@@ -187,7 +187,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
 
               {/* Result Type Selection */}
               <div>
-                <label className="text-xs text-[#9898a8] block mb-2">결과 유형</label>
+                <label className="text-xs text-[#a098b4] block mb-2">결과 유형</label>
                 <div className="flex gap-2 flex-wrap">
                   {RESULT_TYPE_OPTIONS.map((type) => (
                     <button
@@ -198,7 +198,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
                         "px-3 py-1.5 text-xs rounded-lg transition-all duration-200",
                         step.resultType === type
                           ? "bg-[#a78bfa] text-white"
-                          : "bg-white/[0.04] text-[#9898a8] hover:bg-white/[0.08] hover:text-[#e8e8f0]",
+                          : "bg-white/[0.04] text-[#a098b4] hover:bg-white/[0.08] hover:text-[#e8e8f0]",
                         step.completed || step.discarded ? "opacity-40 cursor-not-allowed" : "",
                       ].join(" ")}
                     >
@@ -215,7 +215,7 @@ export default function StepEditor({ steps, goalId, onClose }: StepEditorProps) 
         <div className="flex gap-3 pt-4 border-t border-white/[0.08]">
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-[#9898a8] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200"
+            className="flex-1 px-4 py-2.5 bg-white/[0.04] hover:bg-white/[0.08] text-[#a098b4] hover:text-[#e8e8f0] rounded-xl text-sm transition-all duration-200"
           >
             취소
           </button>

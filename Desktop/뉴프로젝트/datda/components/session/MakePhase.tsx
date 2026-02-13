@@ -15,7 +15,7 @@ export default function MakePhase() {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 0.5 }}
-        className="text-xs tracking-[0.15em] text-[#66667a] mb-12 text-center max-w-[260px] leading-relaxed"
+        className="text-xs tracking-[0.15em] text-[#706884] mb-12 text-center max-w-[260px] leading-relaxed"
       >
         {taskTitle}
       </motion.p>
@@ -38,7 +38,7 @@ export default function MakePhase() {
       >
         <button
           onClick={goToClose}
-          className="text-sm text-[#66667a] hover:text-[#a78bfa] transition-colors duration-700 cursor-pointer"
+          className="text-sm text-[#706884] hover:text-[#a78bfa] transition-colors duration-700 cursor-pointer"
         >
           닫으러 가기
         </button>

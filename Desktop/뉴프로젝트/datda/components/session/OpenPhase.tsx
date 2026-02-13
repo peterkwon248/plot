@@ -51,7 +51,7 @@ export default function OpenPhase() {
         <h1 className="text-2xl font-semibold text-[#e8e8f0]">
           지금 닫을 것 하나를 정하세요
         </h1>
-        <p className="text-sm text-[#9898a8]">
+        <p className="text-sm text-[#a098b4]">
           시작이 아니라 '제한'입니다.
         </p>
       </div>
@@ -69,7 +69,7 @@ export default function OpenPhase() {
         value={taskTitle}
         onChange={(e) => setTaskTitle(e.target.value)}
         placeholder="이번 세션에서 닫을 것..."
-        className="w-full px-5 py-4 text-lg text-center bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#9898a8]/50 focus:border-[#a78bfa] transition-colors duration-300"
+        className="w-full px-5 py-4 text-lg text-center bg-[#252530] border border-[#2d2d38] rounded-xl text-[#e8e8f0] placeholder:text-[#a098b4]/50 focus:border-[#a78bfa] transition-colors duration-300"
         onKeyDown={(e) => {
           if (e.key === "Enter" && canSubmit) handleOpen();
         }}
@@ -86,7 +86,7 @@ export default function OpenPhase() {
               "bg-[#252530] border",
               selectedResult === type
                 ? "border-[#a78bfa] text-[#a78bfa]"
-                : "border-[#2d2d38] text-[#9898a8] hover:border-[#66667a]",
+                : "border-[#2d2d38] text-[#a098b4] hover:border-[#706884]",
             ].join(" ")}
           >
             {type}
@@ -96,7 +96,7 @@ export default function OpenPhase() {
 
       {/* Timer Selector */}
       <div className="flex flex-col items-center gap-3">
-        <span className="text-xs text-[#9898a8] tracking-wide">
+        <span className="text-xs text-[#a098b4] tracking-wide">
           세션 시간
         </span>
         <div className="flex items-center gap-2 flex-wrap justify-center">
@@ -108,7 +108,7 @@ export default function OpenPhase() {
                 "px-4 py-2 text-sm rounded-xl transition-all duration-300 cursor-pointer",
                 selectedTimer === minutes
                   ? "bg-[#a78bfa] text-white"
-                  : "bg-[#252530] border border-[#2d2d38] text-[#9898a8] hover:border-[#66667a]",
+                  : "bg-[#252530] border border-[#2d2d38] text-[#a098b4] hover:border-[#706884]",
               ].join(" ")}
             >
               {minutes}분
