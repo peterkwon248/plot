@@ -1,0 +1,497 @@
+{
+  "version": "2.0",
+  "lastUpdated": "2026-02-27T05:12:04.557Z",
+  "activeFeatures": [
+    "vibrant-lovelace",
+    "stores",
+    "(main)",
+    "layout",
+    "items",
+    "command-bar",
+    "editor",
+    "ui",
+    "supabase",
+    "login"
+  ],
+  "primaryFeature": "vibrant-lovelace",
+  "features": {
+    "vibrant-lovelace": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:47:10.324Z",
+        "lastUpdated": "2026-02-27T05:12:04.557Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\hooks\\useSupabaseSync.ts"
+    },
+    "stores": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:47:28.729Z",
+        "lastUpdated": "2026-02-27T05:04:38.835Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\stores\\itemStore.ts"
+    },
+    "(main)": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:50:54.152Z",
+        "lastUpdated": "2026-02-27T05:10:49.571Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\app\\(main)\\layout.tsx"
+    },
+    "layout": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:51:21.917Z",
+        "lastUpdated": "2026-02-27T04:48:57.092Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\components\\layout\\DetailPanel.tsx"
+    },
+    "items": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:51:33.429Z",
+        "lastUpdated": "2026-02-27T05:05:23.725Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\components\\items\\ItemList.tsx"
+    },
+    "command-bar": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:52:12.525Z",
+        "lastUpdated": "2026-02-27T05:06:47.729Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\components\\command-bar\\CommandBar.tsx"
+    },
+    "editor": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T01:52:47.419Z",
+        "lastUpdated": "2026-02-27T01:52:47.419Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\components\\editor\\TipTapEditor.tsx"
+    },
+    "ui": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T02:08:20.552Z",
+        "lastUpdated": "2026-02-27T02:08:30.168Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\components\\ui\\PriorityDropdown.tsx"
+    },
+    "supabase": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T05:09:20.374Z",
+        "lastUpdated": "2026-02-27T05:09:29.891Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\lib\\supabase\\middleware.ts"
+    },
+    "login": {
+      "phase": "do",
+      "phaseNumber": 3,
+      "matchRate": null,
+      "iterationCount": 0,
+      "requirements": [],
+      "documents": {},
+      "timestamps": {
+        "started": "2026-02-27T05:10:35.903Z",
+        "lastUpdated": "2026-02-27T05:10:35.903Z"
+      },
+      "lastFile": "C:\\Users\\kwonkyunghun\\Desktop\\plot\\.claude\\worktrees\\vibrant-lovelace\\app\\(auth)\\login\\page.tsx"
+    }
+  },
+  "pipeline": {
+    "currentPhase": 1,
+    "level": "Dynamic",
+    "phaseHistory": []
+  },
+  "session": {
+    "startedAt": "2026-02-27T01:34:44.228Z",
+    "onboardingCompleted": false,
+    "lastActivity": "2026-02-27T05:12:04.557Z"
+  },
+  "history": [
+    {
+      "timestamp": "2026-02-27T01:47:10.324Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:47:16.335Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:47:28.730Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:47:31.669Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:50:48.966Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:50:49.837Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:50:54.152Z",
+      "feature": "(main)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:50:54.978Z",
+      "feature": "(main)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:51:21.917Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:51:25.915Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:51:33.429Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:51:42.494Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:51:46.719Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:51:58.572Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:52:12.525Z",
+      "feature": "command-bar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T01:52:47.419Z",
+      "feature": "editor",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T02:00:57.200Z",
+      "feature": "command-bar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T02:01:02.659Z",
+      "feature": "command-bar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T02:08:20.553Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T02:08:30.168Z",
+      "feature": "ui",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T02:09:13.606Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T02:10:19.164Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:35:00.645Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:35:30.049Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:35:38.834Z",
+      "feature": "(main)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:35:53.255Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:36:08.897Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:41:45.698Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:41:52.836Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:42:09.370Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:42:18.297Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:42:27.980Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:42:43.643Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:48:57.092Z",
+      "feature": "layout",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:49:03.235Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T04:49:11.215Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:03:21.823Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:03:28.128Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:03:34.269Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:03:46.901Z",
+      "feature": "(main)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:04:29.290Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:04:38.835Z",
+      "feature": "stores",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:04:59.952Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:05:23.725Z",
+      "feature": "items",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:06:47.729Z",
+      "feature": "command-bar",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:09:20.374Z",
+      "feature": "supabase",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:09:22.971Z",
+      "feature": "supabase",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:09:29.891Z",
+      "feature": "supabase",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:10:11.147Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:10:35.904Z",
+      "feature": "login",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:10:44.170Z",
+      "feature": "(main)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:10:49.571Z",
+      "feature": "(main)",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:10:57.695Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:11:31.386Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:11:35.522Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    },
+    {
+      "timestamp": "2026-02-27T05:12:04.557Z",
+      "feature": "vibrant-lovelace",
+      "phase": "do",
+      "action": "updated"
+    }
+  ]
+}
