@@ -73,7 +73,7 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
         data-focused={isFocused || undefined}
         style={style}
         className={cn(
-          "w-full flex items-start gap-3 px-4 py-2 border-b border-border-subtle transition-colors duration-100 text-left",
+          "w-full flex items-start gap-2 px-6 py-3 border-b border-border-subtle transition-colors duration-100 text-left group/row",
           isSelected
             ? "bg-accent-muted border-l-2 border-l-accent"
             : isFocused
@@ -82,6 +82,20 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           isDone && "opacity-60"
         )}
       >
+        {/* Context menu (hover) */}
+        <div className="shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity mt-0.5">
+          <button
+            onClick={(e) => { e.stopPropagation(); }}
+            className="text-text-tertiary hover:text-text-secondary p-0.5"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <circle cx="3" cy="7" r="1.2" />
+              <circle cx="7" cy="7" r="1.2" />
+              <circle cx="11" cy="7" r="1.2" />
+            </svg>
+          </button>
+        </div>
+
         {/* Drag Handle */}
         {dragHandleProps && (
           <div
@@ -104,6 +118,11 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           <ItemStatusIcon status={item.status} size={16} />
         </div>
 
+        {/* Item ID */}
+        <span className="text-[11px] leading-[16px] text-text-tertiary shrink-0 font-mono mt-0.5">
+          {item.id.slice(0, 4).toUpperCase()}
+        </span>
+
         {/* Hub Color Dot */}
         {item.hub_id && currentView !== "hub" && (
           <HubColorDot hubId={item.hub_id} />
@@ -111,21 +130,25 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "text-[14px] leading-[20px] tracking-[-0.006em] font-medium truncate",
-                isDone
-                  ? "text-text-secondary line-through"
-                  : "text-text-primary"
-              )}
-            >
-              {item.title}
+          <span
+            className={cn(
+              "text-[15px] leading-[22px] tracking-[-0.01em] font-medium truncate block",
+              isDone
+                ? "text-text-secondary line-through"
+                : "text-text-primary"
+            )}
+          >
+            {item.title}
+          </span>
+          {/* 타임스탬프 서브라인 (note 프리뷰가 없을 때) */}
+          {displayType === "task" && (
+            <span className="text-[12px] leading-[16px] text-text-tertiary mt-0.5 block">
+              {timeAgo(item.updated_at)}
             </span>
-          </div>
-          {/* Note preview (2줄) */}
+          )}
+          {/* Note preview */}
           {displayType === "note" && item.body_plain && (
-            <p className="text-[13px] leading-[20px] text-text-secondary mt-0.5 line-clamp-2">
+            <p className="text-[13px] leading-[20px] text-text-secondary mt-1 line-clamp-2">
               {item.body_plain}
             </p>
           )}
@@ -136,9 +159,11 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           {item.priority !== "none" && (
             <PriorityBadge priority={item.priority} />
           )}
-          <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
-            {timeAgo(item.updated_at)}
-          </span>
+          {displayType === "note" && (
+            <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
+              {timeAgo(item.updated_at)}
+            </span>
+          )}
         </div>
       </button>
     );

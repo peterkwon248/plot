@@ -26,12 +26,12 @@ export function HubSection() {
         <div className="border-t border-border-subtle mb-2" />
         <div className="group flex items-center justify-between px-1 mb-1">
           <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
-            Projects
+            프로젝트
           </span>
           <button
             onClick={() => setIsCreating(true)}
             className="text-[14px] leading-[16px] text-text-disabled group-hover:text-text-secondary transition-colors"
-            title="New project"
+            title="새 프로젝트"
           >
             +
           </button>
@@ -80,7 +80,7 @@ export function HubSection() {
         {/* Empty state when no hubs and not creating */}
         {hubs.length === 0 && !isCreating && (
           <p className="px-3 py-2 text-[12px] leading-[16px] text-text-disabled">
-            No projects yet
+            프로젝트가 없습니다
           </p>
         )}
       </div>
@@ -128,7 +128,7 @@ function HubInlineCreate({
           if (e.key === "Escape") onCancel();
         }}
         onBlur={handleSubmit}
-        placeholder="Project name..."
+        placeholder="프로젝트 이름..."
         className="w-full h-8 bg-bg-elevated rounded-md px-3 text-[13px] leading-[20px] text-text-primary placeholder:text-text-tertiary outline-none border border-border-focus"
       />
       {/* Color Picker Row */}

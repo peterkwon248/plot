@@ -22,7 +22,7 @@ export function TipTapEditor({ content, onChange, editable = true }: Props) {
         heading: { levels: [1, 2, 3] },
       }),
       Placeholder.configure({
-        placeholder: "Write something...",
+        placeholder: "내용을 입력하세요...",
       }),
       TaskList,
       TaskItem.configure({
@@ -103,18 +103,18 @@ export function TipTapEditor({ content, onChange, editable = true }: Props) {
         }
         .tiptap-editor .tiptap ul[data-type="taskList"] li input[type="checkbox"] {
           margin-top: 4px;
-          accent-color: #5E6AD2;
+          accent-color: #22D3EE;
         }
         .tiptap-editor .tiptap code {
-          background: #222222;
+          background: #1C2428;
           border-radius: 4px;
           padding: 2px 4px;
           font-family: "JetBrains Mono", "Fira Code", monospace;
           font-size: 12px;
         }
         .tiptap-editor .tiptap pre {
-          background: #1A1A1A;
-          border: 1px solid #2A2A2A;
+          background: #0E1215;
+          border: 1px solid #1E2A30;
           border-radius: 6px;
           padding: 12px;
           margin-bottom: 8px;
@@ -124,16 +124,16 @@ export function TipTapEditor({ content, onChange, editable = true }: Props) {
           padding: 0;
         }
         .tiptap-editor .tiptap mark {
-          background: rgba(94, 106, 210, 0.3);
+          background: rgba(34, 211, 238, 0.2);
           border-radius: 2px;
         }
         .tiptap-editor .tiptap a {
-          color: #5E6AD2;
+          color: #22D3EE;
           text-decoration: underline;
           text-underline-offset: 2px;
         }
         .tiptap-editor .tiptap blockquote {
-          border-left: 3px solid #2A2A2A;
+          border-left: 3px solid #1E2A30;
           padding-left: 12px;
           color: #8A8A8A;
           margin-bottom: 4px;

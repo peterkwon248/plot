@@ -32,8 +32,10 @@ export default function MainLayout({
   return (
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
-      <main className="flex-1 flex overflow-hidden">{children}</main>
-      <DetailPanel />
+      <main className="flex-1 flex overflow-hidden relative">
+        {children}
+        <DetailPanel />
+      </main>
       {isCommandBarOpen && <CommandBar />}
       {isHubAssignOpen && <HubAssignOverlay />}
     </div>

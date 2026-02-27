@@ -42,7 +42,7 @@ export function HubDropdown({ value, onChange }: Props) {
             <span className="text-text-primary">{selectedHub.name}</span>
           </>
         ) : (
-          <span className="text-text-tertiary">None</span>
+          <span className="text-text-tertiary">없음</span>
         )}
       </button>
 
@@ -60,7 +60,7 @@ export function HubDropdown({ value, onChange }: Props) {
             )}
           >
             <span className="text-text-tertiary">—</span>
-            <span>None</span>
+            <span>없음</span>
           </button>
 
           {/* Hub options */}

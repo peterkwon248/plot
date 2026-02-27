@@ -35,7 +35,7 @@ export function CommandBar() {
     const base: CommandOption[] = [
       {
         id: "create",
-        label: "Create new item",
+        label: "새 항목 만들기",
         section: "Actions" as const,
         hint: "C",
         action: () => {
@@ -46,7 +46,7 @@ export function CommandBar() {
       },
       {
         id: "nav-inbox",
-        label: "Go to Inbox",
+        label: "메모로 이동",
         section: "Navigation" as const,
         hint: "1",
         action: () => {
@@ -56,7 +56,7 @@ export function CommandBar() {
       },
       {
         id: "nav-active",
-        label: "Go to Active",
+        label: "진행으로 이동",
         section: "Navigation" as const,
         hint: "2",
         action: () => {
@@ -66,7 +66,7 @@ export function CommandBar() {
       },
       {
         id: "nav-all",
-        label: "Go to All",
+        label: "전체로 이동",
         section: "Navigation" as const,
         hint: "3",
         action: () => {
@@ -76,7 +76,7 @@ export function CommandBar() {
       },
       {
         id: "nav-done",
-        label: "Go to Done",
+        label: "완료로 이동",
         section: "Navigation" as const,
         hint: "4",
         action: () => {
@@ -197,7 +197,8 @@ export function CommandBar() {
     <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
       {/* Overlay */}
       <div
-        className="absolute inset-0 bg-black/60"
+        className="absolute inset-0"
+        style={{ background: "rgba(10, 13, 15, 0.6)", backdropFilter: "blur(12px)" }}
         onClick={() => toggleCommandBar(false)}
       />
 
@@ -217,7 +218,7 @@ export function CommandBar() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Type a command or search..."
+            placeholder="무엇을 기록할까요..."
             className="flex-1 bg-transparent text-[15px] leading-[24px] tracking-[-0.008em] text-text-primary placeholder:text-text-tertiary outline-none"
           />
           <kbd className="text-[11px] leading-[16px] text-text-tertiary bg-bg-elevated px-1.5 py-0.5 rounded border border-border-subtle">
@@ -229,7 +230,7 @@ export function CommandBar() {
         <div ref={listRef} className="max-h-80 overflow-y-auto py-1">
           {filtered.length === 0 ? (
             <div className="px-4 py-6 text-center text-text-tertiary text-[13px] leading-[20px]">
-              No results found
+              결과 없음
             </div>
           ) : (
             sections.map((group) => (
@@ -256,7 +257,7 @@ export function CommandBar() {
                   >
                     <span className="truncate">
                       {opt.id === "create" && query.trim()
-                        ? `Create "${query.trim()}"`
+                        ? `"${query.trim()}" 만들기`
                         : opt.label}
                     </span>
                     {opt.hint && (
