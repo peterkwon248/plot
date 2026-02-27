@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { DetailPanel } from "@/components/layout/DetailPanel";
 import { CommandBar } from "@/components/command-bar/CommandBar";
+import { HubAssignOverlay } from "@/components/ui/HubAssignOverlay";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
@@ -14,7 +15,7 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isCommandBarOpen } = useViewStore();
+  const { isCommandBarOpen, isHubAssignOpen } = useViewStore();
   const { purgeDeleted } = useItemStore();
 
   // 글로벌 키보드 네비게이션 (j/k, Enter, Esc, ⌘K, 1-4, c, x)
@@ -34,6 +35,7 @@ export default function MainLayout({
       <main className="flex-1 flex overflow-hidden">{children}</main>
       <DetailPanel />
       {isCommandBarOpen && <CommandBar />}
+      {isHubAssignOpen && <HubAssignOverlay />}
     </div>
   );
 }

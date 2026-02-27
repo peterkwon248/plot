@@ -1,0 +1,150 @@
+"use client";
+
+import { useState, useRef, useEffect } from "react";
+import { useHubStore } from "@/stores/hubStore";
+import { useItemStore } from "@/stores/itemStore";
+import { useViewStore } from "@/stores/viewStore";
+import { getHubColorHex, HUB_COLORS } from "@/lib/hubColors";
+import { cn } from "@/lib/utils";
+import type { HubColor } from "@/types";
+
+export function HubSection() {
+  const { getActiveHubs, addHub } = useHubStore();
+  const { items } = useItemStore();
+  const { currentView, activeHubId, setActiveHub } = useViewStore();
+  const hubs = getActiveHubs();
+  const [isCreating, setIsCreating] = useState(false);
+
+  // Count items per hub (non-deleted only)
+  const getHubItemCount = (hubId: string) =>
+    items.filter((i) => !i.deleted_at && i.hub_id === hubId).length;
+
+  return (
+    <div className="flex-1 min-h-0 flex flex-col">
+      {/* Divider + Section Header */}
+      <div className="px-2 pt-2">
+        <div className="border-t border-border-subtle mb-2" />
+        <div className="group flex items-center justify-between px-1 mb-1">
+          <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
+            Projects
+          </span>
+          <button
+            onClick={() => setIsCreating(true)}
+            className="text-[14px] leading-[16px] text-text-disabled group-hover:text-text-secondary transition-colors"
+            title="New project"
+          >
+            +
+          </button>
+        </div>
+      </div>
+
+      {/* Scrollable hub list */}
+      <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
+        {/* Inline Create Form */}
+        {isCreating && (
+          <HubInlineCreate
+            onCreated={() => setIsCreating(false)}
+            onCancel={() => setIsCreating(false)}
+          />
+        )}
+
+        {/* Hub Items */}
+        {hubs.map((hub) => {
+          const isActive = currentView === "hub" && activeHubId === hub.id;
+          const count = getHubItemCount(hub.id);
+
+          return (
+            <button
+              key={hub.id}
+              onClick={() => setActiveHub(hub.id)}
+              className={cn(
+                "w-full h-8 flex items-center gap-2 px-3 rounded-md text-[13px] leading-[20px] transition-colors duration-100",
+                isActive
+                  ? "bg-accent-muted text-accent"
+                  : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
+              )}
+            >
+              <svg width="6" height="6" viewBox="0 0 6 6" className="shrink-0">
+                <circle cx="3" cy="3" r="3" fill={getHubColorHex(hub.color)} />
+              </svg>
+              <span className="flex-1 text-left truncate">{hub.name}</span>
+              {count > 0 && (
+                <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary">
+                  {count}
+                </span>
+              )}
+            </button>
+          );
+        })}
+
+        {/* Empty state when no hubs and not creating */}
+        {hubs.length === 0 && !isCreating && (
+          <p className="px-3 py-2 text-[12px] leading-[16px] text-text-disabled">
+            No projects yet
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function HubInlineCreate({
+  onCreated,
+  onCancel,
+}: {
+  onCreated: () => void;
+  onCancel: () => void;
+}) {
+  const [name, setName] = useState("");
+  const [color, setColor] = useState<HubColor>("purple");
+  const inputRef = useRef<HTMLInputElement>(null);
+  const { addHub } = useHubStore();
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
+  const handleSubmit = () => {
+    const trimmed = name.trim();
+    if (!trimmed) {
+      onCancel();
+      return;
+    }
+    addHub({ name: trimmed, color });
+    onCreated();
+  };
+
+  return (
+    <div
+      className="mb-1 px-1"
+      style={{ animation: "fadeIn 150ms ease forwards" }}
+    >
+      <input
+        ref={inputRef}
+        value={name}
+        onChange={(e) => setName(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") handleSubmit();
+          if (e.key === "Escape") onCancel();
+        }}
+        onBlur={handleSubmit}
+        placeholder="Project name..."
+        className="w-full h-8 bg-bg-elevated rounded-md px-3 text-[13px] leading-[20px] text-text-primary placeholder:text-text-tertiary outline-none border border-border-focus"
+      />
+      {/* Color Picker Row */}
+      <div className="flex items-center gap-1.5 px-1 py-1.5">
+        {HUB_COLORS.map((c) => (
+          <button
+            key={c.value}
+            onClick={() => setColor(c.value)}
+            className={cn(
+              "w-4 h-4 rounded-full transition-transform",
+              color === c.value ? "scale-125 ring-1 ring-white/30" : "hover:scale-110"
+            )}
+            style={{ backgroundColor: c.hex }}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}

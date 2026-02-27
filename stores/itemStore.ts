@@ -22,6 +22,10 @@ interface ItemState {
 
   // Filters
   getByStatus: (status: ItemStatus | "active" | "all") => Item[];
+  getByHub: (hubId: string) => Item[];
+
+  // Hub assignment
+  assignToHub: (itemId: string, hubId: string | null) => void;
 
   // Sort
   getNextSortOrder: () => number;
@@ -57,6 +61,7 @@ export const useItemStore = create<ItemState>()(
           updated_at: now,
           completed_at: null,
           deleted_at: null,
+          hub_id: null,
         };
 
         set((state) => ({ items: [newItem, ...state.items] }));
@@ -159,6 +164,16 @@ export const useItemStore = create<ItemState>()(
         }
       },
 
+      getByHub: (hubId) => {
+        return get()
+          .items.filter((item) => !item.deleted_at && item.hub_id === hubId)
+          .sort((a, b) => a.sort_order - b.sort_order);
+      },
+
+      assignToHub: (itemId, hubId) => {
+        get().updateItem(itemId, { hub_id: hubId });
+      },
+
       getNextSortOrder: () => {
         const items = get().items.filter((item) => !item.deleted_at);
         if (items.length === 0) return 0;
@@ -172,6 +187,17 @@ export const useItemStore = create<ItemState>()(
     }),
     {
       name: "plot-items",
+      version: 1,
+      migrate: (persistedState: unknown) => {
+        const state = persistedState as { items?: Item[] };
+        if (state?.items) {
+          state.items = state.items.map((item) => ({
+            ...item,
+            hub_id: item.hub_id ?? null,
+          }));
+        }
+        return state as ItemState;
+      },
     }
   )
 );

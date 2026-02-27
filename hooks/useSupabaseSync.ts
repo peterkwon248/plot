@@ -3,7 +3,9 @@
 import { useEffect, useRef, useCallback } from "react";
 import { createClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { useItemStore } from "@/stores/itemStore";
+import { useHubStore } from "@/stores/hubStore";
 import type { Item, CreateItemInput } from "@/types";
+import type { Hub, CreateHubInput } from "@/types";
 import type { RealtimePostgresChangesPayload } from "@supabase/supabase-js";
 
 /**
@@ -21,8 +23,37 @@ export function useSupabaseSync() {
   const userIdRef = useRef<string | null>(null);
 
   const { setItems, items } = useItemStore();
+  const { setHubs } = useHubStore();
 
   // 초기 데이터 로드
+  const loadHubs = useCallback(async () => {
+    if (!isConfigured) return;
+    const supabase = createClient();
+    if (!supabase) return;
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+
+    userIdRef.current = user.id;
+
+    const { data, error } = await supabase
+      .from("hubs")
+      .select("*")
+      .eq("user_id", user.id)
+      .order("sort_order", { ascending: true });
+
+    if (error) {
+      console.error("[Plot] Hub load error:", error);
+      return;
+    }
+
+    if (data) {
+      syncingRef.current = true;
+      setHubs(data as Hub[]);
+      syncingRef.current = false;
+    }
+  }, [isConfigured, setHubs]);
+
   const loadItems = useCallback(async () => {
     if (!isConfigured) return;
     const supabase = createClient();
@@ -57,28 +88,21 @@ export function useSupabaseSync() {
     const supabase = createClient();
     if (!supabase) return;
 
-    // 초기 로드
-    loadItems();
+    // Load order: hubs first, then items (FK dependency)
+    loadHubs().then(() => loadItems());
 
-    // 실시간 변경 구독
-    const channel = supabase
+    // Items realtime channel (existing)
+    const itemsChannel = supabase
       .channel("items-realtime")
       .on(
         "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "items",
-        },
+        { event: "*", schema: "public", table: "items" },
         (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
           syncingRef.current = true;
-
           const store = useItemStore.getState();
-
           switch (payload.eventType) {
             case "INSERT": {
               const newItem = payload.new as unknown as Item;
-              // 이미 존재하면 무시 (로컬에서 추가한 것)
               if (!store.items.find((i) => i.id === newItem.id)) {
                 store.setItems([newItem, ...store.items]);
               }
@@ -97,16 +121,51 @@ export function useSupabaseSync() {
               break;
             }
           }
+          syncingRef.current = false;
+        }
+      )
+      .subscribe();
 
+    // Hubs realtime channel (NEW)
+    const hubsChannel = supabase
+      .channel("hubs-realtime")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "hubs" },
+        (payload: RealtimePostgresChangesPayload<Record<string, unknown>>) => {
+          syncingRef.current = true;
+          const store = useHubStore.getState();
+          switch (payload.eventType) {
+            case "INSERT": {
+              const newHub = payload.new as unknown as Hub;
+              if (!store.hubs.find((h) => h.id === newHub.id)) {
+                store.setHubs([...store.hubs, newHub]);
+              }
+              break;
+            }
+            case "UPDATE": {
+              const updated = payload.new as unknown as Hub;
+              store.setHubs(
+                store.hubs.map((h) => (h.id === updated.id ? updated : h))
+              );
+              break;
+            }
+            case "DELETE": {
+              const deletedId = (payload.old as unknown as { id: string }).id;
+              store.setHubs(store.hubs.filter((h) => h.id !== deletedId));
+              break;
+            }
+          }
           syncingRef.current = false;
         }
       )
       .subscribe();
 
     return () => {
-      supabase.removeChannel(channel);
+      supabase.removeChannel(itemsChannel);
+      supabase.removeChannel(hubsChannel);
     };
-  }, [isConfigured, loadItems]);
+  }, [isConfigured, loadItems, loadHubs]);
 
   return {
     isConfigured,
@@ -168,6 +227,60 @@ export function useSupabaseSync() {
 
       if (error) {
         console.error("[Plot] Delete error:", error);
+      }
+    },
+
+    // Hub methods
+    createHub: async (input: CreateHubInput) => {
+      if (!isConfigured) return null;
+      const supabase = createClient();
+      if (!supabase || !userIdRef.current) return null;
+
+      const { data, error } = await supabase
+        .from("hubs")
+        .insert({
+          ...input,
+          user_id: userIdRef.current,
+          description: input.description || "",
+          color: input.color || "purple",
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error("[Plot] Hub create error:", error);
+        return null;
+      }
+      return data as Hub;
+    },
+
+    updateHub: async (id: string, updates: Partial<Hub>) => {
+      if (!isConfigured) return;
+      const supabase = createClient();
+      if (!supabase) return;
+
+      const { error } = await supabase
+        .from("hubs")
+        .update(updates)
+        .eq("id", id);
+
+      if (error) {
+        console.error("[Plot] Hub update error:", error);
+      }
+    },
+
+    archiveHub: async (id: string) => {
+      if (!isConfigured) return;
+      const supabase = createClient();
+      if (!supabase) return;
+
+      const { error } = await supabase
+        .from("hubs")
+        .update({ archived_at: new Date().toISOString() })
+        .eq("id", id);
+
+      if (error) {
+        console.error("[Plot] Hub archive error:", error);
       }
     },
   };

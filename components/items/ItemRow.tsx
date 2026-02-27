@@ -7,6 +7,8 @@ import type { Item } from "@/types";
 import { inferDisplayType } from "@/types";
 import { ItemStatusIcon } from "./ItemStatusIcon";
 import { useViewStore } from "@/stores/viewStore";
+import { useHubStore } from "@/stores/hubStore";
+import { getHubColorHex } from "@/lib/hubColors";
 import { cn, timeAgo } from "@/lib/utils";
 
 interface Props {
@@ -59,7 +61,7 @@ interface ItemRowContentProps {
 
 const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
   function ItemRowContent({ item, isFocused, style, dragHandleProps }, ref) {
-    const { selectedItemId, selectItem } = useViewStore();
+    const { selectedItemId, selectItem, currentView } = useViewStore();
     const isSelected = selectedItemId === item.id;
     const displayType = inferDisplayType(item);
     const isDone = item.status === "done";
@@ -102,6 +104,11 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           <ItemStatusIcon status={item.status} size={16} />
         </div>
 
+        {/* Hub Color Dot */}
+        {item.hub_id && currentView !== "hub" && (
+          <HubColorDot hubId={item.hub_id} />
+        )}
+
         {/* Content */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -137,6 +144,18 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
     );
   }
 );
+
+function HubColorDot({ hubId }: { hubId: string }) {
+  const hub = useHubStore((s) => s.hubs.find((h) => h.id === hubId));
+  if (!hub) return null;
+  return (
+    <div className="mt-1 shrink-0" title={hub.name}>
+      <svg width="6" height="6" viewBox="0 0 6 6">
+        <circle cx="3" cy="3" r="3" fill={getHubColorHex(hub.color)} />
+      </svg>
+    </div>
+  );
+}
 
 function PriorityBadge({ priority }: { priority: string }) {
   const config: Record<string, { label: string; color: string }> = {

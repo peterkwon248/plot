@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef, useMemo } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
+import { useHubStore } from "@/stores/hubStore";
 import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -19,7 +20,7 @@ export function CommandBar() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const { setView, selectItem, toggleCommandBar } = useViewStore();
+  const { setView, selectItem, toggleCommandBar, setActiveHub } = useViewStore();
   const { addItem, items: allItems } = useItemStore();
 
   // 자동 포커스
@@ -28,8 +29,10 @@ export function CommandBar() {
   }, []);
 
   // 고정 커맨드 옵션
-  const staticOptions: CommandOption[] = useMemo(
-    () => [
+  const staticOptions: CommandOption[] = useMemo(() => {
+    const hubs = useHubStore.getState().getActiveHubs();
+
+    const base: CommandOption[] = [
       {
         id: "create",
         label: "Create new item",
@@ -81,9 +84,20 @@ export function CommandBar() {
           toggleCommandBar(false);
         },
       },
-    ],
-    [query, addItem, setView, toggleCommandBar]
-  );
+    ];
+
+    const hubNav: CommandOption[] = hubs.map((hub) => ({
+      id: `nav-hub-${hub.id}`,
+      label: hub.name,
+      section: "Navigation" as const,
+      action: () => {
+        setActiveHub(hub.id);
+        toggleCommandBar(false);
+      },
+    }));
+
+    return [...base, ...hubNav];
+  }, [query, addItem, setView, setActiveHub, toggleCommandBar]);
 
   // 아이템 검색 결과
   const itemResults: CommandOption[] = useMemo(() => {

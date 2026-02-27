@@ -3,7 +3,7 @@
 import { useEffect, useCallback } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
-import type { ItemStatus } from "@/types";
+import type { ItemStatus, ViewType } from "@/types";
 
 /**
  * Linear 스타일 키보드 네비게이션
@@ -25,12 +25,15 @@ export function useKeyboardNavigation() {
     selectedItemId,
     isDetailOpen,
     isCommandBarOpen,
+    isHubAssignOpen,
     toggleDetail,
     toggleCommandBar,
+    toggleHubAssign,
     currentView,
+    activeHubId,
   } = useViewStore();
 
-  const { getByStatus, updateItem, softDeleteItem, addItem } = useItemStore();
+  const { getByStatus, getByHub, updateItem, softDeleteItem, addItem } = useItemStore();
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -54,6 +57,15 @@ export function useKeyboardNavigation() {
         return;
       }
 
+      // Hub assign overlay open: handle Escape only
+      if (isHubAssignOpen) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          toggleHubAssign(false);
+        }
+        return;
+      }
+
       // ⌘K — 커맨드 바 토글
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
         e.preventDefault();
@@ -64,7 +76,9 @@ export function useKeyboardNavigation() {
       // 편집 중이면 나머지 단축키 무시
       if (isEditing) return;
 
-      const items = getByStatus(currentView);
+      const items = currentView === "hub" && activeHubId
+        ? getByHub(activeHubId)
+        : getByStatus(currentView as Exclude<ViewType, "hub">);
       const maxIndex = items.length - 1;
 
       switch (e.key) {
@@ -131,6 +145,18 @@ export function useKeyboardNavigation() {
           break;
         }
 
+        // ─── Hub Assign ───
+        case "m": {
+          e.preventDefault();
+          const target = selectedItemId
+            ? items.find((i) => i.id === selectedItemId)
+            : items[focusedIndex];
+          if (target) {
+            toggleHubAssign(true);
+          }
+          break;
+        }
+
         // ─── Delete (x만 사용, Backspace/Delete는 일반 타이핑에서 오동작 방지) ───
         case "x": {
           e.preventDefault();
@@ -157,10 +183,14 @@ export function useKeyboardNavigation() {
       selectedItemId,
       isDetailOpen,
       isCommandBarOpen,
+      isHubAssignOpen,
       toggleDetail,
       toggleCommandBar,
+      toggleHubAssign,
       currentView,
+      activeHubId,
       getByStatus,
+      getByHub,
       updateItem,
       softDeleteItem,
       addItem,

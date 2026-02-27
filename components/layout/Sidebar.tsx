@@ -3,9 +3,10 @@
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { SidebarItem } from "./SidebarItem";
-import type { ViewType } from "@/types";
+import { HubSection } from "./HubSection";
+type SidebarView = "inbox" | "active" | "all" | "done";
 
-const views: { id: ViewType; label: string }[] = [
+const views: { id: SidebarView; label: string }[] = [
   { id: "inbox", label: "Inbox" },
   { id: "active", label: "Active" },
   { id: "all", label: "All" },
@@ -32,7 +33,7 @@ export function Sidebar() {
       </div>
 
       {/* Views */}
-      <nav className="flex-1 px-2 py-1">
+      <nav className="px-2 py-1">
         {views.map((view) => (
           <SidebarItem
             key={view.id}
@@ -44,6 +45,9 @@ export function Sidebar() {
           />
         ))}
       </nav>
+
+      {/* Hub Section */}
+      <HubSection />
     </aside>
   );
 }
