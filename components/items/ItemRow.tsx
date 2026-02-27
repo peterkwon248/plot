@@ -73,7 +73,7 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
         data-focused={isFocused || undefined}
         style={style}
         className={cn(
-          "w-full flex items-start gap-3 px-4 py-2 border-b border-border-subtle transition-colors duration-100 text-left",
+          "w-full flex items-start gap-3 px-4 py-3 border-b border-border-subtle transition-colors duration-100 text-left",
           isSelected
             ? "bg-accent-muted border-l-2 border-l-accent"
             : isFocused
@@ -111,21 +111,25 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <span
-              className={cn(
-                "text-[14px] leading-[20px] tracking-[-0.006em] font-medium truncate",
-                isDone
-                  ? "text-text-secondary line-through"
-                  : "text-text-primary"
-              )}
-            >
-              {item.title}
+          <span
+            className={cn(
+              "text-[15px] leading-[22px] tracking-[-0.01em] font-medium truncate block",
+              isDone
+                ? "text-text-secondary line-through"
+                : "text-text-primary"
+            )}
+          >
+            {item.title}
+          </span>
+          {/* 타임스탬프 서브라인 (note 프리뷰가 없을 때) */}
+          {displayType === "task" && (
+            <span className="text-[12px] leading-[16px] text-text-tertiary mt-0.5 block">
+              {timeAgo(item.updated_at)}
             </span>
-          </div>
-          {/* Note preview (2줄) */}
+          )}
+          {/* Note preview */}
           {displayType === "note" && item.body_plain && (
-            <p className="text-[13px] leading-[20px] text-text-secondary mt-0.5 line-clamp-2">
+            <p className="text-[13px] leading-[20px] text-text-secondary mt-1 line-clamp-2">
               {item.body_plain}
             </p>
           )}
@@ -136,9 +140,11 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           {item.priority !== "none" && (
             <PriorityBadge priority={item.priority} />
           )}
-          <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
-            {timeAgo(item.updated_at)}
-          </span>
+          {displayType === "note" && (
+            <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
+              {timeAgo(item.updated_at)}
+            </span>
+          )}
         </div>
       </button>
     );

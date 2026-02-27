@@ -6,10 +6,10 @@ import { cn } from "@/lib/utils";
 import type { ItemStatus } from "@/types";
 
 const statuses: { value: ItemStatus; label: string }[] = [
-  { value: "inbox", label: "Inbox" },
-  { value: "todo", label: "Todo" },
-  { value: "in_progress", label: "In Progress" },
-  { value: "done", label: "Done" },
+  { value: "inbox", label: "메모" },
+  { value: "todo", label: "할 일" },
+  { value: "in_progress", label: "진행 중" },
+  { value: "done", label: "완료" },
 ];
 
 interface Props {

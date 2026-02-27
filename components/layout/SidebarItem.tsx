@@ -39,65 +39,59 @@ export function SidebarItem({
   );
 }
 
-/** 뷰별 커스텀 SVG 아이콘 (16x16) — Linear 스타일 */
 function ViewIcon({ viewType, active }: { viewType: ViewType; active: boolean }) {
-  const accent = active ? "#5E6AD2" : undefined;
+  const color = active ? "var(--color-accent)" : undefined;
 
   switch (viewType) {
+    // Inbox — 십자 조준선 (작게)
     case "inbox":
-      // 점선 원 — 미분류
       return (
         <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-          <circle
-            cx="8" cy="8" r="6"
-            fill="none"
-            stroke={accent || "#8A8A8A"}
-            strokeWidth="1.5"
-            strokeDasharray="3 2"
-          />
+          <circle cx="8" cy="8" r="2" fill="none"
+            stroke={color || "var(--color-status-inbox)"} strokeWidth="1" />
+          <line x1="8" y1="2" x2="8" y2="5"
+            stroke={color || "var(--color-status-inbox)"} strokeWidth="1" />
+          <line x1="8" y1="11" x2="8" y2="14"
+            stroke={color || "var(--color-status-inbox)"} strokeWidth="1" />
+          <line x1="2" y1="8" x2="5" y2="8"
+            stroke={color || "var(--color-status-inbox)"} strokeWidth="1" />
+          <line x1="11" y1="8" x2="14" y2="8"
+            stroke={color || "var(--color-status-inbox)"} strokeWidth="1" />
         </svg>
       );
+
+    // Active — 점 + 확산 링
     case "active":
-      // 반원 채움 — 진행 중
       return (
         <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-          <circle
-            cx="8" cy="8" r="6"
-            fill="none"
-            stroke={accent || "#F2C94C"}
-            strokeWidth="1.5"
-          />
-          <path
-            d="M8 2a6 6 0 0 1 0 12"
-            fill={accent || "#F2C94C"}
-          />
+          <circle cx="8" cy="8" r="5.5" fill="none"
+            stroke={color || "var(--color-status-in-progress)"} strokeWidth="1" opacity="0.35" />
+          <circle cx="8" cy="8" r="2.5"
+            fill={color || "var(--color-status-in-progress)"} />
         </svg>
       );
+
+    // All — 3개 점 (다수의 좌표)
     case "all":
-      // 이중 원 — 전체
       return (
         <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-          <circle
-            cx="8" cy="8" r="6"
-            fill="none"
-            stroke={accent || "#E8E8E8"}
-            strokeWidth="1.5"
-          />
-          <circle
-            cx="8" cy="8" r="3"
-            fill={accent || "#E8E8E8"}
-          />
+          <circle cx="5" cy="8" r="1.8"
+            fill={color || "var(--color-text-secondary)"} />
+          <circle cx="8" cy="4.5" r="1.8"
+            fill={color || "var(--color-text-secondary)"} opacity="0.6" />
+          <circle cx="11" cy="8" r="1.8"
+            fill={color || "var(--color-text-secondary)"} opacity="0.35" />
         </svg>
       );
+
+    // Done — 체크
     case "done":
-      // 채워진 원 + 체크 — 완료
       return (
         <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
-          <circle cx="8" cy="8" r="6" fill={accent || "#5E6AD2"} />
           <path
-            d="M5 8L7 10L11 6"
+            d="M4 8L7 11L12 5"
             fill="none"
-            stroke="white"
+            stroke={color || "var(--color-status-done)"}
             strokeWidth="1.5"
             strokeLinecap="round"
             strokeLinejoin="round"

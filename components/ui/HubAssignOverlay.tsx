@@ -41,7 +41,7 @@ export function HubAssignOverlay() {
   // Options: "None" + filtered hubs
   const options = useMemo(() => {
     const result: { id: string | null; label: string; color?: string }[] = [
-      { id: null, label: "No project" },
+      { id: null, label: "프로젝트 해제" },
     ];
     for (const hub of filteredHubs) {
       result.push({ id: hub.id, label: hub.name, color: getHubColorHex(hub.color) });
@@ -98,7 +98,7 @@ export function HubAssignOverlay() {
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
-            placeholder="Search projects..."
+            placeholder="프로젝트 검색..."
             className="flex-1 bg-transparent text-[13px] leading-[20px] text-text-primary placeholder:text-text-tertiary outline-none"
           />
           <kbd className="text-[11px] leading-[16px] text-text-tertiary bg-bg-elevated px-1.5 py-0.5 rounded border border-border-subtle">
@@ -110,7 +110,7 @@ export function HubAssignOverlay() {
         <div className="max-h-60 overflow-y-auto py-1">
           {options.length === 0 ? (
             <div className="px-4 py-4 text-center text-text-tertiary text-[13px] leading-[20px]">
-              No projects found
+              프로젝트를 찾을 수 없습니다
             </div>
           ) : (
             options.map((opt, idx) => (

@@ -92,7 +92,7 @@ export function DetailPanel() {
         <button
           onClick={handleDelete}
           className="text-text-tertiary hover:text-priority-urgent transition-colors"
-          title="Delete item"
+          title="삭제"
         >
           <Trash2 size={16} />
         </button>
@@ -133,21 +133,21 @@ export function DetailPanel() {
 
         {/* Properties */}
         <div className="space-y-3 mb-6">
-          <PropertyRow label="Status">
+          <PropertyRow label="상태">
             <StatusDropdown
               value={item.status}
               onChange={handleStatusChange}
             />
           </PropertyRow>
 
-          <PropertyRow label="Priority">
+          <PropertyRow label="중요도">
             <PriorityDropdown
               value={item.priority}
               onChange={handlePriorityChange}
             />
           </PropertyRow>
 
-          <PropertyRow label="Project">
+          <PropertyRow label="프로젝트">
             <HubDropdown
               value={item.hub_id}
               onChange={handleHubChange}
@@ -155,7 +155,7 @@ export function DetailPanel() {
           </PropertyRow>
 
           {item.tags.length > 0 && (
-            <PropertyRow label="Tags">
+            <PropertyRow label="태그">
               <div className="flex gap-1.5 flex-wrap">
                 {item.tags.map((tag) => (
                   <span
@@ -184,8 +184,8 @@ export function DetailPanel() {
 
       {/* Footer */}
       <div className="px-6 py-3 border-t border-border-subtle text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary space-y-1">
-        <div>Created {timeAgo(item.created_at)}</div>
-        <div>Updated {timeAgo(item.updated_at)}</div>
+        <div>생성 {timeAgo(item.created_at)}</div>
+        <div>수정 {timeAgo(item.updated_at)}</div>
       </div>
     </aside>
   );

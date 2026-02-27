@@ -7,10 +7,10 @@ import { HubSection } from "./HubSection";
 type SidebarView = "inbox" | "active" | "all" | "done";
 
 const views: { id: SidebarView; label: string }[] = [
-  { id: "inbox", label: "Inbox" },
-  { id: "active", label: "Active" },
-  { id: "all", label: "All" },
-  { id: "done", label: "Done" },
+  { id: "inbox", label: "메모" },
+  { id: "active", label: "진행" },
+  { id: "all", label: "전체" },
+  { id: "done", label: "완료" },
 ];
 
 export function Sidebar() {
@@ -22,7 +22,7 @@ export function Sidebar() {
       {/* Header */}
       <div className="h-12 flex items-center justify-between px-3">
         <span className="text-[14px] leading-[20px] tracking-[-0.006em] font-semibold text-text-primary">
-          ◆ Plot
+          <span className="text-accent">✦</span> Plot
         </span>
         <button
           onClick={() => toggleCommandBar(true)}

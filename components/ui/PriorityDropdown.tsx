@@ -5,11 +5,11 @@ import { cn } from "@/lib/utils";
 import type { ItemPriority } from "@/types";
 
 const priorities: { value: ItemPriority; label: string; color: string }[] = [
-  { value: "none", label: "None", color: "text-text-tertiary" },
-  { value: "low", label: "Low", color: "text-priority-low" },
-  { value: "medium", label: "Medium", color: "text-priority-medium" },
-  { value: "high", label: "High", color: "text-priority-high" },
-  { value: "urgent", label: "Urgent", color: "text-priority-urgent" },
+  { value: "none", label: "없음", color: "text-text-tertiary" },
+  { value: "low", label: "낮음", color: "text-priority-low" },
+  { value: "medium", label: "보통", color: "text-priority-medium" },
+  { value: "high", label: "높음", color: "text-priority-high" },
+  { value: "urgent", label: "긴급", color: "text-priority-urgent" },
 ];
 
 interface Props {

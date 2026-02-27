@@ -135,24 +135,24 @@ export function ItemList() {
 
 const emptyMessages: Record<ViewType, { title: string; desc: string }> = {
   inbox: {
-    title: "Inbox is empty",
-    desc: "Press C or \u2318K to create a new item",
+    title: "아직 메모가 없습니다",
+    desc: "⌘K를 눌러 새 항목을 만들어보세요",
   },
   active: {
-    title: "No active items",
-    desc: "Move items to Todo or In Progress to see them here",
+    title: "진행 중인 항목이 없습니다",
+    desc: "메모에서 항목을 옮겨보세요",
   },
   all: {
-    title: "No items yet",
-    desc: "Press C to get started",
+    title: "아직 항목이 없습니다",
+    desc: "⌘K를 눌러 시작하세요",
   },
   done: {
-    title: "Nothing completed yet",
-    desc: "Mark items as done with the status dropdown or press 4",
+    title: "완료된 항목이 없습니다",
+    desc: "항목을 완료하면 여기에 표시됩니다",
   },
   hub: {
-    title: "No items yet",
-    desc: "Press C to add one",
+    title: "이 프로젝트에 항목이 없습니다",
+    desc: "항목을 프로젝트에 배정해보세요",
   },
 };
 
@@ -161,8 +161,19 @@ function EmptyState({ view }: { view: ViewType }) {
   return (
     <div className="flex flex-col items-center justify-center h-full gap-3">
       <svg width="48" height="48" viewBox="0 0 48 48" className="text-text-disabled">
-        <circle cx="24" cy="24" r="20" fill="none" stroke="currentColor" strokeWidth="1.5" strokeDasharray="4 3" />
-        <path d="M18 24h12M24 18v12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" opacity="0.5" />
+        {/* 십자선 */}
+        <line x1="24" y1="8" x2="24" y2="18"
+          stroke="currentColor" strokeWidth="1" opacity="0.4" />
+        <line x1="24" y1="30" x2="24" y2="40"
+          stroke="currentColor" strokeWidth="1" opacity="0.4" />
+        <line x1="8" y1="24" x2="18" y2="24"
+          stroke="currentColor" strokeWidth="1" opacity="0.4" />
+        <line x1="30" y1="24" x2="40" y2="24"
+          stroke="currentColor" strokeWidth="1" opacity="0.4" />
+        {/* 중심 점선 원 */}
+        <circle cx="24" cy="24" r="6"
+          fill="none" stroke="currentColor" strokeWidth="1"
+          strokeDasharray="3 3" opacity="0.3" />
       </svg>
       <div className="text-center">
         <p className="text-text-secondary text-[14px] leading-[20px] font-medium">{msg.title}</p>
