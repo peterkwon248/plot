@@ -1,0 +1,96 @@
+@import "tailwindcss";
+@import "pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css";
+
+/* ─── Custom Theme ─── */
+@theme {
+  --color-bg-primary: #0D0D0D;
+  --color-bg-secondary: #141414;
+  --color-bg-surface: #1A1A1A;
+  --color-bg-elevated: #222222;
+  --color-border-default: #2A2A2A;
+  --color-border-subtle: #1F1F1F;
+  --color-border-focus: #5E6AD2;
+  --color-text-primary: #E8E8E8;
+  --color-text-secondary: #8A8A8A;
+  --color-text-tertiary: #555555;
+  --color-text-disabled: #3A3A3A;
+  --color-accent: #5E6AD2;
+  --color-accent-hover: #6E7AE2;
+  --color-accent-muted: rgba(94, 106, 210, 0.15);
+  --color-status-inbox: #8A8A8A;
+  --color-status-todo: #E8E8E8;
+  --color-status-in-progress: #F2C94C;
+  --color-status-done: #5E6AD2;
+  --color-priority-urgent: #EB5757;
+  --color-priority-high: #F2994A;
+  --color-priority-medium: #F2C94C;
+  --color-priority-low: #8A8A8A;
+  --font-sans: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --spacing-sidebar: 220px;
+  --spacing-detail: 420px;
+}
+
+/* ─── Base ─── */
+body {
+  font-family: "Pretendard Variable", Pretendard, -apple-system,
+    BlinkMacSystemFont, sans-serif;
+  background: #0D0D0D;
+  color: #E8E8E8;
+  font-size: 13px;
+  line-height: 20px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Scrollbar (Linear style) ─── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #2A2A2A;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3A3A3A;
+}
+
+/* ─── Selection ─── */
+::selection {
+  background: rgba(94, 106, 210, 0.3);
+  color: #E8E8E8;
+}
+
+/* ─── Focus ─── */
+:focus-visible {
+  outline: 2px solid #5E6AD2;
+  outline-offset: -2px;
+  border-radius: 4px;
+}
+
+/* ─── Animations ─── */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes commandBarIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
