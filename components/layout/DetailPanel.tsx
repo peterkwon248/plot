@@ -8,27 +8,33 @@ import { PriorityDropdown } from "@/components/ui/PriorityDropdown";
 import { HubDropdown } from "@/components/ui/HubDropdown";
 import { TipTapEditor } from "@/components/editor/TipTapEditor";
 import { timeAgo } from "@/lib/utils";
-import { X, Trash2 } from "lucide-react";
 import type { ItemStatus, ItemPriority } from "@/types";
 
+const viewLabels: Record<string, string> = {
+  inbox: "메모",
+  active: "진행",
+  all: "전체",
+  done: "완료",
+  hub: "프로젝트",
+};
+
 export function DetailPanel() {
-  const { selectedItemId, isDetailOpen, toggleDetail } = useViewStore();
+  const { selectedItemId, isDetailOpen, toggleDetail, currentView } = useViewStore();
   const { items, updateItem, softDeleteItem } = useItemStore();
 
   const item = items.find((i) => i.id === selectedItemId);
+  const currentIndex = items.findIndex((i) => i.id === selectedItemId);
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
 
-  // 아이템 변경 시 타이틀 초기화
   const itemId = item?.id;
   const itemTitle = item?.title;
   useEffect(() => {
     if (itemTitle) setTitleValue(itemTitle);
   }, [itemId, itemTitle]);
 
-  // 타이틀 편집 모드 진입 시 포커스
   useEffect(() => {
     if (editingTitle) titleRef.current?.focus();
   }, [editingTitle]);
@@ -78,116 +84,168 @@ export function DetailPanel() {
     toggleDetail(false);
   }, [item, softDeleteItem, toggleDetail]);
 
+  const goToPrev = useCallback(() => {
+    if (currentIndex > 0) {
+      const { selectItem } = useViewStore.getState();
+      selectItem(items[currentIndex - 1].id);
+    }
+  }, [currentIndex, items]);
+
+  const goToNext = useCallback(() => {
+    if (currentIndex < items.length - 1) {
+      const { selectItem } = useViewStore.getState();
+      selectItem(items[currentIndex + 1].id);
+    }
+  }, [currentIndex, items]);
+
   if (!isDetailOpen || !item) return null;
 
   return (
-    <aside
-      className="w-detail h-full bg-bg-surface border-l border-border-default flex flex-col overflow-hidden"
-      style={{
-        animation: "slideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
-      }}
-    >
-      {/* Header */}
-      <div className="h-12 flex items-center justify-between px-4 border-b border-border-subtle">
-        <button
-          onClick={handleDelete}
-          className="text-text-tertiary hover:text-priority-urgent transition-colors"
-          title="삭제"
-        >
-          <Trash2 size={16} />
-        </button>
-        <button
-          onClick={() => toggleDetail(false)}
-          className="text-text-tertiary hover:text-text-primary transition-colors"
-        >
-          <X size={18} />
-        </button>
-      </div>
-
-      {/* Content */}
-      <div className="flex-1 overflow-y-auto p-6">
-        {/* Title — 클릭하면 편집 모드 */}
-        {editingTitle ? (
-          <input
-            ref={titleRef}
-            value={titleValue}
-            onChange={(e) => setTitleValue(e.target.value)}
-            onBlur={saveTitle}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") saveTitle();
-              if (e.key === "Escape") {
-                setTitleValue(item.title);
-                setEditingTitle(false);
-              }
-            }}
-            className="w-full text-[20px] leading-[28px] tracking-[-0.017em] font-semibold mb-6 bg-transparent outline-none border-b border-accent pb-1"
-          />
-        ) : (
-          <h2
-            onClick={() => setEditingTitle(true)}
-            className="text-[20px] leading-[28px] tracking-[-0.017em] font-semibold mb-6 cursor-text hover:border-b hover:border-border-default hover:pb-1 transition-all"
+    <div className="absolute inset-0 z-30 bg-bg-primary flex flex-col">
+      {/* Top Bar */}
+      <div className="h-12 shrink-0 flex items-center justify-between px-6 border-b border-border-default">
+        {/* Left: Back + Breadcrumb */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => toggleDetail(false)}
+            className="text-text-secondary hover:text-text-primary transition-colors"
           >
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <line x1="12" y1="8" x2="4" y2="8" />
+              <polyline points="8,4 4,8 8,12" />
+            </svg>
+          </button>
+          <span className="text-[13px] leading-[20px] text-text-secondary">
+            {viewLabels[currentView]}
+          </span>
+          <span className="text-[13px] leading-[20px] text-text-tertiary">&gt;</span>
+          <span className="text-[13px] leading-[20px] text-text-primary font-medium truncate max-w-[300px]">
             {item.title}
-          </h2>
-        )}
-
-        {/* Properties */}
-        <div className="space-y-3 mb-6">
-          <PropertyRow label="상태">
-            <StatusDropdown
-              value={item.status}
-              onChange={handleStatusChange}
-            />
-          </PropertyRow>
-
-          <PropertyRow label="중요도">
-            <PriorityDropdown
-              value={item.priority}
-              onChange={handlePriorityChange}
-            />
-          </PropertyRow>
-
-          <PropertyRow label="프로젝트">
-            <HubDropdown
-              value={item.hub_id}
-              onChange={handleHubChange}
-            />
-          </PropertyRow>
-
-          {item.tags.length > 0 && (
-            <PropertyRow label="태그">
-              <div className="flex gap-1.5 flex-wrap">
-                {item.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="text-[12px] leading-[16px] bg-bg-elevated px-2 py-0.5 rounded-md text-text-secondary"
-                  >
-                    #{tag}
-                  </span>
-                ))}
-              </div>
-            </PropertyRow>
-          )}
+          </span>
         </div>
 
-        {/* Divider */}
-        <div className="border-t border-border-subtle mb-6" />
-
-        {/* Body — TipTap Editor (key로 아이템 전환 시 강제 리마운트) */}
-        <TipTapEditor
-          key={item.id}
-          content={item.body as Record<string, unknown>}
-          onChange={handleBodyChange}
-          editable={true}
-        />
+        {/* Right: Nav + Delete */}
+        <div className="flex items-center gap-1">
+          {/* Item counter */}
+          <span className="text-[12px] leading-[16px] text-text-tertiary mr-2">
+            {currentIndex + 1}/{items.length}
+          </span>
+          {/* Prev */}
+          <button
+            onClick={goToPrev}
+            disabled={currentIndex <= 0}
+            className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="10,3 7,7 10,11" />
+            </svg>
+          </button>
+          {/* Next */}
+          <button
+            onClick={goToNext}
+            disabled={currentIndex >= items.length - 1}
+            className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="4,3 7,7 4,11" />
+            </svg>
+          </button>
+        </div>
       </div>
 
-      {/* Footer */}
-      <div className="px-6 py-3 border-t border-border-subtle text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary space-y-1">
-        <div>생성 {timeAgo(item.created_at)}</div>
-        <div>수정 {timeAgo(item.updated_at)}</div>
+      {/* Body — two column layout */}
+      <div className="flex-1 flex overflow-hidden">
+        {/* Main content — left */}
+        <div className="flex-1 overflow-y-auto px-16 py-8 max-w-3xl">
+          {/* Title */}
+          {editingTitle ? (
+            <input
+              ref={titleRef}
+              value={titleValue}
+              onChange={(e) => setTitleValue(e.target.value)}
+              onBlur={saveTitle}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") saveTitle();
+                if (e.key === "Escape") {
+                  setTitleValue(item.title);
+                  setEditingTitle(false);
+                }
+              }}
+              className="w-full text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 bg-transparent outline-none border-b border-accent pb-1 text-text-primary"
+            />
+          ) : (
+            <h1
+              onClick={() => setEditingTitle(true)}
+              className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 cursor-text hover:border-b hover:border-border-default hover:pb-1 transition-all text-text-primary"
+            >
+              {item.title}
+            </h1>
+          )}
+
+          {/* Editor */}
+          <TipTapEditor
+            key={item.id}
+            content={item.body as Record<string, unknown>}
+            onChange={handleBodyChange}
+            editable={true}
+          />
+        </div>
+
+        {/* Right sidebar — properties */}
+        <div className="w-[280px] shrink-0 border-l border-border-default overflow-y-auto p-6">
+          <div className="space-y-4">
+            <PropertyRow label="상태">
+              <StatusDropdown value={item.status} onChange={handleStatusChange} />
+            </PropertyRow>
+
+            <PropertyRow label="중요도">
+              <PriorityDropdown value={item.priority} onChange={handlePriorityChange} />
+            </PropertyRow>
+
+            <PropertyRow label="프로젝트">
+              <HubDropdown value={item.hub_id} onChange={handleHubChange} />
+            </PropertyRow>
+
+            {item.tags.length > 0 && (
+              <PropertyRow label="태그">
+                <div className="flex gap-1.5 flex-wrap">
+                  {item.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="text-[12px] leading-[16px] bg-bg-elevated px-2 py-0.5 rounded-md text-text-secondary"
+                    >
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              </PropertyRow>
+            )}
+          </div>
+
+          {/* Divider */}
+          <div className="border-t border-border-subtle my-6" />
+
+          {/* Delete */}
+          <button
+            onClick={handleDelete}
+            className="flex items-center gap-2 text-[13px] leading-[20px] text-text-tertiary hover:text-priority-urgent transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+              <polyline points="2,4 12,4" />
+              <path d="M5,4V2.5C5,2.2,5.2,2,5.5,2h3C8.8,2,9,2.2,9,2.5V4" />
+              <path d="M3,4l0.7,8.1c0,0.5,0.4,0.9,0.9,0.9h4.8c0.5,0,0.9-0.4,0.9-0.9L11,4" />
+            </svg>
+            삭제
+          </button>
+
+          {/* Timestamps */}
+          <div className="mt-6 space-y-1 text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary">
+            <div>생성 {timeAgo(item.created_at)}</div>
+            <div>수정 {timeAgo(item.updated_at)}</div>
+          </div>
+        </div>
       </div>
-    </aside>
+    </div>
   );
 }
 
@@ -199,8 +257,8 @@ function PropertyRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center">
-      <span className="w-24 text-[13px] leading-[20px] text-text-secondary shrink-0">
+    <div className="flex flex-col gap-1.5">
+      <span className="text-[12px] leading-[16px] text-text-tertiary uppercase tracking-wider">
         {label}
       </span>
       {children}

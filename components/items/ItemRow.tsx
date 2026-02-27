@@ -73,7 +73,7 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
         data-focused={isFocused || undefined}
         style={style}
         className={cn(
-          "w-full flex items-start gap-3 px-4 py-3 border-b border-border-subtle transition-colors duration-100 text-left",
+          "w-full flex items-start gap-2 px-6 py-3 border-b border-border-subtle transition-colors duration-100 text-left group/row",
           isSelected
             ? "bg-accent-muted border-l-2 border-l-accent"
             : isFocused
@@ -82,6 +82,20 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           isDone && "opacity-60"
         )}
       >
+        {/* Context menu (hover) */}
+        <div className="shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity mt-0.5">
+          <button
+            onClick={(e) => { e.stopPropagation(); }}
+            className="text-text-tertiary hover:text-text-secondary p-0.5"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+              <circle cx="3" cy="7" r="1.2" />
+              <circle cx="7" cy="7" r="1.2" />
+              <circle cx="11" cy="7" r="1.2" />
+            </svg>
+          </button>
+        </div>
+
         {/* Drag Handle */}
         {dragHandleProps && (
           <div
@@ -103,6 +117,11 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
         <div className="mt-0.5 shrink-0">
           <ItemStatusIcon status={item.status} size={16} />
         </div>
+
+        {/* Item ID */}
+        <span className="text-[11px] leading-[16px] text-text-tertiary shrink-0 font-mono mt-0.5">
+          {item.id.slice(0, 4).toUpperCase()}
+        </span>
 
         {/* Hub Color Dot */}
         {item.hub_id && currentView !== "hub" && (
