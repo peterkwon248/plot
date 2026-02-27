@@ -8,7 +8,7 @@ export type ItemPriority = "none" | "low" | "medium" | "high" | "urgent";
 export type ItemType = "auto" | "note" | "task";
 
 // ─── View ───
-export type ViewType = "inbox" | "active" | "all" | "done";
+export type ViewType = "inbox" | "active" | "all" | "done" | "hub";
 
 // ─── Core Item ───
 export interface Item {
@@ -26,6 +26,7 @@ export interface Item {
   updated_at: string;
   completed_at: string | null;
   deleted_at: string | null;
+  hub_id: string | null;
 }
 
 // ─── Create ───
@@ -36,12 +37,37 @@ export interface CreateItemInput {
   priority?: ItemPriority;
   item_type?: ItemType;
   tags?: string[];
+  hub_id?: string | null;
 }
 
 // ─── Update ───
 export type UpdateItemInput = Partial<
   Omit<Item, "id" | "user_id" | "created_at">
 >;
+
+// ─── Hub Color ───
+export type HubColor = "purple" | "blue" | "green" | "yellow" | "orange" | "red" | "pink" | "gray";
+
+// ─── Hub ───
+export interface Hub {
+  id: string;
+  user_id: string;
+  name: string;
+  description: string;
+  color: HubColor;
+  icon: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  archived_at: string | null;
+}
+
+// ─── Hub Create ───
+export interface CreateHubInput {
+  name: string;
+  color?: HubColor;
+  description?: string;
+}
 
 // ─── Inferred display type ───
 export function inferDisplayType(item: Item): "note" | "task" {

@@ -17,16 +17,24 @@ import {
 } from "@dnd-kit/sortable";
 import { useItemStore } from "@/stores/itemStore";
 import { useViewStore } from "@/stores/viewStore";
+import { useHubStore } from "@/stores/hubStore";
 import { ItemRow } from "./ItemRow";
+import { HubHeader } from "@/components/layout/HubHeader";
 import type { ViewType } from "@/types";
 
 // sort_order 기반 정렬이 가능한 뷰 (done은 완료일 기준이라 드래그 불가)
-const SORTABLE_VIEWS: ViewType[] = ["inbox", "active", "all"];
+const SORTABLE_VIEWS: ViewType[] = ["inbox", "active", "all", "hub"];
 
 export function ItemList() {
-  const { currentView, focusedIndex } = useViewStore();
-  const { getByStatus, reorderItem } = useItemStore();
-  const items = getByStatus(currentView);
+  const { currentView, focusedIndex, activeHubId } = useViewStore();
+  const { getByStatus, getByHub, reorderItem } = useItemStore();
+  const { getHubById } = useHubStore();
+
+  const items = currentView === "hub" && activeHubId
+    ? getByHub(activeHubId)
+    : getByStatus(currentView as Exclude<ViewType, "hub">);
+
+  const activeHub = activeHubId ? getHubById(activeHubId) : null;
   const listRef = useRef<HTMLDivElement>(null);
   const isSortable = SORTABLE_VIEWS.includes(currentView);
 
@@ -35,6 +43,7 @@ export function ItemList() {
     active: "Active",
     all: "All Items",
     done: "Done",
+    hub: "Project",
   };
 
   // 포커스된 아이템을 뷰포트에 스크롤
@@ -75,11 +84,15 @@ export function ItemList() {
   return (
     <div className="flex-1 flex flex-col overflow-hidden">
       {/* View Header */}
-      <div className="h-12 flex items-center px-4 border-b border-border-default">
-        <h1 className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold">
-          {viewLabels[currentView]}
-        </h1>
-      </div>
+      {currentView === "hub" && activeHub ? (
+        <HubHeader hub={activeHub} />
+      ) : (
+        <div className="h-12 flex items-center px-4 border-b border-border-default">
+          <h1 className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold">
+            {viewLabels[currentView]}
+          </h1>
+        </div>
+      )}
 
       {/* List */}
       <div ref={listRef} className="flex-1 overflow-y-auto">
@@ -136,6 +149,10 @@ const emptyMessages: Record<ViewType, { title: string; desc: string }> = {
   done: {
     title: "Nothing completed yet",
     desc: "Mark items as done with the status dropdown or press 4",
+  },
+  hub: {
+    title: "No items yet",
+    desc: "Press C to add one",
   },
 };
 

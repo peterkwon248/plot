@@ -5,6 +5,7 @@ import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { StatusDropdown } from "@/components/ui/StatusDropdown";
 import { PriorityDropdown } from "@/components/ui/PriorityDropdown";
+import { HubDropdown } from "@/components/ui/HubDropdown";
 import { TipTapEditor } from "@/components/editor/TipTapEditor";
 import { timeAgo } from "@/lib/utils";
 import { X, Trash2 } from "lucide-react";
@@ -53,6 +54,13 @@ export function DetailPanel() {
   const handlePriorityChange = useCallback(
     (priority: ItemPriority) => {
       if (item) updateItem(item.id, { priority });
+    },
+    [item, updateItem]
+  );
+
+  const handleHubChange = useCallback(
+    (hubId: string | null) => {
+      if (item) updateItem(item.id, { hub_id: hubId });
     },
     [item, updateItem]
   );
@@ -136,6 +144,13 @@ export function DetailPanel() {
             <PriorityDropdown
               value={item.priority}
               onChange={handlePriorityChange}
+            />
+          </PropertyRow>
+
+          <PropertyRow label="Project">
+            <HubDropdown
+              value={item.hub_id}
+              onChange={handleHubChange}
             />
           </PropertyRow>
 

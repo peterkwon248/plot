@@ -30,6 +30,15 @@
   --font-mono: "JetBrains Mono", "Fira Code", monospace;
   --spacing-sidebar: 220px;
   --spacing-detail: 420px;
+  /* Hub colors */
+  --color-hub-purple: #8B5CF6;
+  --color-hub-blue: #3B82F6;
+  --color-hub-green: #10B981;
+  --color-hub-yellow: #F59E0B;
+  --color-hub-orange: #F97316;
+  --color-hub-red: #EF4444;
+  --color-hub-pink: #EC4899;
+  --color-hub-gray: #6B7280;
 }
 
 /* ─── Base ─── */
@@ -92,5 +101,14 @@ body {
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
