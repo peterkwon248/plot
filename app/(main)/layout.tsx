@@ -5,6 +5,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 import { DetailPanel } from "@/components/layout/DetailPanel";
 import { CommandBar } from "@/components/command-bar/CommandBar";
 import { HubAssignOverlay } from "@/components/ui/HubAssignOverlay";
+import { OnboardingGuide } from "@/components/ui/OnboardingGuide";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
@@ -38,6 +39,7 @@ export default function MainLayout({
       </main>
       {isCommandBarOpen && <CommandBar />}
       {isHubAssignOpen && <HubAssignOverlay />}
+      <OnboardingGuide />
     </div>
   );
 }

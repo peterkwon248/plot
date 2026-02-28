@@ -3,12 +3,14 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
+import { useCustomViewStore } from "@/stores/customViewStore";
 import { SidebarItem } from "./SidebarItem";
 import { HubSection } from "./HubSection";
+import { CustomViewEditor } from "@/components/views/CustomViewEditor";
 
 type SidebarView = "inbox" | "active" | "all" | "done";
 
-const views: { id: SidebarView; label: string }[] = [
+const NAV_VIEWS: { id: SidebarView; label: string }[] = [
   { id: "inbox", label: "메모" },
   { id: "active", label: "진행" },
   { id: "all", label: "전체" },
@@ -20,8 +22,10 @@ const MIN_WIDTH = 180;
 const MAX_WIDTH = 320;
 
 export function Sidebar() {
-  const { currentView, setView, toggleCommandBar } = useViewStore();
+  const { currentView, setView, toggleCommandBar, setCustomView } = useViewStore();
   const { getByStatus } = useItemStore();
+  const { views: customViews } = useCustomViewStore();
+  const [showViewEditor, setShowViewEditor] = useState(false);
 
   const [width, setWidth] = useState(() => {
     if (typeof window !== "undefined") {
@@ -99,7 +103,7 @@ export function Sidebar() {
 
       {/* Views */}
       <nav className="px-2 py-1">
-        {views.map((view) => (
+        {NAV_VIEWS.map((view) => (
           <SidebarItem
             key={view.id}
             label={view.label}
@@ -113,6 +117,37 @@ export function Sidebar() {
 
       {/* Hub Section */}
       <HubSection />
+
+      {/* Views Section */}
+      <div className="mt-1 px-2">
+        <div className="flex items-center justify-between px-0.5 py-1.5">
+          <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
+            뷰
+          </span>
+          <button
+            onClick={() => setShowViewEditor(true)}
+            className="text-text-tertiary hover:text-text-secondary transition-colors"
+          >
+            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+              <line x1="7" y1="3" x2="7" y2="11" />
+              <line x1="3" y1="7" x2="11" y2="7" />
+            </svg>
+          </button>
+        </div>
+        {customViews.map(view => (
+          <button
+            key={view.id}
+            onClick={() => setCustomView(view.id)}
+            className="w-full h-7 flex items-center gap-2 px-2.5 text-[13px] leading-[20px] text-text-secondary hover:bg-bg-surface transition-colors rounded-md"
+          >
+            <span className="text-[12px] shrink-0">{view.icon}</span>
+            <span className="truncate">{view.name}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* View Editor Modal */}
+      {showViewEditor && <CustomViewEditor onClose={() => setShowViewEditor(false)} />}
 
       {/* Resize Handle */}
       <div

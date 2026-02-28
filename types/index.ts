@@ -75,3 +75,51 @@ export function inferDisplayType(item: Item): "note" | "task" {
   if (!item.body_plain || item.body_plain.trim().length < 50) return "task";
   return "note";
 }
+
+// ─── Chain (Node Link) ───
+export type ChainRelation = "related" | "parent" | "child" | "blocks" | "blocked_by";
+
+export interface Chain {
+  id: string;
+  source_id: string;   // 링크를 생성한 쪽
+  target_id: string;   // 연결된 대상
+  relation: ChainRelation;
+  created_at: string;
+}
+
+// ─── Activity Log ───
+export type ActivityAction =
+  | "created"
+  | "status_changed"
+  | "priority_changed"
+  | "hub_assigned"
+  | "hub_removed"
+  | "title_changed"
+  | "chain_added"
+  | "chain_removed";
+
+export interface ActivityEntry {
+  id: string;
+  item_id: string;
+  action: ActivityAction;
+  from_value?: string;
+  to_value?: string;
+  created_at: string;
+}
+
+// ─── Custom View (Saved Filter) ───
+export interface CustomViewFilter {
+  status?: ItemStatus[];
+  priority?: ItemPriority[];
+  hub_ids?: string[];
+}
+
+export interface CustomView {
+  id: string;
+  name: string;
+  icon: string;     // emoji or symbol
+  filter: CustomViewFilter;
+  sort_by: "manual" | "created" | "updated" | "priority" | "title";
+  sort_dir: "asc" | "desc";
+  created_at: string;
+}

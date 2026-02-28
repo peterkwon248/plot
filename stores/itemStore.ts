@@ -65,10 +65,19 @@ export const useItemStore = create<ItemState>()(
         };
 
         set((state) => ({ items: [newItem, ...state.items] }));
+
+        // Track creation
+        try {
+          const { useActivityStore } = require("@/stores/activityStore");
+          useActivityStore.getState().addEntry(newItem.id, "created");
+        } catch {}
+
         return newItem;
       },
 
-      updateItem: (id, updates) =>
+      updateItem: (id, updates) => {
+        const oldItem = get().items.find(i => i.id === id);
+
         set((state) => ({
           items: state.items.map((item) => {
             if (item.id !== id) return item;
@@ -91,7 +100,33 @@ export const useItemStore = create<ItemState>()(
             }
             return updated;
           }),
-        })),
+        }));
+
+        // Track activity (lazy import to avoid circular deps)
+        if (oldItem) {
+          try {
+            const { useActivityStore } = require("@/stores/activityStore");
+            const addEntry = useActivityStore.getState().addEntry;
+
+            if (updates.status && updates.status !== oldItem.status) {
+              addEntry(id, "status_changed", oldItem.status, updates.status);
+            }
+            if (updates.priority && updates.priority !== oldItem.priority) {
+              addEntry(id, "priority_changed", oldItem.priority, updates.priority);
+            }
+            if (updates.hub_id !== undefined && updates.hub_id !== oldItem.hub_id) {
+              if (updates.hub_id) {
+                addEntry(id, "hub_assigned", oldItem.hub_id || undefined, updates.hub_id);
+              } else {
+                addEntry(id, "hub_removed", oldItem.hub_id || undefined, undefined);
+              }
+            }
+            if (updates.title && updates.title !== oldItem.title) {
+              addEntry(id, "title_changed", oldItem.title, updates.title);
+            }
+          } catch {}
+        }
+      },
 
       removeItem: (id) =>
         set((state) => ({

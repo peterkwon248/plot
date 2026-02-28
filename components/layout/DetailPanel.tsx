@@ -7,6 +7,8 @@ import { StatusDropdown } from "@/components/ui/StatusDropdown";
 import { PriorityDropdown } from "@/components/ui/PriorityDropdown";
 import { HubDropdown } from "@/components/ui/HubDropdown";
 import { TipTapEditor } from "@/components/editor/TipTapEditor";
+import { ChainSection } from "@/components/detail/ChainSection";
+import { ActivityTimeline } from "@/components/detail/ActivityTimeline";
 import { timeAgo } from "@/lib/utils";
 import type { ItemStatus, ItemPriority } from "@/types";
 
@@ -197,6 +199,9 @@ export function DetailPanel() {
             onChange={handleBodyChange}
             editable={true}
           />
+
+          {/* Activity Timeline */}
+          <ActivityTimeline itemId={item.id} />
         </div>
 
         {/* Right sidebar — properties */}
@@ -234,6 +239,9 @@ export function DetailPanel() {
               </PropertyRow>
             )}
           </div>
+
+          {/* Chain Section */}
+          <ChainSection itemId={item.id} />
 
           {/* Divider */}
           <div className="border-t border-border-subtle my-6" />

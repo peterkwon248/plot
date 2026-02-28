@@ -14,6 +14,7 @@ import type { ItemStatus, ViewType } from "@/types";
  * Esc    — 디테일 패널 닫기 / 커맨드 바 닫기
  * c      — 새 아이템 생성 (커맨드 바)
  * ⌘K     — 커맨드 바 토글
+ * ⌘L     — 체인 링크 피커 열기
  * 1-4    — 선택된 아이템 상태 변경
  * x      — 선택된 아이템 삭제
  */
@@ -26,9 +27,11 @@ export function useKeyboardNavigation() {
     isDetailOpen,
     isCommandBarOpen,
     isHubAssignOpen,
+    isChainPickerOpen,
     toggleDetail,
     toggleCommandBar,
     toggleHubAssign,
+    toggleChainPicker,
     currentView,
     activeHubId,
   } = useViewStore();
@@ -105,6 +108,15 @@ export function useKeyboardNavigation() {
         if (e.key === "Escape") {
           e.preventDefault();
           toggleHubAssign(false);
+        }
+        return;
+      }
+
+      // Chain picker open: handle Escape only
+      if (isChainPickerOpen) {
+        if (e.key === "Escape") {
+          e.preventDefault();
+          toggleChainPicker(false);
         }
         return;
       }
@@ -270,6 +282,17 @@ export function useKeyboardNavigation() {
           }
           break;
         }
+
+        // ─── Chain Link (Ctrl/Meta + l) ───
+        case "l": {
+          if (e.metaKey || e.ctrlKey) {
+            e.preventDefault();
+            if (selectedItemId || items[focusedIndex]) {
+              toggleChainPicker(true);
+            }
+          }
+          break;
+        }
       }
     },
     [
@@ -280,9 +303,11 @@ export function useKeyboardNavigation() {
       isDetailOpen,
       isCommandBarOpen,
       isHubAssignOpen,
+      isChainPickerOpen,
       toggleDetail,
       toggleCommandBar,
       toggleHubAssign,
+      toggleChainPicker,
       currentView,
       activeHubId,
       getByStatus,

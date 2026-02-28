@@ -18,6 +18,7 @@ import {
 import { useItemStore } from "@/stores/itemStore";
 import { useViewStore } from "@/stores/viewStore";
 import { useHubStore } from "@/stores/hubStore";
+import { useCustomViewStore } from "@/stores/customViewStore";
 import { ItemRow } from "./ItemRow";
 import { ItemStatusIcon } from "./ItemStatusIcon";
 import { HubHeader } from "@/components/layout/HubHeader";
@@ -78,9 +79,12 @@ const viewTabs: Record<ViewType, { id: TabFilter; label: string }[]> = {
 };
 
 export function ItemList() {
-  const { currentView, focusedIndex, activeHubId } = useViewStore();
-  const { getByStatus, getByHub, reorderItem } = useItemStore();
+  const { currentView, focusedIndex, activeHubId, activeCustomViewId } = useViewStore();
+  const { getByStatus, getByHub, reorderItem, items: allItems } = useItemStore();
   const { getHubById } = useHubStore();
+  const customView = useCustomViewStore(state =>
+    activeCustomViewId ? state.getView(activeCustomViewId) : undefined
+  );
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
@@ -95,11 +99,53 @@ export function ItemList() {
   const showGrouped = GROUPED_VIEWS.includes(currentView);
   const showTabs = TAB_VIEWS.includes(currentView);
 
+  // Apply custom view filtering and sorting
+  const customFilteredItems = useMemo(() => {
+    if (!customView) return items;
+
+    let result = allItems.filter(i => !i.deleted_at);
+
+    if (customView.filter.status?.length) {
+      result = result.filter(i => customView.filter.status!.includes(i.status));
+    }
+    if (customView.filter.priority?.length) {
+      result = result.filter(i => customView.filter.priority!.includes(i.priority));
+    }
+    if (customView.filter.hub_ids?.length) {
+      result = result.filter(i => i.hub_id && customView.filter.hub_ids!.includes(i.hub_id));
+    }
+
+    // Sort
+    switch (customView.sort_by) {
+      case "created":
+        result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+        break;
+      case "updated":
+        result.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+        break;
+      case "priority": {
+        const order = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
+        result.sort((a, b) => order[a.priority] - order[b.priority]);
+        break;
+      }
+      case "title":
+        result.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      default:
+        result.sort((a, b) => a.sort_order - b.sort_order);
+    }
+
+    if (customView.sort_dir === "asc") result.reverse();
+
+    return result;
+  }, [customView, allItems, items]);
+
   // Filter items by active tab
   const filteredItems = useMemo(() => {
-    if (!showTabs || activeTab === "all") return items;
-    return items.filter((item) => item.status === activeTab);
-  }, [items, activeTab, showTabs]);
+    const sourceItems = customView ? customFilteredItems : items;
+    if (!showTabs || activeTab === "all") return sourceItems;
+    return sourceItems.filter((item) => item.status === activeTab);
+  }, [customView, customFilteredItems, items, activeTab, showTabs]);
 
   // Group items by status
   const groupedItems = useMemo(() => {
@@ -185,6 +231,11 @@ export function ItemList() {
         <div className="h-11 flex items-center justify-between px-4">
           {currentView === "hub" && activeHub ? (
             <HubHeader hub={activeHub} />
+          ) : customView ? (
+            <h1 className="text-[14px] leading-[20px] font-semibold text-text-primary flex items-center gap-2">
+              <span className="text-[13px]">{customView.icon}</span>
+              {customView.name}
+            </h1>
           ) : (
             <h1 className="text-[14px] leading-[20px] font-semibold text-text-primary">
               {viewLabels[currentView]}
