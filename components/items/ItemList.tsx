@@ -20,8 +20,12 @@ import { useViewStore } from "@/stores/viewStore";
 import { useHubStore } from "@/stores/hubStore";
 import { useCustomViewStore } from "@/stores/customViewStore";
 import { ItemRow } from "./ItemRow";
+import { BoardView } from "./BoardView";
 import { ItemStatusIcon } from "./ItemStatusIcon";
 import { HubHeader } from "@/components/layout/HubHeader";
+import { FilterDropdown } from "@/components/ui/FilterDropdown";
+import { DisplayDropdown } from "@/components/ui/DisplayDropdown";
+import { useDisplayStore } from "@/stores/displayStore";
 import type { ViewType, ItemStatus, Item } from "@/types";
 
 const SORTABLE_VIEWS: ViewType[] = ["inbox", "active", "all", "hub"];
@@ -79,12 +83,13 @@ const viewTabs: Record<ViewType, { id: TabFilter; label: string }[]> = {
 };
 
 export function ItemList() {
-  const { currentView, focusedIndex, activeHubId, activeCustomViewId } = useViewStore();
+  const { currentView, focusedIndex, activeHubId, activeCustomViewId, activeFilter, isFilterActive } = useViewStore();
   const { getByStatus, getByHub, reorderItem, items: allItems } = useItemStore();
   const { getHubById } = useHubStore();
   const customView = useCustomViewStore(state =>
     activeCustomViewId ? state.getView(activeCustomViewId) : undefined
   );
+  const { settings: displaySettings } = useDisplayStore();
 
   const [collapsedGroups, setCollapsedGroups] = useState<Set<string>>(new Set());
   const [activeTab, setActiveTab] = useState<TabFilter>("all");
@@ -96,7 +101,7 @@ export function ItemList() {
   const activeHub = activeHubId ? getHubById(activeHubId) : null;
   const listRef = useRef<HTMLDivElement>(null);
   const isSortable = SORTABLE_VIEWS.includes(currentView);
-  const showGrouped = GROUPED_VIEWS.includes(currentView);
+
   const showTabs = TAB_VIEWS.includes(currentView);
 
   // Apply custom view filtering and sorting
@@ -140,25 +145,92 @@ export function ItemList() {
     return result;
   }, [customView, allItems, items]);
 
+  // Apply active filters from FilterDropdown
+  const filterAppliedItems = useMemo(() => {
+    const source = customView ? customFilteredItems : items;
+    if (!isFilterActive()) return source;
+    let result = source;
+    if (activeFilter.status?.length) {
+      result = result.filter(i => activeFilter.status!.includes(i.status));
+    }
+    if (activeFilter.priority?.length) {
+      result = result.filter(i => activeFilter.priority!.includes(i.priority));
+    }
+    if (activeFilter.hub_ids?.length) {
+      result = result.filter(i => i.hub_id && activeFilter.hub_ids!.includes(i.hub_id));
+    }
+    if (activeFilter.tags?.length) {
+      result = result.filter(i => i.tags.some(t => activeFilter.tags!.includes(t)));
+    }
+    // Apply display sort (only when not in custom view which has its own sort)
+    if (!customView && displaySettings.sortBy !== "manual") {
+      result = [...result]; // clone to avoid mutating
+      switch (displaySettings.sortBy) {
+        case "created":
+          result.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+          break;
+        case "updated":
+          result.sort((a, b) => new Date(b.updated_at).getTime() - new Date(a.updated_at).getTime());
+          break;
+        case "priority": {
+          const order = { urgent: 0, high: 1, medium: 2, low: 3, none: 4 };
+          result.sort((a, b) => order[a.priority] - order[b.priority]);
+          break;
+        }
+        case "title":
+          result.sort((a, b) => a.title.localeCompare(b.title));
+          break;
+      }
+      if (displaySettings.sortDir === "asc") result.reverse();
+    }
+    return result;
+  }, [customView, customFilteredItems, items, activeFilter, isFilterActive, displaySettings]);
+
   // Filter items by active tab
   const filteredItems = useMemo(() => {
-    const sourceItems = customView ? customFilteredItems : items;
+    const sourceItems = filterAppliedItems;
     if (!showTabs || activeTab === "all") return sourceItems;
     return sourceItems.filter((item) => item.status === activeTab);
-  }, [customView, customFilteredItems, items, activeTab, showTabs]);
+  }, [filterAppliedItems, activeTab, showTabs]);
 
   // Group items by status
   const groupedItems = useMemo(() => {
-    if (!showGrouped || activeTab !== "all") return null;
-    const groups: Record<string, Item[]> = {};
-    for (const status of statusOrder) {
-      const group = filteredItems.filter((item) => item.status === status);
-      if (group.length > 0) {
-        groups[status] = group;
+    if (activeTab !== "all") return null;
+    const effectiveGroupBy = displaySettings.groupBy !== "none"
+      ? displaySettings.groupBy
+      : (GROUPED_VIEWS.includes(currentView) ? "status" : null);
+    if (!effectiveGroupBy) return null;
+
+    if (effectiveGroupBy === "status") {
+      const groups: Record<string, Item[]> = {};
+      for (const status of statusOrder) {
+        const group = filteredItems.filter((item) => item.status === status);
+        if (group.length > 0) groups[status] = group;
       }
+      return groups;
     }
-    return groups;
-  }, [filteredItems, showGrouped, activeTab]);
+    if (effectiveGroupBy === "priority") {
+      const priorityOrder = ["urgent", "high", "medium", "low", "none"];
+      const groups: Record<string, Item[]> = {};
+      for (const p of priorityOrder) {
+        const group = filteredItems.filter((item) => item.priority === p);
+        if (group.length > 0) groups[p] = group;
+      }
+      return groups;
+    }
+    if (effectiveGroupBy === "hub") {
+      const groups: Record<string, Item[]> = {};
+      const noHub = filteredItems.filter(i => !i.hub_id);
+      if (noHub.length > 0) groups["_none"] = noHub;
+      const hubIds = [...new Set(filteredItems.filter(i => i.hub_id).map(i => i.hub_id!))];
+      for (const hid of hubIds) {
+        const group = filteredItems.filter(i => i.hub_id === hid);
+        if (group.length > 0) groups[hid] = group;
+      }
+      return groups;
+    }
+    return null;
+  }, [filteredItems, activeTab, displaySettings.groupBy, currentView]);
 
   // Reset tab when view changes
   useEffect(() => {
@@ -243,29 +315,15 @@ export function ItemList() {
           )}
           {/* Filter & Display buttons */}
           <div className="flex items-center gap-1">
-            <button className="flex items-center gap-1.5 px-2 py-1 rounded text-[12px] leading-[16px] text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.2">
-                <line x1="2" y1="4" x2="12" y2="4" />
-                <line x1="4" y1="7" x2="10" y2="7" />
-                <line x1="6" y1="10" x2="8" y2="10" />
-              </svg>
-              {"\uD544\uD130"}
-            </button>
-            <button className="flex items-center gap-1.5 px-2 py-1 rounded text-[12px] leading-[16px] text-text-secondary hover:text-text-primary hover:bg-bg-elevated transition-colors">
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.2">
-                <line x1="2" y1="3" x2="12" y2="3" />
-                <line x1="2" y1="7" x2="8" y2="7" />
-                <line x1="2" y1="11" x2="5" y2="11" />
-              </svg>
-              {"\uBCF4\uAE30"}
-            </button>
+            <FilterDropdown />
+            <DisplayDropdown />
           </div>
         </div>
 
         {/* Tab Bar — all views */}
         {showTabs && (
           <div className="flex items-center gap-0.5 px-4 pb-2">
-            {(viewTabs[currentView] || []).map((tab) => (
+            {(viewTabs[currentView as ViewType] || []).map((tab) => (
               <TabButton
                 key={tab.id}
                 label={tab.label}
@@ -277,35 +335,39 @@ export function ItemList() {
         )}
       </div>
 
-      {/* List */}
-      <div ref={listRef} className="flex-1 overflow-y-auto">
-        {filteredItems.length === 0 ? (
-          <EmptyState view={currentView} />
-        ) : showGrouped && groupedItems && activeTab === "all" ? (
-          // Grouped view
-          Object.entries(groupedItems).map(([status, groupItems]) => (
-            <div key={status}>
-              <GroupHeader
-                status={status as ItemStatus}
-                count={groupItems.length}
-                collapsed={collapsedGroups.has(status)}
-                onToggle={() => toggleGroup(status)}
-              />
-              <div
-                className="grid transition-[grid-template-rows] duration-200 ease-out"
-                style={{ gridTemplateRows: collapsedGroups.has(status) ? "0fr" : "1fr" }}
-              >
-                <div className="overflow-hidden">
-                  {renderItems(groupItems, isSortable)}
+      {/* List / Board */}
+      {displaySettings.layout === "board" ? (
+        <BoardView items={filteredItems} />
+      ) : (
+        <div ref={listRef} className="flex-1 overflow-y-auto">
+          {filteredItems.length === 0 ? (
+            <EmptyState view={currentView} />
+          ) : groupedItems && activeTab === "all" ? (
+            // Grouped view
+            Object.entries(groupedItems).map(([status, groupItems]) => (
+              <div key={status}>
+                <GroupHeader
+                  status={status as ItemStatus}
+                  count={groupItems.length}
+                  collapsed={collapsedGroups.has(status)}
+                  onToggle={() => toggleGroup(status)}
+                />
+                <div
+                  className="grid transition-[grid-template-rows] duration-200 ease-out"
+                  style={{ gridTemplateRows: collapsedGroups.has(status) ? "0fr" : "1fr" }}
+                >
+                  <div className="overflow-hidden">
+                    {renderItems(groupItems, isSortable)}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))
-        ) : (
-          // Flat view
-          renderItems(filteredItems, isSortable)
-        )}
-      </div>
+            ))
+          ) : (
+            // Flat view
+            renderItems(filteredItems, isSortable)
+          )}
+        </div>
+      )}
     </div>
   );
 }
@@ -376,32 +438,43 @@ function GroupHeader({
 }
 
 // ─── Empty State ───
-const emptyMessages: Record<ViewType, { title: string; desc: string }> = {
+const emptyMessages: Record<ViewType, { title: string; desc: string; action?: string }> = {
   inbox: {
-    title: "\uC544\uC9C1 \uBA54\uBAA8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4",
-    desc: "\u2318K\uB97C \uB20C\uB7EC \uC0C8 \uD56D\uBAA9\uC744 \uB9CC\uB4E4\uC5B4\uBCF4\uC138\uC694",
+    title: "아직 메모가 없습니다",
+    desc: "⌘K를 눌러 새 항목을 만들어보세요",
   },
   active: {
-    title: "\uC9C4\uD589 \uC911\uC778 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
-    desc: "\uBA54\uBAA8\uC5D0\uC11C \uD56D\uBAA9\uC744 \uC62E\uACA8\uBCF4\uC138\uC694",
+    title: "진행 중인 항목이 없습니다",
+    desc: "메모에서 항목의 상태를 변경하여 시작하세요",
+    action: "메모 보기",
   },
   all: {
-    title: "\uC544\uC9C1 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
-    desc: "\u2318K\uB97C \uB20C\uB7EC \uC2DC\uC791\uD558\uC138\uC694",
+    title: "아직 항목이 없습니다",
+    desc: "⌘K를 눌러 시작하세요",
   },
   done: {
-    title: "\uC644\uB8CC\uB41C \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
-    desc: "\uD56D\uBAA9\uC744 \uC644\uB8CC\uD558\uBA74 \uC5EC\uAE30\uC5D0 \uD45C\uC2DC\uB429\uB2C8\uB2E4",
+    title: "완료된 항목이 없습니다",
+    desc: "항목을 완료하면 여기에 표시됩니다",
   },
   hub: {
-    title: "\uC774 \uD504\uB85C\uC81D\uD2B8\uC5D0 \uD56D\uBAA9\uC774 \uC5C6\uC2B5\uB2C8\uB2E4",
-    desc: "\uD56D\uBAA9\uC744 \uD504\uB85C\uC81D\uD2B8\uC5D0 \uBC30\uC815\uD574\uBCF4\uC138\uC694",
+    title: "이 프로젝트에 항목이 없습니다",
+    desc: "항목을 만들거나 기존 항목에 프로젝트를 배정하세요",
+    action: "새 항목 만들기",
   },
 };
 
 function EmptyState({ view }: { view: ViewType }) {
-  const { toggleCommandBar } = useViewStore();
+  const { toggleCommandBar, setView } = useViewStore();
   const msg = emptyMessages[view];
+
+  const handleAction = () => {
+    if (msg.action === "메모 보기") {
+      setView("inbox");
+    } else {
+      toggleCommandBar(true);
+    }
+  };
+
   return (
     <div className="flex flex-col items-center justify-center h-full gap-4">
       <EmptyIcon view={view} />
@@ -410,14 +483,14 @@ function EmptyState({ view }: { view: ViewType }) {
         <p className="text-text-tertiary text-[12px] leading-[16px] mt-1">{msg.desc}</p>
       </div>
       <button
-        onClick={() => toggleCommandBar(true)}
+        onClick={handleAction}
         className="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-elevated hover:bg-bg-surface text-text-secondary hover:text-text-primary text-[13px] leading-[20px] font-medium transition-colors border border-border-subtle"
       >
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
           <line x1="7" y1="3" x2="7" y2="11" />
           <line x1="3" y1="7" x2="11" y2="7" />
         </svg>
-        새 항목 만들기
+        {msg.action || "새 항목 만들기"}
       </button>
       <span className="text-text-disabled text-[11px] leading-[16px]">
         또는 ⌘K로 시작

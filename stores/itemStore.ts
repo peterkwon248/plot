@@ -29,6 +29,9 @@ interface ItemState {
 
   // Sort
   getNextSortOrder: () => number;
+
+  // Tags
+  getAllTags: () => string[];
 }
 
 export const useItemStore = create<ItemState>()(
@@ -62,6 +65,7 @@ export const useItemStore = create<ItemState>()(
           completed_at: null,
           deleted_at: null,
           hub_id: null,
+          due_date: input.due_date || null,
         };
 
         set((state) => ({ items: [newItem, ...state.items] }));
@@ -123,6 +127,13 @@ export const useItemStore = create<ItemState>()(
             }
             if (updates.title && updates.title !== oldItem.title) {
               addEntry(id, "title_changed", oldItem.title, updates.title);
+            }
+            if (updates.due_date !== undefined && updates.due_date !== oldItem.due_date) {
+              if (updates.due_date) {
+                addEntry(id, "due_date_set", oldItem.due_date || undefined, updates.due_date);
+              } else {
+                addEntry(id, "due_date_removed", oldItem.due_date || undefined, undefined);
+              }
             }
           } catch {}
         }
@@ -219,16 +230,22 @@ export const useItemStore = create<ItemState>()(
         );
         return minOrder - 1000;
       },
+
+      getAllTags: () => {
+        const items = get().items.filter((item) => !item.deleted_at);
+        return Array.from(new Set(items.flatMap((i) => i.tags))).sort();
+      },
     }),
     {
       name: "plot-items",
-      version: 1,
+      version: 2,
       migrate: (persistedState: unknown) => {
         const state = persistedState as { items?: Item[] };
         if (state?.items) {
           state.items = state.items.map((item) => ({
             ...item,
             hub_id: item.hub_id ?? null,
+            due_date: (item as any).due_date ?? null,
           }));
         }
         return state as ItemState;

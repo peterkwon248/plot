@@ -1,14 +1,16 @@
-# Session Notepad (Updated: 2026-02-27 23:50)
+# Session Notepad (Updated: 2026-02-28 01:30)
 
 ## Critical Context
 - Plot = 개인용 Linear + Zettelkasten + Todo. 노드끼리 협업(체인).
-- 사용자 피드백: "리니어 UI/UX의 20%도 못했다" → 밀도감과 디테일에 집중 필요
-- Linear 참고 리소스 보고서 미검증 상태 — 내일 "꼼꼼하게 깊이있게" 검증 필수 (사용자 강조)
+- shadcn/ui 마이그레이션 완료 + circle 사이드바 이식 완료 (빌드 성공)
+- Dev server: port 3002 (eager-roentgen worktree)
+- 사용자가 사이드바 CSS 렌더링 안 된다고 보고 — 포트 혼동 또는 캐시 문제 추정
 
 ## Active Tasks
-- [ ] 리소스 보고서 검증 (코드베이스 전체 + 레포 실제 코드 대조) — 최우선
-- [ ] UI 오버홀 Phase 1 (명세서: docs/plot-ui-overhaul-spec.md)
+- [ ] localhost:3002 사이드바 렌더링 확인 (유저에게 Ctrl+Shift+R 안내)
+- [ ] 사이드바 디자인 미세 조정 (Linear과의 gap 최소화)
+- [ ] circle-temp 임시 디렉토리 정리
 
 ## Blockers
-- Turbopack 간헐 에러 → tsc --noEmit으로 대체
-- 포트 3333 좀비 프로세스 → 재부팅 후 해결 예상
+- .next 캐시 corruption 간헐 발생 → 삭제 후 재시작 필요
+- 포트 3000/3001 다른 worktree 점유

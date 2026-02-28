@@ -6,9 +6,12 @@ import { useItemStore } from "@/stores/itemStore";
 import { StatusDropdown } from "@/components/ui/StatusDropdown";
 import { PriorityDropdown } from "@/components/ui/PriorityDropdown";
 import { HubDropdown } from "@/components/ui/HubDropdown";
+import { DatePicker } from "@/components/ui/DatePicker";
+import { TagEditor } from "@/components/ui/TagEditor";
 import { TipTapEditor } from "@/components/editor/TipTapEditor";
 import { ChainSection } from "@/components/detail/ChainSection";
 import { ActivityTimeline } from "@/components/detail/ActivityTimeline";
+import { Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { timeAgo } from "@/lib/utils";
 import type { ItemStatus, ItemPriority } from "@/types";
 
@@ -116,15 +119,20 @@ export function DetailPanel() {
       <div className="h-12 shrink-0 flex items-center justify-between px-6 border-b border-border-default">
         {/* Left: Back + Breadcrumb */}
         <div className="flex items-center gap-2">
-          <button
-            onClick={() => toggleDetail(false)}
-            className="text-text-secondary hover:text-text-primary transition-colors"
-          >
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="12" y1="8" x2="4" y2="8" />
-              <polyline points="8,4 4,8 8,12" />
-            </svg>
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={() => toggleDetail(false)}
+                className="text-text-secondary hover:text-text-primary transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="8" x2="4" y2="8" />
+                  <polyline points="8,4 4,8 8,12" />
+                </svg>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>뒤로 (Esc)</TooltipContent>
+          </Tooltip>
           <span className="text-[13px] leading-[20px] text-text-secondary">
             {viewLabels[currentView]}
           </span>
@@ -141,25 +149,35 @@ export function DetailPanel() {
             {currentIndex + 1}/{viewItems.length}
           </span>
           {/* Prev */}
-          <button
-            onClick={goToPrev}
-            disabled={currentIndex <= 0}
-            className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="10,3 7,7 10,11" />
-            </svg>
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={goToPrev}
+                disabled={currentIndex <= 0}
+                className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="10,3 7,7 10,11" />
+                </svg>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>이전 (K)</TooltipContent>
+          </Tooltip>
           {/* Next */}
-          <button
-            onClick={goToNext}
-            disabled={currentIndex >= viewItems.length - 1}
-            className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-              <polyline points="4,3 7,7 4,11" />
-            </svg>
-          </button>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <button
+                onClick={goToNext}
+                disabled={currentIndex >= viewItems.length - 1}
+                className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
+              >
+                <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="4,3 7,7 4,11" />
+                </svg>
+              </button>
+            </TooltipTrigger>
+            <TooltipContent>다음 (J)</TooltipContent>
+          </Tooltip>
         </div>
       </div>
 
@@ -224,20 +242,19 @@ export function DetailPanel() {
               <HubDropdown value={item.hub_id} onChange={handleHubChange} />
             </PropertyRow>
 
-            {item.tags.length > 0 && (
-              <PropertyRow label="태그">
-                <div className="flex gap-1.5 flex-wrap">
-                  {item.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="text-[12px] leading-[16px] bg-bg-elevated px-2 py-0.5 rounded-md text-text-secondary"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              </PropertyRow>
-            )}
+            <PropertyRow label="마감일">
+              <DatePicker
+                value={item.due_date}
+                onChange={(date) => updateItem(item.id, { due_date: date })}
+              />
+            </PropertyRow>
+
+            <PropertyRow label="태그">
+              <TagEditor
+                tags={item.tags}
+                onChange={(tags) => updateItem(item.id, { tags })}
+              />
+            </PropertyRow>
           </div>
 
           {/* Chain Section */}

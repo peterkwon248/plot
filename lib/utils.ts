@@ -1,10 +1,11 @@
 import { clsx, type ClassValue } from "clsx";
+import { twMerge } from "tailwind-merge";
 import { formatDistanceToNow } from "date-fns";
 import { ko } from "date-fns/locale";
 
-// ─── className 합치기 ───
+// ─── className 합치기 (tailwind-merge for shadcn conflict resolution) ───
 export function cn(...inputs: ClassValue[]) {
-  return clsx(inputs);
+  return twMerge(clsx(inputs));
 }
 
 // ─── 상대 시간 (2시간 전, 3일 전) ───

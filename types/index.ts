@@ -27,6 +27,7 @@ export interface Item {
   completed_at: string | null;
   deleted_at: string | null;
   hub_id: string | null;
+  due_date: string | null;  // ISO date string (date only, e.g., "2024-03-15")
 }
 
 // ─── Create ───
@@ -38,6 +39,7 @@ export interface CreateItemInput {
   item_type?: ItemType;
   tags?: string[];
   hub_id?: string | null;
+  due_date?: string | null;
 }
 
 // ─── Update ───
@@ -96,7 +98,9 @@ export type ActivityAction =
   | "hub_removed"
   | "title_changed"
   | "chain_added"
-  | "chain_removed";
+  | "chain_removed"
+  | "due_date_set"
+  | "due_date_removed";
 
 export interface ActivityEntry {
   id: string;
@@ -107,11 +111,40 @@ export interface ActivityEntry {
   created_at: string;
 }
 
+// ─── List Filter (Active filter state) ───
+export interface ListFilter {
+  status?: ItemStatus[];
+  priority?: ItemPriority[];
+  hub_ids?: string[];
+  tags?: string[];
+}
+
+// ─── Display Settings ───
+export type GroupByOption = "none" | "status" | "priority" | "hub";
+export type SortByOption = "manual" | "created" | "updated" | "priority" | "title";
+export type SortDirection = "asc" | "desc";
+export type LayoutMode = "list" | "board";
+
+export interface DisplaySettings {
+  groupBy: GroupByOption;
+  sortBy: SortByOption;
+  sortDir: SortDirection;
+  showProperties: {
+    priority: boolean;
+    hub: boolean;
+    date: boolean;
+    id: boolean;
+    preview: boolean;
+  };
+  layout: LayoutMode;
+}
+
 // ─── Custom View (Saved Filter) ───
 export interface CustomViewFilter {
   status?: ItemStatus[];
   priority?: ItemPriority[];
   hub_ids?: string[];
+  tags?: string[];
 }
 
 export interface CustomView {

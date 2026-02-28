@@ -1,0 +1,28 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx next build:*)",
+      "Bash(npx tsc:*)",
+      "Bash(npm run build:*)",
+      "Bash(node:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout 15 npx next dev:*)",
+      "Bash(curl:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(wmic process where \"ProcessId=59228\" get CommandLine:*)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:www.shadcn.io)",
+      "WebFetch(domain:ui.shadcn.com)",
+      "WebFetch(domain:circle.lndev.me)",
+      "Bash(npm ls:*)",
+      "Bash(npx next dev:*)",
+      "Bash(powershell:*)",
+      "Bash(wmic process where \"ProcessID=59228\" get CommandLine:*)",
+      "Bash(taskkill:*)",
+      "Bash(tasklist:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

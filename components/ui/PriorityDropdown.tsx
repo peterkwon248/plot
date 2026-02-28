@@ -1,8 +1,14 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { cn } from "@/lib/utils";
 import type { ItemPriority } from "@/types";
+import { cn } from "@/lib/utils";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const priorities: { value: ItemPriority; label: string; color: string }[] = [
   { value: "none", label: "없음", color: "text-text-tertiary" },
@@ -18,56 +24,27 @@ interface Props {
 }
 
 export function PriorityDropdown({ value, onChange }: Props) {
-  const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (e: MouseEvent) => {
-      if (ref.current && !ref.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   const current = priorities.find((p) => p.value === value)!;
 
   return (
-    <div ref={ref} className="relative">
-      <button
-        onClick={() => setOpen(!open)}
-        className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-bg-elevated transition-colors"
-      >
+    <Select value={value} onValueChange={(v) => onChange(v as ItemPriority)}>
+      <SelectTrigger className="flex items-center gap-2 px-2 py-1 rounded-md hover:bg-bg-elevated transition-colors border-none shadow-none h-auto focus:ring-0">
         <PriorityIcon priority={value} />
-        <span className={cn("text-[13px] leading-[20px] capitalize", current.color)}>
-          {current.label}
-        </span>
-      </button>
-
-      {open && (
-        <div className="absolute top-full left-0 mt-1 w-40 bg-bg-surface border border-border-default rounded-lg shadow-xl z-50 py-1">
-          {priorities.map((p) => (
-            <button
-              key={p.value}
-              onClick={() => {
-                onChange(p.value);
-                setOpen(false);
-              }}
-              className={cn(
-                "w-full flex items-center gap-2 px-3 py-1.5 text-[13px] leading-[20px] transition-colors",
-                p.value === value
-                  ? "bg-accent-muted text-accent"
-                  : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
-              )}
-            >
+        <SelectValue>
+          <span className={cn(current.color)}>{current.label}</span>
+        </SelectValue>
+      </SelectTrigger>
+      <SelectContent>
+        {priorities.map((p) => (
+          <SelectItem key={p.value} value={p.value}>
+            <div className="flex items-center gap-2">
               <PriorityIcon priority={p.value} />
-              {p.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
+              <span className={cn(p.color)}>{p.label}</span>
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 

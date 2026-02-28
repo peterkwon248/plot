@@ -32,6 +32,7 @@ export function useKeyboardNavigation() {
     toggleCommandBar,
     toggleHubAssign,
     toggleChainPicker,
+    toggleShortcutHelp,
     currentView,
     activeHubId,
   } = useViewStore();
@@ -293,6 +294,13 @@ export function useKeyboardNavigation() {
           }
           break;
         }
+
+        // ─── Shortcut Help (?) ───
+        case "?": {
+          e.preventDefault();
+          toggleShortcutHelp(true);
+          break;
+        }
       }
     },
     [
@@ -308,6 +316,7 @@ export function useKeyboardNavigation() {
       toggleCommandBar,
       toggleHubAssign,
       toggleChainPicker,
+      toggleShortcutHelp,
       currentView,
       activeHubId,
       getByStatus,
