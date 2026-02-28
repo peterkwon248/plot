@@ -35,6 +35,49 @@ export function useKeyboardNavigation() {
 
   const { getByStatus, getByHub, updateItem, softDeleteItem, addItem } = useItemStore();
 
+  // 상태 변경 헬퍼
+  const changeStatus = useCallback(
+    (status: ItemStatus, items: { id: string }[]) => {
+      const target = selectedItemId
+        ? items.find((i) => i.id === selectedItemId)
+        : items[focusedIndex];
+      if (target) {
+        updateItem(target.id, { status });
+      }
+    },
+    [selectedItemId, focusedIndex, updateItem]
+  );
+
+  // 상태 순환 헬퍼
+  const cycleStatus = useCallback(
+    (items: { id: string; status: string }[]) => {
+      const target = selectedItemId
+        ? items.find((i) => i.id === selectedItemId)
+        : items[focusedIndex];
+      if (!target) return;
+      const order: ItemStatus[] = ["inbox", "todo", "in_progress", "done"];
+      const idx = order.indexOf(target.status as ItemStatus);
+      const next = order[(idx + 1) % order.length];
+      updateItem(target.id, { status: next });
+    },
+    [selectedItemId, focusedIndex, updateItem]
+  );
+
+  // 우선순위 순환 헬퍼
+  const cyclePriority = useCallback(
+    (items: { id: string; priority: string }[]) => {
+      const target = selectedItemId
+        ? items.find((i) => i.id === selectedItemId)
+        : items[focusedIndex];
+      if (!target) return;
+      const order = ["none", "low", "medium", "high", "urgent"];
+      const idx = order.indexOf(target.priority);
+      const next = order[(idx + 1) % order.length];
+      updateItem(target.id, { priority: next as any });
+    },
+    [selectedItemId, focusedIndex, updateItem]
+  );
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       // 입력 중이면 무시 (input, textarea, contenteditable)
@@ -174,6 +217,59 @@ export function useKeyboardNavigation() {
           }
           break;
         }
+
+        // ─── Delete (Backspace/Delete) ───
+        case "Backspace":
+        case "Delete": {
+          e.preventDefault();
+          const itemToDelete = selectedItemId
+            ? items.find((i) => i.id === selectedItemId)
+            : items[focusedIndex];
+          if (itemToDelete) {
+            softDeleteItem(itemToDelete.id);
+            toggleDetail(false);
+            // 삭제 후 focusedIndex 클램핑
+            const newMax = items.length - 2; // 삭제 후 목록 길이 -1
+            if (focusedIndex > newMax && newMax >= 0) {
+              setFocusedIndex(newMax);
+            }
+          }
+          break;
+        }
+
+        // ─── Status Cycle (s) ───
+        case "s": {
+          e.preventDefault();
+          cycleStatus(items);
+          break;
+        }
+
+        // ─── Priority Cycle (p) ───
+        case "p": {
+          e.preventDefault();
+          cyclePriority(items);
+          break;
+        }
+
+        // ─── Duplicate (Ctrl/Meta + d) ───
+        case "d": {
+          if (e.metaKey || e.ctrlKey) {
+            e.preventDefault();
+            const target = selectedItemId
+              ? items.find((i) => i.id === selectedItemId)
+              : items[focusedIndex];
+            if (target) {
+              addItem({
+                title: target.title + " (복사)",
+                status: target.status,
+                priority: target.priority,
+                hub_id: target.hub_id,
+                tags: [...(target.tags || [])],
+              });
+            }
+          }
+          break;
+        }
       }
     },
     [
@@ -194,20 +290,9 @@ export function useKeyboardNavigation() {
       updateItem,
       softDeleteItem,
       addItem,
+      cycleStatus,
+      cyclePriority,
     ]
-  );
-
-  // 상태 변경 헬퍼
-  const changeStatus = useCallback(
-    (status: ItemStatus, items: { id: string }[]) => {
-      const target = selectedItemId
-        ? items.find((i) => i.id === selectedItemId)
-        : items[focusedIndex];
-      if (target) {
-        updateItem(target.id, { status });
-      }
-    },
-    [selectedItemId, focusedIndex, updateItem]
   );
 
   useEffect(() => {

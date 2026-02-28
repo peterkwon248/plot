@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 interface CommandOption {
   id: string;
   label: string;
-  section: "작업" | "이동" | "항목";
+  section: "작업" | "이동" | "항목" | "최근";
   hint?: string;
   action: () => void;
 }
@@ -19,7 +19,7 @@ export function CommandBar() {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
-  const { setView, selectItem, toggleCommandBar, setActiveHub } = useViewStore();
+  const { setView, selectItem, toggleCommandBar, setActiveHub, recentItems } = useViewStore();
   const { addItem, items: allItems } = useItemStore();
 
   // 자동 포커스
@@ -98,6 +98,24 @@ export function CommandBar() {
     return [...base, ...hubNav];
   }, [query, addItem, setView, setActiveHub, toggleCommandBar]);
 
+  // 최근 항목 (검색어가 없을 때만)
+  const recentOptions: CommandOption[] = useMemo(() => {
+    if (query.trim()) return [];
+    return recentItems
+      .slice(0, 5)
+      .map((id) => allItems.find((item) => item.id === id && !item.deleted_at))
+      .filter(Boolean)
+      .map((item) => ({
+        id: `recent-${item!.id}`,
+        label: item!.title,
+        section: "최근" as const,
+        action: () => {
+          selectItem(item!.id);
+          toggleCommandBar(false);
+        },
+      }));
+  }, [query, recentItems, allItems, selectItem, toggleCommandBar]);
+
   // 아이템 검색 결과
   const itemResults: CommandOption[] = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -126,7 +144,7 @@ export function CommandBar() {
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
 
-    if (!q) return staticOptions;
+    if (!q) return [...staticOptions, ...recentOptions];
 
     // Create는 항상 표시 (검색어를 타이틀로 사용)
     const createOpt = staticOptions.filter((opt) => opt.id === "create");
@@ -137,7 +155,7 @@ export function CommandBar() {
     );
 
     return [...createOpt, ...itemResults, ...matchedStatic];
-  }, [query, staticOptions, itemResults]);
+  }, [query, staticOptions, itemResults, recentOptions]);
 
   // selectedIndex 클램핑
   useEffect(() => {
@@ -174,7 +192,7 @@ export function CommandBar() {
   const sections = useMemo(() => {
     const groups: { section: string; items: (CommandOption & { globalIndex: number })[] }[] = [];
     let globalIdx = 0;
-    const sectionOrder = ["작업", "항목", "이동"];
+    const sectionOrder = ["작업", "최근", "항목", "이동"];
 
     for (const sectionName of sectionOrder) {
       const sectionItems = filtered

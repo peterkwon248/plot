@@ -150,7 +150,7 @@ export function ContextMenu({ itemId, x, y, onClose }: ContextMenuProps) {
       <div
         ref={menuRef}
         className="fixed bg-bg-surface border border-border-default rounded-lg shadow-xl min-w-[200px] py-1 z-50"
-        style={{ left: x, top: y }}
+        style={{ left: x, top: y, animation: "contextMenuIn 100ms ease forwards" }}
       >
         {/* Open Details */}
         <button

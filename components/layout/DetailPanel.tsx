@@ -109,7 +109,7 @@ export function DetailPanel() {
   if (!isDetailOpen || !item) return null;
 
   return (
-    <div className="absolute inset-0 z-30 bg-bg-primary flex flex-col">
+    <div className="absolute inset-0 z-30 bg-bg-primary flex flex-col" style={{ animation: "detailPanelIn 150ms ease forwards" }}>
       {/* Top Bar */}
       <div className="h-12 shrink-0 flex items-center justify-between px-6 border-b border-border-default">
         {/* Left: Back + Breadcrumb */}

@@ -46,9 +46,36 @@ const statusOrder: ItemStatus[] = ["inbox", "todo", "in_progress", "done"];
 const GROUPED_VIEWS: ViewType[] = ["all", "hub"];
 
 // Views that should show tab bar for sub-filtering
-const TAB_VIEWS: ViewType[] = ["all", "hub"];
+const TAB_VIEWS: ViewType[] = ["inbox", "active", "all", "done", "hub"];
 
 type TabFilter = "all" | ItemStatus;
+
+const viewTabs: Record<ViewType, { id: TabFilter; label: string }[]> = {
+  inbox: [
+    { id: "all", label: "전체" },
+    { id: "inbox", label: "최근" },
+  ],
+  active: [
+    { id: "all", label: "전체" },
+    { id: "todo", label: "할 일" },
+    { id: "in_progress", label: "진행 중" },
+  ],
+  all: [
+    { id: "all", label: "전체" },
+    { id: "todo", label: "할 일" },
+    { id: "in_progress", label: "진행 중" },
+    { id: "done", label: "완료" },
+  ],
+  done: [
+    { id: "all", label: "전체" },
+  ],
+  hub: [
+    { id: "all", label: "전체" },
+    { id: "todo", label: "할 일" },
+    { id: "in_progress", label: "진행 중" },
+    { id: "done", label: "완료" },
+  ],
+};
 
 export function ItemList() {
   const { currentView, focusedIndex, activeHubId } = useViewStore();
@@ -184,13 +211,17 @@ export function ItemList() {
           </div>
         </div>
 
-        {/* Tab Bar — only for "all" and "hub" views */}
+        {/* Tab Bar — all views */}
         {showTabs && (
           <div className="flex items-center gap-0.5 px-4 pb-2">
-            <TabButton label={"\uC804\uCCB4"} active={activeTab === "all"} onClick={() => setActiveTab("all")} />
-            <TabButton label={"\uD560 \uC77C"} active={activeTab === "todo"} onClick={() => setActiveTab("todo")} />
-            <TabButton label={"\uC9C4\uD589 \uC911"} active={activeTab === "in_progress"} onClick={() => setActiveTab("in_progress")} />
-            <TabButton label={"\uC644\uB8CC"} active={activeTab === "done"} onClick={() => setActiveTab("done")} />
+            {(viewTabs[currentView] || []).map((tab) => (
+              <TabButton
+                key={tab.id}
+                label={tab.label}
+                active={activeTab === tab.id}
+                onClick={() => setActiveTab(tab.id)}
+              />
+            ))}
           </div>
         )}
       </div>
@@ -209,7 +240,14 @@ export function ItemList() {
                 collapsed={collapsedGroups.has(status)}
                 onToggle={() => toggleGroup(status)}
               />
-              {!collapsedGroups.has(status) && renderItems(groupItems, isSortable)}
+              <div
+                className="grid transition-[grid-template-rows] duration-200 ease-out"
+                style={{ gridTemplateRows: collapsedGroups.has(status) ? "0fr" : "1fr" }}
+              >
+                <div className="overflow-hidden">
+                  {renderItems(groupItems, isSortable)}
+                </div>
+              </div>
             </div>
           ))
         ) : (
@@ -311,20 +349,78 @@ const emptyMessages: Record<ViewType, { title: string; desc: string }> = {
 };
 
 function EmptyState({ view }: { view: ViewType }) {
+  const { toggleCommandBar } = useViewStore();
   const msg = emptyMessages[view];
   return (
-    <div className="flex flex-col items-center justify-center h-full gap-3">
-      <svg width="48" height="48" viewBox="0 0 48 48" className="text-text-disabled">
-        <line x1="24" y1="8" x2="24" y2="18" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-        <line x1="24" y1="30" x2="24" y2="40" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-        <line x1="8" y1="24" x2="18" y2="24" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-        <line x1="30" y1="24" x2="40" y2="24" stroke="currentColor" strokeWidth="1" opacity="0.4" />
-        <circle cx="24" cy="24" r="6" fill="none" stroke="currentColor" strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
-      </svg>
+    <div className="flex flex-col items-center justify-center h-full gap-4">
+      <EmptyIcon view={view} />
       <div className="text-center">
         <p className="text-text-secondary text-[14px] leading-[20px] font-medium">{msg.title}</p>
         <p className="text-text-tertiary text-[12px] leading-[16px] mt-1">{msg.desc}</p>
       </div>
+      <button
+        onClick={() => toggleCommandBar(true)}
+        className="mt-2 flex items-center gap-2 px-4 py-2 rounded-lg bg-bg-elevated hover:bg-bg-surface text-text-secondary hover:text-text-primary text-[13px] leading-[20px] font-medium transition-colors border border-border-subtle"
+      >
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5">
+          <line x1="7" y1="3" x2="7" y2="11" />
+          <line x1="3" y1="7" x2="11" y2="7" />
+        </svg>
+        새 항목 만들기
+      </button>
+      <span className="text-text-disabled text-[11px] leading-[16px]">
+        또는 ⌘K로 시작
+      </span>
     </div>
   );
+}
+
+function EmptyIcon({ view }: { view: ViewType }) {
+  const color = "currentColor";
+  const commonClass = "text-text-disabled";
+
+  switch (view) {
+    case "inbox":
+      return (
+        <svg width="56" height="56" viewBox="0 0 56 56" className={commonClass}>
+          <circle cx="28" cy="28" r="12" fill="none" stroke={color} strokeWidth="1" strokeDasharray="4 4" opacity="0.3" />
+          <line x1="28" y1="10" x2="28" y2="20" stroke={color} strokeWidth="1" opacity="0.4" />
+          <line x1="28" y1="36" x2="28" y2="46" stroke={color} strokeWidth="1" opacity="0.4" />
+          <line x1="10" y1="28" x2="20" y2="28" stroke={color} strokeWidth="1" opacity="0.4" />
+          <line x1="36" y1="28" x2="46" y2="28" stroke={color} strokeWidth="1" opacity="0.4" />
+        </svg>
+      );
+    case "active":
+      return (
+        <svg width="56" height="56" viewBox="0 0 56 56" className={commonClass}>
+          <circle cx="28" cy="28" r="10" fill="none" stroke={color} strokeWidth="1" opacity="0.3" />
+          <circle cx="28" cy="28" r="18" fill="none" stroke={color} strokeWidth="1" strokeDasharray="3 5" opacity="0.2" />
+          <circle cx="28" cy="28" r="4" fill={color} opacity="0.3" />
+        </svg>
+      );
+    case "done":
+      return (
+        <svg width="56" height="56" viewBox="0 0 56 56" className={commonClass}>
+          <circle cx="28" cy="28" r="16" fill="none" stroke={color} strokeWidth="1" strokeDasharray="4 4" opacity="0.2" />
+          <path d="M20 28L26 34L36 22" fill="none" stroke={color} strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" opacity="0.3" />
+        </svg>
+      );
+    case "hub":
+      return (
+        <svg width="56" height="56" viewBox="0 0 56 56" className={commonClass}>
+          <rect x="16" y="16" width="24" height="24" rx="4" fill="none" stroke={color} strokeWidth="1" strokeDasharray="4 4" opacity="0.2" />
+          <circle cx="28" cy="28" r="3" fill={color} opacity="0.3" />
+        </svg>
+      );
+    default: // "all"
+      return (
+        <svg width="56" height="56" viewBox="0 0 56 56" className={commonClass}>
+          <circle cx="28" cy="28" r="8" fill="none" stroke={color} strokeWidth="1" strokeDasharray="3 3" opacity="0.3" />
+          <line x1="28" y1="10" x2="28" y2="20" stroke={color} strokeWidth="1" opacity="0.4" />
+          <line x1="28" y1="36" x2="28" y2="46" stroke={color} strokeWidth="1" opacity="0.4" />
+          <line x1="10" y1="28" x2="20" y2="28" stroke={color} strokeWidth="1" opacity="0.4" />
+          <line x1="36" y1="28" x2="46" y2="28" stroke={color} strokeWidth="1" opacity="0.4" />
+        </svg>
+      );
+  }
 }
