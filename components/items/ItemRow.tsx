@@ -7,6 +7,7 @@ import type { Item } from "@/types";
 import { inferDisplayType } from "@/types";
 import { ItemStatusIcon } from "./ItemStatusIcon";
 import { useViewStore } from "@/stores/viewStore";
+import { useItemStore } from "@/stores/itemStore";
 import { useHubStore } from "@/stores/hubStore";
 import { useDisplayStore } from "@/stores/displayStore";
 import { getHubColorHex } from "@/lib/hubColors";
@@ -66,11 +67,29 @@ interface ItemRowContentProps {
 const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
   function ItemRowContent({ item, isFocused, style, dragHandleProps }, ref) {
     const { selectedItemId, selectItem, currentView } = useViewStore();
+    const { updateItem } = useItemStore();
     const { settings: displaySettings } = useDisplayStore();
     const { showProperties } = displaySettings;
     const isSelected = selectedItemId === item.id;
     const displayType = inferDisplayType(item);
     const isDone = item.status === "done";
+
+    const statusCycle: Item["status"][] = ["inbox", "todo", "in_progress", "done"];
+    const priorityCycle: Item["priority"][] = ["none", "low", "medium", "high", "urgent"];
+
+    const cycleStatus = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+      const idx = statusCycle.indexOf(item.status);
+      const next = statusCycle[(idx + 1) % statusCycle.length];
+      updateItem(item.id, { status: next });
+    }, [item.id, item.status, updateItem]);
+
+    const cyclePriority = useCallback((e: React.MouseEvent) => {
+      e.stopPropagation();
+      const idx = priorityCycle.indexOf(item.priority);
+      const next = priorityCycle[(idx + 1) % priorityCycle.length];
+      updateItem(item.id, { priority: next });
+    }, [item.id, item.priority, updateItem]);
 
     const handleTriggerContextMenu = useCallback((e: React.MouseEvent) => {
       e.preventDefault();
@@ -98,33 +117,19 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           data-item-row
           style={style}
           className={cn(
-            "w-full flex items-center gap-2 px-4 py-[7px] border-b border-border-subtle transition-colors duration-100 text-left group/row",
+            "w-full flex items-center gap-1.5 px-6 h-11 transition-colors duration-75 text-left group/row relative animate-[listItemIn_150ms_ease_forwards]",
             isSelected
-              ? "bg-accent-muted border-l-2 border-l-accent"
+              ? "bg-accent-muted"
               : isFocused
-                ? "bg-bg-elevated border-l-2 border-l-text-tertiary"
-                : "hover:bg-bg-elevated border-l-2 border-l-transparent",
+                ? "bg-bg-surface/60"
+                : "hover:bg-bg-surface/40",
             isDone && "opacity-60"
           )}
         >
-          {/* Context menu (hover) — 3-dot trigger */}
-          <div className="shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity">
-            <button
-              onClick={handleTriggerContextMenu}
-              className="text-text-tertiary hover:text-text-secondary p-0.5"
-            >
-              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-                <circle cx="3" cy="7" r="1.2" />
-                <circle cx="7" cy="7" r="1.2" />
-                <circle cx="11" cy="7" r="1.2" />
-              </svg>
-            </button>
-          </div>
-
-          {/* Drag Handle */}
+          {/* Drag Handle (positioned on hover) */}
           {dragHandleProps && (
             <div
-              className="shrink-0 cursor-grab active:cursor-grabbing text-text-tertiary hover:text-text-secondary transition-colors"
+              className="absolute left-0 ml-1.5 opacity-0 group-hover/row:opacity-100 cursor-grab active:cursor-grabbing text-text-tertiary hover:text-text-secondary transition-opacity"
               {...dragHandleProps}
             >
               <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
@@ -138,23 +143,30 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
             </div>
           )}
 
-          {/* Status Icon */}
-          <div className="shrink-0">
-            <ItemStatusIcon status={item.status} size={16} />
+          {/* Priority icon (always reserve space) */}
+          <div className="shrink-0 w-[14px]">
+            {showProperties.priority && item.priority !== "none" ? (
+              <PriorityBarIcon priority={item.priority} />
+            ) : null}
           </div>
 
-          {/* Item ID */}
+          {/* Item ID (identifier) */}
           {showProperties.id && (
-            <span className="text-[11px] leading-[16px] text-text-tertiary shrink-0 font-mono">
-              {item.id.slice(0, 4).toUpperCase()}
+            <span className="text-[11px] leading-[16px] text-text-tertiary font-mono w-[52px] shrink-0 truncate">
+              {item.id.slice(0, 6).toUpperCase()}
             </span>
           )}
 
-          {/* Content */}
-          <div className="flex-1 min-w-0">
+          {/* Status Icon */}
+          <div className="shrink-0">
+            <ItemStatusIcon status={item.status} size={14} />
+          </div>
+
+          {/* Title (flex-1) */}
+          <div className="flex-1 min-w-0 ml-1">
             <span
               className={cn(
-                "text-[13px] leading-[20px] tracking-[-0.01em] font-medium truncate block",
+                "text-[13px] leading-[20px] font-medium truncate block",
                 isDone
                   ? "text-text-secondary line-through"
                   : "text-text-primary"
@@ -162,37 +174,61 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
             >
               {item.title}
             </span>
-            {/* Note preview */}
+            {/* Note preview (hidden due to h-11 fixed height, but kept in code) */}
             {showProperties.preview && displayType === "note" && item.body_plain && (
-              <p className="text-[12px] leading-[18px] text-text-secondary mt-0.5 line-clamp-2">
+              <p className="text-[12px] leading-[18px] text-text-secondary mt-0.5 line-clamp-2 hidden overflow-hidden">
                 {item.body_plain}
               </p>
             )}
           </div>
 
-          {/* Meta (right-aligned inline attributes) */}
-          <div className="shrink-0 flex items-center gap-2">
-            {/* Project label with color dot */}
+          {/* Meta — 기본 상태 (hover시 숨김) */}
+          <div className="shrink-0 flex items-center gap-2.5 group-hover/row:hidden">
             {showProperties.hub && item.hub_id && currentView !== "hub" && (
               <HubLabel hubId={item.hub_id} />
             )}
-
-            {/* Priority bar icon */}
-            {showProperties.priority && item.priority !== "none" && (
-              <PriorityBarIcon priority={item.priority} />
-            )}
-
-            {/* Due date */}
             {showProperties.date && item.due_date && (
               <DueDateLabel dueDate={item.due_date} />
             )}
-
-            {/* Modified date */}
             {showProperties.date && (
-              <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
+              <span className="text-[11px] text-text-tertiary whitespace-nowrap w-[48px] text-right">
                 {timeAgo(item.updated_at)}
               </span>
             )}
+          </div>
+
+          {/* hover 시 인라인 액션 */}
+          <div className="shrink-0 hidden group-hover/row:flex items-center gap-0.5">
+            {/* 상태 순환 */}
+            <button
+              onClick={cycleStatus}
+              className="p-1 rounded hover:bg-bg-elevated text-text-tertiary hover:text-text-primary transition-colors"
+              title="상태 변경"
+            >
+              <ItemStatusIcon status={item.status} size={14} />
+            </button>
+            {/* 우선순위 순환 */}
+            <button
+              onClick={cyclePriority}
+              className="p-1 rounded hover:bg-bg-elevated text-text-tertiary hover:text-text-primary transition-colors"
+              title="중요도 변경"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.2">
+                <path d="M7 2v7M7 12v0" strokeLinecap="round" />
+              </svg>
+            </button>
+            {/* 3-dot 메뉴 */}
+            <button
+              onClick={handleTriggerContextMenu}
+              className="p-1 rounded hover:bg-bg-elevated text-text-tertiary hover:text-text-primary transition-colors"
+              title="더보기"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <circle cx="3" cy="7" r="1.2" />
+                <circle cx="7" cy="7" r="1.2" />
+                <circle cx="11" cy="7" r="1.2" />
+              </svg>
+            </button>
           </div>
         </button>
       </ItemContextMenu>

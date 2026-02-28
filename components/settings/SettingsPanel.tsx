@@ -67,13 +67,13 @@ export function SettingsPanel() {
   return (
     <div
       className="absolute inset-0 z-30 bg-bg-primary flex flex-col"
-      style={{ animation: "detailPanelIn 150ms ease forwards" }}
+      style={{ animation: "detailSlideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
     >
       {/* Top Bar */}
-      <div className="h-12 shrink-0 flex items-center px-6 border-b border-border-default">
+      <div className="h-11 shrink-0 flex items-center px-6 border-b border-border-default">
         <button
           onClick={() => toggleSettings(false)}
-          className="text-text-secondary hover:text-text-primary transition-colors mr-3"
+          className="p-1.5 -ml-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-surface transition-colors mr-2"
         >
           <svg
             width="16"

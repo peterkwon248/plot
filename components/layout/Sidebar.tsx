@@ -79,9 +79,9 @@ export function Sidebar() {
   return (
     <SidebarPrimitive collapsible="offcanvas">
       {/* ── Header ── */}
-      <SidebarHeader className="h-12 flex-row items-center justify-between px-4 gap-2">
-        <span className="text-[14px] leading-[20px] tracking-[-0.006em] font-semibold text-text-primary flex items-center gap-1.5">
-          <span className="text-accent text-[16px]">{"\u2726"}</span>
+      <SidebarHeader className="h-11 flex-row items-center justify-between px-3 gap-2">
+        <span className="text-[14px] leading-[20px] tracking-[-0.006em] font-semibold text-text-primary flex items-center gap-2">
+          <span className="text-accent text-[18px] leading-none">{"\u2726"}</span>
           Plot
         </span>
         <div className="flex items-center gap-1">
@@ -140,6 +140,7 @@ export function Sidebar() {
                     isActive={isActive}
                     onClick={() => setView(view.id)}
                     tooltip={view.label}
+                    className="h-7 px-2.5 gap-2 text-[13px] hover:bg-bg-surface"
                   >
                     <ViewIcon viewType={view.id} active={isActive} />
                     <span>{view.label}</span>
@@ -155,11 +156,11 @@ export function Sidebar() {
           </SidebarMenu>
         </SidebarGroup>
 
-        <SidebarSeparator />
+        <SidebarSeparator className="my-2 opacity-50" />
 
         {/* ── Workspace Section ── */}
         <SidebarGroup>
-          <SidebarGroupLabel>{"\uC6CC\uD06C\uC2A4\uD398\uC774\uC2A4"}</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.04em] text-text-tertiary">{"\uC6CC\uD06C\uC2A4\uD398\uC774\uC2A4"}</SidebarGroupLabel>
           <SidebarMenu>
             {/* Custom Views as flat items */}
             {customViews.map((view) => (
@@ -167,8 +168,9 @@ export function Sidebar() {
                 <SidebarMenuButton
                   isActive={activeCustomViewId === view.id}
                   onClick={() => setCustomView(view.id)}
+                  className="h-7 px-2.5 gap-2 text-[13px] hover:bg-bg-surface"
                 >
-                  <span className="text-[14px] shrink-0">{view.icon}</span>
+                  <span className="text-[15px] shrink-0">{view.icon}</span>
                   <span className="truncate">{view.name}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -177,10 +179,10 @@ export function Sidebar() {
             <SidebarMenuItem>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <SidebarMenuButton>
+                  <SidebarMenuButton className="h-7 px-2.5 gap-2 text-[13px] hover:bg-bg-surface">
                     <svg
-                      width="16"
-                      height="16"
+                      width="15"
+                      height="15"
                       viewBox="0 0 16 16"
                       fill="none"
                       className="shrink-0"
@@ -235,11 +237,11 @@ export function Sidebar() {
           </SidebarMenu>
         </SidebarGroup>
 
-        <SidebarSeparator />
+        <SidebarSeparator className="my-2 opacity-50" />
 
         {/* ── Projects (Hubs) Section - Linear's "Your teams" pattern ── */}
         <SidebarGroup>
-          <SidebarGroupLabel>{"\uD504\uB85C\uC81D\uD2B8"}</SidebarGroupLabel>
+          <SidebarGroupLabel className="text-[11px] uppercase tracking-[0.04em] text-text-tertiary">{"\uD504\uB85C\uC81D\uD2B8"}</SidebarGroupLabel>
           <SidebarGroupAction
             onClick={() => {
               const name = prompt("\uD504\uB85C\uC81D\uD2B8 \uC774\uB984:");
@@ -265,8 +267,8 @@ export function Sidebar() {
           <SidebarMenu>
             {hubs.length === 0 ? (
               <SidebarMenuItem>
-                <SidebarMenuButton className="text-text-disabled" disabled>
-                  <span className="text-[12px]">
+                <SidebarMenuButton className="h-7 px-2.5 gap-2 text-[13px] text-text-disabled hover:bg-bg-surface" disabled>
+                  <span>
                     {"\uD504\uB85C\uC81D\uD2B8\uAC00 \uC5C6\uC2B5\uB2C8\uB2E4"}
                   </span>
                 </SidebarMenuButton>
@@ -292,28 +294,18 @@ export function Sidebar() {
                         <SidebarMenuButton
                           tooltip={hub.name}
                           isActive={hubActive}
+                          className="h-7 px-2.5 gap-2 text-[13px] hover:bg-bg-surface"
                         >
                           <div
-                            className="inline-flex size-5 items-center justify-center rounded shrink-0"
+                            className="inline-flex size-5 items-center justify-center rounded shrink-0 text-[10px] font-bold"
                             style={{
-                              backgroundColor: `${getHubColorHex(hub.color)}20`,
+                              backgroundColor: `${getHubColorHex(hub.color)}25`,
+                              color: getHubColorHex(hub.color),
                             }}
                           >
-                            <svg
-                              width="8"
-                              height="8"
-                              viewBox="0 0 8 8"
-                              className="shrink-0"
-                            >
-                              <circle
-                                cx="4"
-                                cy="4"
-                                r="4"
-                                fill={getHubColorHex(hub.color)}
-                              />
-                            </svg>
+                            {hub.name.charAt(0)}
                           </div>
-                          <span className="text-sm truncate">{hub.name}</span>
+                          <span className="truncate">{hub.name}</span>
                           <svg
                             width="12"
                             height="12"
@@ -454,16 +446,17 @@ export function Sidebar() {
       </SidebarContent>
 
       {/* ── Footer ── */}
-      <SidebarFooter className="border-t border-border-subtle">
+      <SidebarFooter className="border-t border-border-subtle p-2">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
               onClick={() => toggleSettings()}
               tooltip={"\uC124\uC815"}
+              className="h-7 px-2.5 gap-2 text-[13px] hover:bg-bg-surface"
             >
               <svg
-                width="16"
-                height="16"
+                width="15"
+                height="15"
                 viewBox="0 0 16 16"
                 fill="none"
                 stroke="currentColor"
@@ -498,125 +491,39 @@ function ViewIcon({
   switch (viewType) {
     case "inbox":
       return (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          className="shrink-0"
-        >
-          <circle
-            cx="8"
-            cy="8"
-            r="2"
-            fill="none"
-            stroke={color || "var(--color-status-inbox)"}
-            strokeWidth="1"
-          />
-          <line
-            x1="8"
-            y1="2"
-            x2="8"
-            y2="5"
-            stroke={color || "var(--color-status-inbox)"}
-            strokeWidth="1"
-          />
-          <line
-            x1="8"
-            y1="11"
-            x2="8"
-            y2="14"
-            stroke={color || "var(--color-status-inbox)"}
-            strokeWidth="1"
-          />
-          <line
-            x1="2"
-            y1="8"
-            x2="5"
-            y2="8"
-            stroke={color || "var(--color-status-inbox)"}
-            strokeWidth="1"
-          />
-          <line
-            x1="11"
-            y1="8"
-            x2="14"
-            y2="8"
-            stroke={color || "var(--color-status-inbox)"}
-            strokeWidth="1"
-          />
+        <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0"
+             fill="none" stroke={color || "var(--color-text-secondary)"} strokeWidth="1.5"
+             strokeLinecap="round" strokeLinejoin="round">
+          <path d="M2 8.5h3.5L7 10.5h2l1.5-2H14" />
+          <path d="M3 4.5l-1 4v4.5a1 1 0 001 1h10a1 1 0 001-1V8.5l-1-4H3z" />
         </svg>
       );
     case "active":
       return (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          className="shrink-0"
-        >
-          <circle
-            cx="8"
-            cy="8"
-            r="5.5"
-            fill="none"
-            stroke={color || "var(--color-status-in-progress)"}
-            strokeWidth="1"
-            opacity="0.35"
-          />
-          <circle
-            cx="8"
-            cy="8"
-            r="2.5"
-            fill={color || "var(--color-status-in-progress)"}
-          />
+        <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0"
+             fill="none" stroke={color || "var(--color-status-in-progress)"} strokeWidth="1.5">
+          <circle cx="8" cy="8" r="5.5" strokeDasharray="17.3 17.3" strokeDashoffset="-4.3" />
+          <circle cx="8" cy="8" r="2" fill={color || "var(--color-status-in-progress)"} stroke="none" />
         </svg>
       );
     case "all":
       return (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          className="shrink-0"
-        >
-          <circle
-            cx="5"
-            cy="8"
-            r="1.8"
-            fill={color || "var(--color-text-secondary)"}
-          />
-          <circle
-            cx="8"
-            cy="4.5"
-            r="1.8"
-            fill={color || "var(--color-text-secondary)"}
-            opacity="0.6"
-          />
-          <circle
-            cx="11"
-            cy="8"
-            r="1.8"
-            fill={color || "var(--color-text-secondary)"}
-            opacity="0.35"
-          />
+        <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0"
+             fill="none" stroke={color || "var(--color-text-secondary)"} strokeWidth="1.5"
+             strokeLinecap="round">
+          <line x1="3" y1="4" x2="13" y2="4" />
+          <line x1="8" y1="8" x2="13" y2="8" />
+          <line x1="3" y1="12" x2="10" y2="12" />
         </svg>
       );
     case "done":
       return (
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          className="shrink-0"
-        >
-          <path
-            d="M4 8L7 11L12 5"
-            fill="none"
-            stroke={color || "var(--color-status-done)"}
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
+        <svg width="16" height="16" viewBox="0 0 16 16" className="shrink-0">
+          <circle cx="8" cy="8" r="6" fill="none"
+                  stroke={color || "var(--color-status-done)"} strokeWidth="1.5" />
+          <path d="M5.5 8L7.2 9.7L10.5 6.3" fill="none"
+                stroke={color || "var(--color-status-done)"} strokeWidth="1.5"
+                strokeLinecap="round" strokeLinejoin="round" />
         </svg>
       );
   }
