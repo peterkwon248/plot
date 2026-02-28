@@ -1,9 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { useCustomViewStore } from "@/stores/customViewStore";
 import { useHubStore } from "@/stores/hubStore";
 import type { ItemStatus, ItemPriority, CustomViewFilter, CustomView } from "@/types";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 const STATUS_OPTIONS: { value: ItemStatus; label: string }[] = [
   { value: "inbox", label: "메모" },
@@ -35,7 +42,8 @@ interface CustomViewEditorProps {
 
 export function CustomViewEditor({ editingView, onClose }: CustomViewEditorProps) {
   const { addView, updateView } = useCustomViewStore();
-  const hubs = useHubStore(state => state.getActiveHubs());
+  const hubList = useHubStore(state => state.hubs);
+  const hubs = useMemo(() => hubList.filter(h => !h.archived_at).sort((a, b) => a.sort_order - b.sort_order), [hubList]);
 
   const [name, setName] = useState(editingView?.name || "");
   const [selectedStatuses, setSelectedStatuses] = useState<ItemStatus[]>(editingView?.filter.status || []);
@@ -57,7 +65,7 @@ export function CustomViewEditor({ editingView, onClose }: CustomViewEditorProps
     if (selectedHubs.length > 0) filter.hub_ids = selectedHubs;
 
     if (editingView) {
-      updateView(editingView.id, { name: trimmedName, filter, sort_by: sortBy as any, sort_dir: sortDir as any });
+      updateView(editingView.id, { name: trimmedName, filter, sort_by: sortBy as CustomView["sort_by"], sort_dir: sortDir as CustomView["sort_dir"] });
     } else {
       addView(trimmedName, filter, sortBy, sortDir);
     }
@@ -65,34 +73,15 @@ export function CustomViewEditor({ editingView, onClose }: CustomViewEditorProps
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "rgba(10, 13, 15, 0.6)", backdropFilter: "blur(12px)" }}
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div
-        className="relative w-[420px] bg-bg-surface border border-border-default rounded-xl shadow-2xl overflow-hidden"
-        style={{ animation: "commandBarIn 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards" }}
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between px-5 h-12 border-b border-border-subtle">
-          <span className="text-[14px] leading-[20px] font-medium text-text-primary">
+    <Dialog open onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="max-w-[420px]">
+        <DialogHeader>
+          <DialogTitle className="text-[14px] leading-[20px]">
             {editingView ? "뷰 수정" : "새 뷰 만들기"}
-          </span>
-          <button onClick={onClose} className="text-text-tertiary hover:text-text-secondary transition-colors">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              <line x1="3" y1="3" x2="11" y2="11" />
-              <line x1="11" y1="3" x2="3" y2="11" />
-            </svg>
-          </button>
-        </div>
+          </DialogTitle>
+        </DialogHeader>
 
-        {/* Body */}
-        <div className="px-5 py-4 space-y-5">
+        <div className="space-y-5">
           {/* Name */}
           <div>
             <label className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium mb-1.5 block">
@@ -207,8 +196,7 @@ export function CustomViewEditor({ editingView, onClose }: CustomViewEditorProps
           </div>
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-end gap-2 px-5 py-3 border-t border-border-subtle">
+        <DialogFooter>
           <button
             onClick={onClose}
             className="text-[13px] leading-[20px] px-3 py-1.5 text-text-secondary hover:text-text-primary transition-colors"
@@ -222,8 +210,8 @@ export function CustomViewEditor({ editingView, onClose }: CustomViewEditorProps
           >
             {editingView ? "저장" : "만들기"}
           </button>
-        </div>
-      </div>
-    </div>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

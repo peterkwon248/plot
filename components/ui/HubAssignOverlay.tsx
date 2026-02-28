@@ -1,23 +1,29 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useMemo, useCallback } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { useHubStore } from "@/stores/hubStore";
 import { getHubColorHex } from "@/lib/hubColors";
-import { cn } from "@/lib/utils";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+} from "@/components/ui/command";
 
 export function HubAssignOverlay() {
-  const [query, setQuery] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const { selectedItemId, focusedIndex, currentView, activeHubId, toggleHubAssign } = useViewStore();
-  const { items, getByStatus, getByHub, assignToHub } = useItemStore();
-  const { getActiveHubs } = useHubStore();
+  const { isHubAssignOpen, selectedItemId, focusedIndex, currentView, activeHubId, toggleHubAssign } = useViewStore();
+  const { getByStatus, getByHub, assignToHub } = useItemStore();
+  const hubList = useHubStore((s) => s.hubs);
+  const hubs = useMemo(
+    () => hubList.filter((h) => !h.archived_at).sort((a, b) => a.sort_order - b.sort_order),
+    [hubList]
+  );
 
-  const hubs = getActiveHubs();
-
-  // Determine which item to assign
   const targetItemId = useMemo(() => {
     if (selectedItemId) return selectedItemId;
     const viewItems = currentView === "hub" && activeHubId
@@ -26,117 +32,48 @@ export function HubAssignOverlay() {
     return viewItems[focusedIndex]?.id ?? null;
   }, [selectedItemId, focusedIndex, currentView, activeHubId, getByStatus, getByHub]);
 
-  // Auto-focus
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  const close = useCallback(() => toggleHubAssign(false), [toggleHubAssign]);
 
-  // Filter hubs by query
-  const filteredHubs = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return hubs;
-    return hubs.filter((h) => h.name.toLowerCase().includes(q));
-  }, [query, hubs]);
-
-  // Options: "None" + filtered hubs
-  const options = useMemo(() => {
-    const result: { id: string | null; label: string; color?: string }[] = [
-      { id: null, label: "프로젝트 해제" },
-    ];
-    for (const hub of filteredHubs) {
-      result.push({ id: hub.id, label: hub.name, color: getHubColorHex(hub.color) });
-    }
-    return result;
-  }, [filteredHubs]);
-
-  // Clamp index
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
-
-  const close = () => toggleHubAssign(false);
-
-  const handleSelect = (hubId: string | null) => {
+  const handleSelect = useCallback((hubId: string | null) => {
     if (targetItemId) {
       assignToHub(targetItemId, hubId);
     }
     close();
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, options.length - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Enter" && options[selectedIndex]) {
-      e.preventDefault();
-      handleSelect(options[selectedIndex].id);
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      close();
-    }
-  };
+  }, [targetItemId, assignToHub, close]);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-black/60" onClick={close} />
-
-      {/* Modal */}
-      <div
-        className="relative w-[320px] bg-bg-surface border border-border-default rounded-xl shadow-2xl overflow-hidden"
-        style={{
-          animation: "commandBarIn 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
-        }}
-      >
-        {/* Search input */}
-        <div className="flex items-center gap-3 px-4 h-10 border-b border-border-subtle">
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="프로젝트 검색..."
-            className="flex-1 bg-transparent text-[13px] leading-[20px] text-text-primary placeholder:text-text-tertiary outline-none"
-          />
-          <kbd className="text-[11px] leading-[16px] text-text-tertiary bg-bg-elevated px-1.5 py-0.5 rounded border border-border-subtle">
-            ESC
-          </kbd>
-        </div>
-
-        {/* Options */}
-        <div className="max-h-60 overflow-y-auto py-1">
-          {options.length === 0 ? (
-            <div className="px-4 py-4 text-center text-text-tertiary text-[13px] leading-[20px]">
+    <Dialog open={isHubAssignOpen} onOpenChange={(open) => !open && close()}>
+      <DialogContent className="overflow-hidden p-0 max-w-[320px] top-[20%] translate-y-0 gap-0">
+        <Command className="rounded-xl">
+          <CommandInput placeholder="프로젝트 검색..." className="h-10 text-[13px] border-none focus:ring-0" />
+          <CommandList className="max-h-60 overflow-y-auto">
+            <CommandEmpty className="px-4 py-4 text-center text-text-tertiary text-[13px] leading-[20px]">
               프로젝트를 찾을 수 없습니다
-            </div>
-          ) : (
-            options.map((opt, idx) => (
-              <button
-                key={opt.id ?? "none"}
-                onClick={() => handleSelect(opt.id)}
-                className={cn(
-                  "w-full h-8 flex items-center gap-2 px-4 text-[13px] leading-[20px] transition-colors",
-                  idx === selectedIndex
-                    ? "bg-bg-elevated text-text-primary"
-                    : "text-text-secondary hover:bg-bg-elevated"
-                )}
+            </CommandEmpty>
+            <CommandGroup>
+              <CommandItem
+                onSelect={() => handleSelect(null)}
+                className="h-8 flex items-center gap-2 px-4 text-[13px] leading-[20px] rounded-none"
               >
-                {opt.color ? (
+                <span className="text-text-tertiary text-[11px]">—</span>
+                <span>프로젝트 해제</span>
+              </CommandItem>
+              {hubs.map((hub) => (
+                <CommandItem
+                  key={hub.id}
+                  onSelect={() => handleSelect(hub.id)}
+                  className="h-8 flex items-center gap-2 px-4 text-[13px] leading-[20px] rounded-none"
+                >
                   <svg width="6" height="6" viewBox="0 0 6 6" className="shrink-0">
-                    <circle cx="3" cy="3" r="3" fill={opt.color} />
+                    <circle cx="3" cy="3" r="3" fill={getHubColorHex(hub.color)} />
                   </svg>
-                ) : (
-                  <span className="text-text-tertiary text-[11px]">—</span>
-                )}
-                <span className="truncate">{opt.label}</span>
-              </button>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
+                  <span className="truncate">{hub.name}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }

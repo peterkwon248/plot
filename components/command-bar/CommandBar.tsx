@@ -1,297 +1,158 @@
 "use client";
 
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { useHubStore } from "@/stores/hubStore";
-import { cn } from "@/lib/utils";
-
-interface CommandOption {
-  id: string;
-  label: string;
-  section: "작업" | "이동" | "항목" | "최근";
-  hint?: string;
-  action: () => void;
-}
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import {
+  Command,
+  CommandInput,
+  CommandList,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandShortcut,
+} from "@/components/ui/command";
+import type { Item } from "@/types";
 
 export function CommandBar() {
   const [query, setQuery] = useState("");
-  const [selectedIndex, setSelectedIndex] = useState(0);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const listRef = useRef<HTMLDivElement>(null);
-  const { setView, selectItem, toggleCommandBar, setActiveHub, recentItems } = useViewStore();
+  const { isCommandBarOpen, setView, selectItem, toggleCommandBar, setActiveHub, recentItems } = useViewStore();
   const { addItem, items: allItems } = useItemStore();
 
-  // 자동 포커스
-  useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+  const handleClose = useCallback(() => toggleCommandBar(false), [toggleCommandBar]);
 
-  // 고정 커맨드 옵션
-  const staticOptions: CommandOption[] = useMemo(() => {
-    const hubs = useHubStore.getState().getActiveHubs();
+  const handleCreate = useCallback(() => {
+    const title = query.trim() || "Untitled";
+    addItem({ title });
+    handleClose();
+  }, [query, addItem, handleClose]);
 
-    const base: CommandOption[] = [
-      {
-        id: "create",
-        label: "새 항목 만들기",
-        section: "작업" as const,
-        hint: "C",
-        action: () => {
-          const title = query.trim() || "Untitled";
-          addItem({ title });
-          toggleCommandBar(false);
-        },
-      },
-      {
-        id: "nav-inbox",
-        label: "메모로 이동",
-        section: "이동" as const,
-        hint: "1",
-        action: () => {
-          setView("inbox");
-          toggleCommandBar(false);
-        },
-      },
-      {
-        id: "nav-active",
-        label: "진행으로 이동",
-        section: "이동" as const,
-        hint: "2",
-        action: () => {
-          setView("active");
-          toggleCommandBar(false);
-        },
-      },
-      {
-        id: "nav-all",
-        label: "전체로 이동",
-        section: "이동" as const,
-        hint: "3",
-        action: () => {
-          setView("all");
-          toggleCommandBar(false);
-        },
-      },
-      {
-        id: "nav-done",
-        label: "완료로 이동",
-        section: "이동" as const,
-        hint: "4",
-        action: () => {
-          setView("done");
-          toggleCommandBar(false);
-        },
-      },
-    ];
-
-    const hubNav: CommandOption[] = hubs.map((hub) => ({
-      id: `nav-hub-${hub.id}`,
-      label: hub.name,
-      section: "이동" as const,
-      action: () => {
-        setActiveHub(hub.id);
-        toggleCommandBar(false);
-      },
-    }));
-
-    return [...base, ...hubNav];
-  }, [query, addItem, setView, setActiveHub, toggleCommandBar]);
-
-  // 최근 항목 (검색어가 없을 때만)
-  const recentOptions: CommandOption[] = useMemo(() => {
+  // Recent items
+  const recentOptions = useMemo(() => {
     if (query.trim()) return [];
-    return recentItems
-      .slice(0, 5)
-      .map((id) => allItems.find((item) => item.id === id && !item.deleted_at))
-      .filter(Boolean)
-      .map((item) => ({
-        id: `recent-${item!.id}`,
-        label: item!.title,
-        section: "최근" as const,
-        action: () => {
-          selectItem(item!.id);
-          toggleCommandBar(false);
-        },
-      }));
-  }, [query, recentItems, allItems, selectItem, toggleCommandBar]);
-
-  // 아이템 검색 결과
-  const itemResults: CommandOption[] = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    if (!q) return [];
-
-    return allItems
-      .filter((item) => !item.deleted_at)
-      .filter(
-        (item) =>
-          item.title.toLowerCase().includes(q) ||
-          (item.body_plain && item.body_plain.toLowerCase().includes(q))
-      )
-      .slice(0, 8) // 최대 8개
-      .map((item) => ({
-        id: `item-${item.id}`,
-        label: item.title,
-        section: "항목" as const,
-        action: () => {
-          selectItem(item.id);
-          toggleCommandBar(false);
-        },
-      }));
-  }, [query, allItems, selectItem, toggleCommandBar]);
-
-  // 필터링된 결과 조합
-  const filtered = useMemo(() => {
-    const q = query.trim().toLowerCase();
-
-    if (!q) return [...staticOptions, ...recentOptions];
-
-    // Create는 항상 표시 (검색어를 타이틀로 사용)
-    const createOpt = staticOptions.filter((opt) => opt.id === "create");
-
-    // 나머지 static 필터링
-    const matchedStatic = staticOptions.filter(
-      (opt) => opt.id !== "create" && opt.label.toLowerCase().includes(q)
-    );
-
-    return [...createOpt, ...itemResults, ...matchedStatic];
-  }, [query, staticOptions, itemResults, recentOptions]);
-
-  // selectedIndex 클램핑
-  useEffect(() => {
-    setSelectedIndex(0);
-  }, [query]);
-
-  // 선택된 항목 스크롤
-  useEffect(() => {
-    if (!listRef.current) return;
-    const selected = listRef.current.querySelector("[data-selected]");
-    if (selected) {
-      selected.scrollIntoView({ block: "nearest" });
+    const found: Item[] = [];
+    for (const id of recentItems.slice(0, 5)) {
+      const item = allItems.find((i) => i.id === id && !i.deleted_at);
+      if (item) found.push(item);
     }
-  }, [selectedIndex]);
+    return found;
+  }, [query, recentItems, allItems]);
 
-  // 키보드 핸들링
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.min(i + 1, filtered.length - 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setSelectedIndex((i) => Math.max(i - 1, 0));
-    } else if (e.key === "Enter" && filtered[selectedIndex]) {
-      e.preventDefault();
-      filtered[selectedIndex].action();
-    } else if (e.key === "Escape") {
-      e.preventDefault();
-      toggleCommandBar(false);
-    }
-  };
-
-  // 섹션별 그룹핑
-  const sections = useMemo(() => {
-    const groups: { section: string; items: (CommandOption & { globalIndex: number })[] }[] = [];
-    let globalIdx = 0;
-    const sectionOrder = ["작업", "최근", "항목", "이동"];
-
-    for (const sectionName of sectionOrder) {
-      const sectionItems = filtered
-        .filter((opt) => opt.section === sectionName)
-        .map((opt) => ({ ...opt, globalIndex: -1 }));
-
-      if (sectionItems.length > 0) {
-        for (const item of sectionItems) {
-          item.globalIndex = globalIdx++;
-        }
-        groups.push({ section: sectionName, items: sectionItems });
-      }
-    }
-
-    return groups;
-  }, [filtered]);
+  // Hub navigation options
+  const hubs = useMemo(() => useHubStore.getState().getActiveHubs(), []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-center pt-[20vh]">
-      {/* Overlay */}
-      <div
-        className="absolute inset-0"
-        style={{ background: "rgba(10, 13, 15, 0.6)", backdropFilter: "blur(12px)" }}
-        onClick={() => toggleCommandBar(false)}
-      />
+    <Dialog open={isCommandBarOpen} onOpenChange={(open) => !open && handleClose()}>
+      <DialogContent className="overflow-hidden p-0 max-w-[560px] top-[20%] translate-y-0 gap-0">
+        <Command shouldFilter={false} className="[&_[cmdk-group-heading]]:px-4 [&_[cmdk-group-heading]]:pt-2 [&_[cmdk-group-heading]]:pb-1 [&_[cmdk-group-heading]]:text-[11px] [&_[cmdk-group-heading]]:leading-[16px] [&_[cmdk-group-heading]]:tracking-[0.04em] [&_[cmdk-group-heading]]:uppercase [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-text-tertiary">
+          {/* Input */}
+          <div className="flex items-center gap-3 px-4 h-12 border-b border-border-subtle">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-tertiary shrink-0">
+              <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+              <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </svg>
+            <CommandInput
+              value={query}
+              onValueChange={setQuery}
+              placeholder="무엇을 기록할까요..."
+              className="flex-1 bg-transparent text-[15px] leading-[24px] tracking-[-0.008em] text-text-primary placeholder:text-text-tertiary outline-none border-none h-12 p-0 ring-0 focus:ring-0"
+            />
+            <kbd className="text-[11px] leading-[16px] text-text-tertiary bg-bg-elevated px-1.5 py-0.5 rounded border border-border-subtle">
+              ESC
+            </kbd>
+          </div>
 
-      {/* Modal */}
-      <div
-        className="relative w-[560px] bg-bg-surface border border-border-default rounded-xl shadow-2xl overflow-hidden"
-        style={{
-          animation:
-            "commandBarIn 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
-        }}
-      >
-        {/* Input */}
-        <div className="flex items-center gap-3 px-4 h-12 border-b border-border-subtle">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-tertiary shrink-0">
-            <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
-            <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-          </svg>
-          <input
-            ref={inputRef}
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            onKeyDown={handleKeyDown}
-            placeholder="무엇을 기록할까요..."
-            className="flex-1 bg-transparent text-[15px] leading-[24px] tracking-[-0.008em] text-text-primary placeholder:text-text-tertiary outline-none"
-          />
-          <kbd className="text-[11px] leading-[16px] text-text-tertiary bg-bg-elevated px-1.5 py-0.5 rounded border border-border-subtle">
-            ESC
-          </kbd>
-        </div>
-
-        {/* Results */}
-        <div ref={listRef} className="max-h-80 overflow-y-auto py-1">
-          {filtered.length === 0 ? (
-            <div className="px-4 py-6 text-center text-text-tertiary text-[13px] leading-[20px]">
+          {/* Results */}
+          <CommandList className="max-h-80 overflow-y-auto">
+            <CommandEmpty className="py-6 text-center text-text-tertiary text-[13px] leading-[20px]">
               결과 없음
-            </div>
-          ) : (
-            sections.map((group) => (
-              <div key={group.section}>
-                {/* Section Header */}
-                <div className="px-4 pt-2 pb-1">
-                  <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
-                    {group.section}
-                  </span>
-                </div>
+            </CommandEmpty>
 
-                {/* Section Items */}
-                {group.items.map((opt) => (
-                  <button
-                    key={opt.id}
-                    onClick={opt.action}
-                    data-selected={opt.globalIndex === selectedIndex || undefined}
-                    className={cn(
-                      "w-full h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] transition-colors",
-                      opt.globalIndex === selectedIndex
-                        ? "bg-bg-elevated text-text-primary"
-                        : "text-text-secondary hover:bg-bg-elevated"
-                    )}
+            {/* Create */}
+            <CommandGroup heading="작업">
+              <CommandItem
+                onSelect={handleCreate}
+                className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none"
+              >
+                <span>{query.trim() ? `"${query.trim()}" 만들기` : "새 항목 만들기"}</span>
+                <CommandShortcut>C</CommandShortcut>
+              </CommandItem>
+            </CommandGroup>
+
+            {/* Recent */}
+            {recentOptions.length > 0 && (
+              <CommandGroup heading="최근">
+                {recentOptions.map((item) => (
+                  <CommandItem
+                    key={`recent-${item.id}`}
+                    onSelect={() => { selectItem(item.id); handleClose(); }}
+                    className="h-9 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
                   >
-                    <span className="truncate">
-                      {opt.id === "create" && query.trim()
-                        ? `"${query.trim()}" 만들기`
-                        : opt.label}
-                    </span>
-                    {opt.hint && (
-                      <kbd className="ml-2 text-[11px] leading-[16px] text-text-tertiary bg-bg-secondary px-1.5 py-0.5 rounded border border-border-subtle shrink-0">
-                        {opt.hint}
-                      </kbd>
-                    )}
-                  </button>
+                    <span className="truncate">{item.title}</span>
+                  </CommandItem>
                 ))}
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-    </div>
+              </CommandGroup>
+            )}
+
+            {/* Item search results */}
+            {query.trim() && (() => {
+              const q = query.trim().toLowerCase();
+              const results = allItems
+                .filter((item) => !item.deleted_at)
+                .filter((item) =>
+                  item.title.toLowerCase().includes(q) ||
+                  (item.body_plain && item.body_plain.toLowerCase().includes(q))
+                )
+                .slice(0, 8);
+              if (results.length === 0) return null;
+              return (
+                <CommandGroup heading="항목">
+                  {results.map((item) => (
+                    <CommandItem
+                      key={`item-${item.id}`}
+                      onSelect={() => { selectItem(item.id); handleClose(); }}
+                      className="h-9 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
+                    >
+                      <span className="truncate">{item.title}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              );
+            })()}
+
+            {/* Navigation */}
+            <CommandGroup heading="이동">
+              <CommandItem onSelect={() => { setView("inbox"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+                <span>메모로 이동</span>
+                <CommandShortcut>1</CommandShortcut>
+              </CommandItem>
+              <CommandItem onSelect={() => { setView("active"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+                <span>진행으로 이동</span>
+                <CommandShortcut>2</CommandShortcut>
+              </CommandItem>
+              <CommandItem onSelect={() => { setView("all"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+                <span>전체로 이동</span>
+                <CommandShortcut>3</CommandShortcut>
+              </CommandItem>
+              <CommandItem onSelect={() => { setView("done"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+                <span>완료로 이동</span>
+                <CommandShortcut>4</CommandShortcut>
+              </CommandItem>
+              {hubs.map((hub) => (
+                <CommandItem
+                  key={`hub-${hub.id}`}
+                  onSelect={() => { setActiveHub(hub.id); handleClose(); }}
+                  className="h-9 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
+                >
+                  <span>{hub.name}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </DialogContent>
+    </Dialog>
   );
 }

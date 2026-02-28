@@ -6,6 +6,10 @@ import { DetailPanel } from "@/components/layout/DetailPanel";
 import { CommandBar } from "@/components/command-bar/CommandBar";
 import { HubAssignOverlay } from "@/components/ui/HubAssignOverlay";
 import { OnboardingGuide } from "@/components/ui/OnboardingGuide";
+import { ShortcutHelpModal } from "@/components/ui/ShortcutHelpModal";
+import { SettingsPanel } from "@/components/settings/SettingsPanel";
+import { SidebarProvider } from "@/components/ui/sidebar-primitives";
+import { Toaster } from "@/components/ui/sonner";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { useKeyboardNavigation } from "@/hooks/useKeyboardNavigation";
@@ -16,7 +20,7 @@ export default function MainLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const { isCommandBarOpen, isHubAssignOpen } = useViewStore();
+  const { isSettingsOpen } = useViewStore();
   const { purgeDeleted } = useItemStore();
 
   // 글로벌 키보드 네비게이션 (j/k, Enter, Esc, ⌘K, 1-4, c, x)
@@ -31,15 +35,18 @@ export default function MainLayout({
   }, [purgeDeleted]);
 
   return (
-    <div className="flex h-screen overflow-hidden">
+    <SidebarProvider>
       <Sidebar />
       <main className="flex-1 flex overflow-hidden relative">
         {children}
         <DetailPanel />
       </main>
-      {isCommandBarOpen && <CommandBar />}
-      {isHubAssignOpen && <HubAssignOverlay />}
+      <CommandBar />
+      <HubAssignOverlay />
+      <ShortcutHelpModal />
+      {isSettingsOpen && <SettingsPanel />}
       <OnboardingGuide />
-    </div>
+      <Toaster />
+    </SidebarProvider>
   );
 }

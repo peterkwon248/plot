@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { ViewType } from "@/types";
+import type { ViewType, ListFilter } from "@/types";
 
 interface ViewState {
   currentView: ViewType;
@@ -10,8 +10,11 @@ interface ViewState {
   activeHubId: string | null;
   isHubAssignOpen: boolean;
   isChainPickerOpen: boolean;
+  isSettingsOpen: boolean;
   recentItems: string[];
   activeCustomViewId: string | null;
+  activeFilter: ListFilter;
+  isShortcutHelpOpen: boolean;
 
   setView: (view: ViewType) => void;
   selectItem: (id: string | null) => void;
@@ -21,11 +24,16 @@ interface ViewState {
   setActiveHub: (id: string | null) => void;
   toggleHubAssign: (open?: boolean) => void;
   toggleChainPicker: (open?: boolean) => void;
+  toggleSettings: (open?: boolean) => void;
   addRecentItem: (id: string) => void;
   setCustomView: (id: string | null) => void;
+  setFilter: (filter: ListFilter) => void;
+  clearFilter: () => void;
+  isFilterActive: () => boolean;
+  toggleShortcutHelp: (open?: boolean) => void;
 }
 
-export const useViewStore = create<ViewState>((set) => ({
+export const useViewStore = create<ViewState>((set, get) => ({
   currentView: "inbox",
   selectedItemId: null,
   focusedIndex: 0,
@@ -34,7 +42,10 @@ export const useViewStore = create<ViewState>((set) => ({
   activeHubId: null,
   isHubAssignOpen: false,
   isChainPickerOpen: false,
+  isSettingsOpen: false,
   activeCustomViewId: null,
+  activeFilter: {},
+  isShortcutHelpOpen: false,
   recentItems: (() => {
     try {
       if (typeof window !== "undefined") {
@@ -97,6 +108,11 @@ export const useViewStore = create<ViewState>((set) => ({
       isChainPickerOpen: open ?? !state.isChainPickerOpen,
     })),
 
+  toggleSettings: (open) =>
+    set((state) => ({
+      isSettingsOpen: open ?? !state.isSettingsOpen,
+    })),
+
   addRecentItem: (id) =>
     set((state) => {
       const recent = [id, ...state.recentItems.filter(r => r !== id)].slice(0, 10);
@@ -114,4 +130,29 @@ export const useViewStore = create<ViewState>((set) => ({
       selectedItemId: null,
       isDetailOpen: false,
     }),
+
+  setFilter: (filter) =>
+    set({
+      activeFilter: filter,
+    }),
+
+  clearFilter: () =>
+    set({
+      activeFilter: {},
+    }),
+
+  isFilterActive: () => {
+    const { activeFilter } = get();
+    return !!(
+      (activeFilter.status && activeFilter.status.length > 0) ||
+      (activeFilter.priority && activeFilter.priority.length > 0) ||
+      (activeFilter.hub_ids && activeFilter.hub_ids.length > 0) ||
+      (activeFilter.tags && activeFilter.tags.length > 0)
+    );
+  },
+
+  toggleShortcutHelp: (open) =>
+    set((state) => ({
+      isShortcutHelpOpen: open ?? !state.isShortcutHelpOpen,
+    })),
 }));
