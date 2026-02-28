@@ -41,6 +41,18 @@ export function DetailPanel() {
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState("");
   const titleRef = useRef<HTMLInputElement>(null);
+  const [isClosing, setIsClosing] = useState(false);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  // Track open/close for animation
+  useEffect(() => {
+    if (isDetailOpen && item) {
+      setShouldRender(true);
+      setIsClosing(false);
+    } else if (shouldRender) {
+      setIsClosing(true);
+    }
+  }, [isDetailOpen, item]);
 
   const itemId = item?.id;
   const itemTitle = item?.title;
@@ -111,19 +123,32 @@ export function DetailPanel() {
     }
   }, [currentIndex, viewItems]);
 
-  if (!isDetailOpen || !item) return null;
+  if (!shouldRender || !item) return null;
 
   return (
-    <div className="absolute inset-0 z-30 bg-bg-primary flex flex-col" style={{ animation: "detailPanelIn 150ms ease forwards" }}>
+    <div
+      className="absolute right-0 top-0 bottom-0 w-[62%] min-w-[480px] z-30 bg-bg-primary border-l border-border-default flex flex-col shadow-2xl"
+      style={{
+        animation: isClosing
+          ? "detailSlideOut 150ms cubic-bezier(0.16, 1, 0.3, 1) forwards"
+          : "detailSlideIn 200ms cubic-bezier(0.16, 1, 0.3, 1) forwards",
+      }}
+      onAnimationEnd={() => {
+        if (isClosing) {
+          setShouldRender(false);
+          setIsClosing(false);
+        }
+      }}
+    >
       {/* Top Bar */}
       <div className="h-12 shrink-0 flex items-center justify-between px-6 border-b border-border-default">
         {/* Left: Back + Breadcrumb */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <Tooltip>
             <TooltipTrigger asChild>
               <button
                 onClick={() => toggleDetail(false)}
-                className="text-text-secondary hover:text-text-primary transition-colors"
+                className="p-1.5 -ml-1.5 rounded-md text-text-secondary hover:text-text-primary hover:bg-bg-surface transition-colors"
               >
                 <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="8" x2="4" y2="8" />
@@ -133,11 +158,13 @@ export function DetailPanel() {
             </TooltipTrigger>
             <TooltipContent>뒤로 (Esc)</TooltipContent>
           </Tooltip>
-          <span className="text-[13px] leading-[20px] text-text-secondary">
+          <span className="text-[12px] text-text-tertiary">
             {viewLabels[currentView]}
           </span>
-          <span className="text-[13px] leading-[20px] text-text-tertiary">&gt;</span>
-          <span className="text-[13px] leading-[20px] text-text-primary font-medium truncate max-w-[300px]">
+          <svg width="12" height="12" viewBox="0 0 12 12" className="text-text-disabled">
+            <path d="M4.5 2.5L7.5 6L4.5 9.5" fill="none" stroke="currentColor" strokeWidth="1.2"/>
+          </svg>
+          <span className="text-[13px] text-text-primary font-medium truncate max-w-[240px]">
             {item.title}
           </span>
         </div>
@@ -184,7 +211,7 @@ export function DetailPanel() {
       {/* Body — two column layout */}
       <div className="flex-1 flex overflow-hidden">
         {/* Main content — left */}
-        <div className="flex-1 overflow-y-auto px-16 py-8 max-w-3xl">
+        <div className="flex-1 overflow-y-auto px-10 py-6">
           {/* Title */}
           {editingTitle ? (
             <input
@@ -199,12 +226,12 @@ export function DetailPanel() {
                   setEditingTitle(false);
                 }
               }}
-              className="w-full text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 bg-transparent outline-none border-b border-text-tertiary pb-1 text-text-primary"
+              className="w-full text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-4 bg-transparent outline-none border-b border-text-tertiary pb-1 text-text-primary"
             />
           ) : (
             <h1
               onClick={() => setEditingTitle(true)}
-              className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 cursor-text border-b border-transparent hover:border-border-subtle pb-1 text-text-primary"
+              className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-4 cursor-text border-b border-transparent hover:border-border-subtle pb-1 text-text-primary"
             >
               {item.title}
             </h1>
@@ -223,7 +250,7 @@ export function DetailPanel() {
         </div>
 
         {/* Right sidebar — properties */}
-        <div className="w-[280px] shrink-0 border-l border-border-default overflow-y-auto p-6">
+        <div className="w-[260px] shrink-0 border-l border-border-default overflow-y-auto p-5">
           <div className="mb-3">
             <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
               속성
@@ -295,11 +322,11 @@ function PropertyRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between h-8">
-      <span className="text-[13px] leading-[20px] text-text-tertiary shrink-0">
+    <div className="flex items-center h-9 hover:bg-bg-surface/50 -mx-2 px-2 rounded-md transition-colors">
+      <span className="text-[13px] leading-[20px] text-text-tertiary w-[72px] shrink-0">
         {label}
       </span>
-      <div className="flex items-center">
+      <div className="flex-1 flex items-center min-w-0">
         {children}
       </div>
     </div>

@@ -37,9 +37,11 @@ export default function MainLayout({
   return (
     <SidebarProvider>
       <Sidebar />
-      <main className="flex-1 flex overflow-hidden relative">
-        {children}
-        <DetailPanel />
+      <main className="flex-1 flex overflow-hidden p-2">
+        <div className="flex-1 border border-border-default/60 rounded-lg overflow-hidden flex flex-col bg-bg-secondary relative">
+          {children}
+          <DetailPanel />
+        </div>
       </main>
       <CommandBar />
       <HubAssignOverlay />

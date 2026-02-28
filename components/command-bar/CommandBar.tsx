@@ -74,7 +74,7 @@ export function CommandBar() {
             <CommandGroup heading="작업">
               <CommandItem
                 onSelect={handleCreate}
-                className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none"
+                className="h-10 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none"
               >
                 <span>{query.trim() ? `"${query.trim()}" 만들기` : "새 항목 만들기"}</span>
                 <CommandShortcut>C</CommandShortcut>
@@ -88,7 +88,7 @@ export function CommandBar() {
                   <CommandItem
                     key={`recent-${item.id}`}
                     onSelect={() => { selectItem(item.id); handleClose(); }}
-                    className="h-9 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
+                    className="h-10 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
                   >
                     <span className="truncate">{item.title}</span>
                   </CommandItem>
@@ -113,7 +113,7 @@ export function CommandBar() {
                     <CommandItem
                       key={`item-${item.id}`}
                       onSelect={() => { selectItem(item.id); handleClose(); }}
-                      className="h-9 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
+                      className="h-10 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
                     >
                       <span className="truncate">{item.title}</span>
                     </CommandItem>
@@ -124,19 +124,19 @@ export function CommandBar() {
 
             {/* Navigation */}
             <CommandGroup heading="이동">
-              <CommandItem onSelect={() => { setView("inbox"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+              <CommandItem onSelect={() => { setView("inbox"); handleClose(); }} className="h-10 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
                 <span>메모로 이동</span>
                 <CommandShortcut>1</CommandShortcut>
               </CommandItem>
-              <CommandItem onSelect={() => { setView("active"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+              <CommandItem onSelect={() => { setView("active"); handleClose(); }} className="h-10 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
                 <span>진행으로 이동</span>
                 <CommandShortcut>2</CommandShortcut>
               </CommandItem>
-              <CommandItem onSelect={() => { setView("all"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+              <CommandItem onSelect={() => { setView("all"); handleClose(); }} className="h-10 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
                 <span>전체로 이동</span>
                 <CommandShortcut>3</CommandShortcut>
               </CommandItem>
-              <CommandItem onSelect={() => { setView("done"); handleClose(); }} className="h-9 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
+              <CommandItem onSelect={() => { setView("done"); handleClose(); }} className="h-10 flex items-center justify-between px-4 text-[13px] leading-[20px] rounded-none">
                 <span>완료로 이동</span>
                 <CommandShortcut>4</CommandShortcut>
               </CommandItem>
@@ -144,13 +144,29 @@ export function CommandBar() {
                 <CommandItem
                   key={`hub-${hub.id}`}
                   onSelect={() => { setActiveHub(hub.id); handleClose(); }}
-                  className="h-9 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
+                  className="h-10 flex items-center px-4 text-[13px] leading-[20px] rounded-none"
                 >
                   <span>{hub.name}</span>
                 </CommandItem>
               ))}
             </CommandGroup>
           </CommandList>
+
+          {/* Keyboard hints */}
+          <div className="flex items-center gap-3 px-4 py-2 border-t border-border-subtle text-[11px] leading-[16px] text-text-tertiary">
+            <span className="flex items-center gap-1">
+              <kbd className="bg-bg-elevated px-1 py-0.5 rounded border border-border-subtle text-[10px]">↑↓</kbd>
+              이동
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="bg-bg-elevated px-1 py-0.5 rounded border border-border-subtle text-[10px]">Enter</kbd>
+              선택
+            </span>
+            <span className="flex items-center gap-1">
+              <kbd className="bg-bg-elevated px-1 py-0.5 rounded border border-border-subtle text-[10px]">Esc</kbd>
+              닫기
+            </span>
+          </div>
         </Command>
       </DialogContent>
     </Dialog>

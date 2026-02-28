@@ -83,7 +83,7 @@ const viewTabs: Record<ViewType, { id: TabFilter; label: string }[]> = {
 };
 
 export function ItemList() {
-  const { currentView, focusedIndex, activeHubId, activeCustomViewId, activeFilter, isFilterActive } = useViewStore();
+  const { currentView, focusedIndex, activeHubId, activeCustomViewId, activeFilter, isFilterActive, toggleCommandBar } = useViewStore();
   const { getByStatus, getByHub, reorderItem, items: allItems } = useItemStore();
   const { getHubById } = useHubStore();
   const customView = useCustomViewStore(state =>
@@ -300,7 +300,7 @@ export function ItemList() {
       {/* Page Header */}
       <div className="shrink-0 border-b border-border-default">
         {/* Title Row */}
-        <div className="h-11 flex items-center justify-between px-4">
+        <div className="h-10 flex items-center justify-between px-4">
           {currentView === "hub" && activeHub ? (
             <HubHeader hub={activeHub} />
           ) : customView ? (
@@ -315,6 +315,16 @@ export function ItemList() {
           )}
           {/* Filter & Display buttons */}
           <div className="flex items-center gap-1">
+            <button
+              onClick={() => toggleCommandBar(true)}
+              className="flex items-center justify-center h-7 w-7 rounded-md text-text-tertiary hover:text-text-secondary hover:bg-bg-elevated transition-colors"
+              title="검색 (⌘K)"
+            >
+              <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
+                <circle cx="7" cy="7" r="4.5" />
+                <line x1="10.5" y1="10.5" x2="14" y2="14" />
+              </svg>
+            </button>
             <FilterDropdown />
             <DisplayDropdown />
           </div>
@@ -322,7 +332,7 @@ export function ItemList() {
 
         {/* Tab Bar — all views */}
         {showTabs && (
-          <div className="flex items-center gap-0.5 px-4 pb-2">
+          <div className="flex items-center gap-1 px-6 h-9 border-b border-border-subtle">
             {(viewTabs[currentView as ViewType] || []).map((tab) => (
               <TabButton
                 key={tab.id}
@@ -377,13 +387,16 @@ function TabButton({ label, active, onClick }: { label: string; active: boolean;
   return (
     <button
       onClick={onClick}
-      className={`px-3 py-1 rounded text-[12px] leading-[16px] font-medium transition-colors ${
+      className={`relative px-2 py-1.5 text-[12px] leading-[16px] font-medium transition-colors ${
         active
-          ? "bg-bg-elevated text-text-primary"
-          : "text-text-secondary hover:text-text-primary hover:bg-bg-surface"
+          ? "text-text-primary"
+          : "text-text-tertiary hover:text-text-secondary"
       }`}
     >
       {label}
+      {active && (
+        <div className="absolute bottom-0 left-1 right-1 h-[2px] bg-accent rounded-full" />
+      )}
     </button>
   );
 }
@@ -400,10 +413,18 @@ function GroupHeader({
   collapsed: boolean;
   onToggle: () => void;
 }) {
+  const statusColors: Record<ItemStatus, string> = {
+    inbox: "var(--color-status-inbox)",
+    todo: "var(--color-status-todo)",
+    in_progress: "var(--color-status-in-progress)",
+    done: "var(--color-status-done)",
+  };
+
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-center gap-2 px-4 py-1.5 text-left hover:bg-bg-surface transition-colors group"
+      style={{ backgroundColor: `color-mix(in srgb, ${statusColors[status]} 6%, var(--color-bg-primary))` }}
+      className="w-full flex items-center gap-2 h-10 px-6 text-left sticky top-0 z-10 backdrop-blur-sm hover:brightness-110 transition-all group"
     >
       {/* Collapse arrow */}
       <svg
@@ -423,7 +444,7 @@ function GroupHeader({
         {statusLabels[status]}
       </span>
       {/* Count */}
-      <span className="text-[12px] leading-[16px] text-text-tertiary">
+      <span className="text-[13px] text-text-muted-foreground">
         {count}
       </span>
       {/* Add button (right side) */}
