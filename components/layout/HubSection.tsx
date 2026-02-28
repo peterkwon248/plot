@@ -9,11 +9,24 @@ import { cn } from "@/lib/utils";
 import type { HubColor } from "@/types";
 
 export function HubSection() {
-  const { getActiveHubs, addHub } = useHubStore();
+  const { getActiveHubs } = useHubStore();
   const { items } = useItemStore();
   const { currentView, activeHubId, setActiveHub } = useViewStore();
   const hubs = getActiveHubs();
   const [isCreating, setIsCreating] = useState(false);
+
+  // Collapse state management
+  const [collapsed, setCollapsed] = useState(() => {
+    if (typeof window !== "undefined") {
+      return localStorage.getItem("plot-hub-collapsed") === "true";
+    }
+    return false;
+  });
+
+  // Save collapse state to localStorage
+  useEffect(() => {
+    localStorage.setItem("plot-hub-collapsed", String(collapsed));
+  }, [collapsed]);
 
   // Count items per hub (non-deleted only)
   const getHubItemCount = (hubId: string) =>
@@ -25,11 +38,39 @@ export function HubSection() {
       <div className="px-2 pt-2">
         <div className="border-t border-border-subtle mb-2" />
         <div className="group flex items-center justify-between px-1 mb-1">
-          <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
-            프로젝트
-          </span>
           <button
-            onClick={() => setIsCreating(true)}
+            onClick={() => setCollapsed(!collapsed)}
+            className="flex items-center gap-1 text-left"
+          >
+            {/* Collapse arrow */}
+            <svg
+              width="10"
+              height="10"
+              viewBox="0 0 12 12"
+              className={cn(
+                "shrink-0 text-text-tertiary transition-transform duration-150",
+                collapsed ? "" : "rotate-90"
+              )}
+            >
+              <path
+                d="M4 2L8 6L4 10"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
+              프로젝트
+            </span>
+          </button>
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsCreating(true);
+              setCollapsed(false);
+            }}
             className="text-[14px] leading-[16px] text-text-disabled group-hover:text-text-secondary transition-colors"
             title="새 프로젝트"
           >
@@ -39,51 +80,57 @@ export function HubSection() {
       </div>
 
       {/* Scrollable hub list */}
-      <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
-        {/* Inline Create Form */}
-        {isCreating && (
-          <HubInlineCreate
-            onCreated={() => setIsCreating(false)}
-            onCancel={() => setIsCreating(false)}
-          />
-        )}
+      {!collapsed && (
+        <div className="flex-1 min-h-0 overflow-y-auto px-2 pb-2">
+          {/* Inline Create Form */}
+          {isCreating && (
+            <HubInlineCreate
+              onCreated={() => setIsCreating(false)}
+              onCancel={() => setIsCreating(false)}
+            />
+          )}
 
-        {/* Hub Items */}
-        {hubs.map((hub) => {
-          const isActive = currentView === "hub" && activeHubId === hub.id;
-          const count = getHubItemCount(hub.id);
+          {/* Hub Items */}
+          {hubs.map((hub) => {
+            const isActive = currentView === "hub" && activeHubId === hub.id;
+            const count = getHubItemCount(hub.id);
 
-          return (
-            <button
-              key={hub.id}
-              onClick={() => setActiveHub(hub.id)}
-              className={cn(
-                "w-full h-8 flex items-center gap-2 px-3 rounded-md text-[13px] leading-[20px] transition-colors duration-100",
-                isActive
-                  ? "bg-accent-muted text-accent"
-                  : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
-              )}
-            >
-              <svg width="6" height="6" viewBox="0 0 6 6" className="shrink-0">
-                <circle cx="3" cy="3" r="3" fill={getHubColorHex(hub.color)} />
-              </svg>
-              <span className="flex-1 text-left truncate">{hub.name}</span>
-              {count > 0 && (
-                <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary">
-                  {count}
-                </span>
-              )}
-            </button>
-          );
-        })}
+            return (
+              <button
+                key={hub.id}
+                onClick={() => setActiveHub(hub.id)}
+                className={cn(
+                  "relative w-full h-7 flex items-center gap-2 px-2.5 rounded-r-md text-[13px] leading-[20px] transition-colors duration-100",
+                  isActive
+                    ? "bg-bg-elevated text-accent"
+                    : "text-text-secondary hover:bg-bg-surface hover:text-text-primary"
+                )}
+              >
+                {/* Left indicator bar (active state only) */}
+                {isActive && (
+                  <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-[60%] bg-accent rounded-r-full" />
+                )}
+                <svg width="6" height="6" viewBox="0 0 6 6" className="shrink-0">
+                  <circle cx="3" cy="3" r="3" fill={getHubColorHex(hub.color)} />
+                </svg>
+                <span className="flex-1 text-left truncate">{hub.name}</span>
+                {count > 0 && (
+                  <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary">
+                    {count}
+                  </span>
+                )}
+              </button>
+            );
+          })}
 
-        {/* Empty state when no hubs and not creating */}
-        {hubs.length === 0 && !isCreating && (
-          <p className="px-3 py-2 text-[12px] leading-[16px] text-text-disabled">
-            프로젝트가 없습니다
-          </p>
-        )}
-      </div>
+          {/* Empty state when no hubs and not creating */}
+          {hubs.length === 0 && !isCreating && (
+            <p className="px-3 py-2 text-[12px] leading-[16px] text-text-disabled">
+              프로젝트가 없습니다
+            </p>
+          )}
+        </div>
+      )}
     </div>
   );
 }

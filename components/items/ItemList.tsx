@@ -155,7 +155,7 @@ export function ItemList() {
       {/* Page Header */}
       <div className="shrink-0 border-b border-border-default">
         {/* Title Row */}
-        <div className="h-12 flex items-center justify-between px-6">
+        <div className="h-11 flex items-center justify-between px-4">
           {currentView === "hub" && activeHub ? (
             <HubHeader hub={activeHub} />
           ) : (
@@ -186,7 +186,7 @@ export function ItemList() {
 
         {/* Tab Bar — only for "all" and "hub" views */}
         {showTabs && (
-          <div className="flex items-center gap-0.5 px-6 pb-2">
+          <div className="flex items-center gap-0.5 px-4 pb-2">
             <TabButton label={"\uC804\uCCB4"} active={activeTab === "all"} onClick={() => setActiveTab("all")} />
             <TabButton label={"\uD560 \uC77C"} active={activeTab === "todo"} onClick={() => setActiveTab("todo")} />
             <TabButton label={"\uC9C4\uD589 \uC911"} active={activeTab === "in_progress"} onClick={() => setActiveTab("in_progress")} />
@@ -252,7 +252,7 @@ function GroupHeader({
   return (
     <button
       onClick={onToggle}
-      className="w-full flex items-center gap-2 px-6 py-2 text-left hover:bg-bg-surface transition-colors group"
+      className="w-full flex items-center gap-2 px-4 py-1.5 text-left hover:bg-bg-surface transition-colors group"
     >
       {/* Collapse arrow */}
       <svg

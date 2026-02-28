@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { StatusDropdown } from "@/components/ui/StatusDropdown";
@@ -19,11 +19,19 @@ const viewLabels: Record<string, string> = {
 };
 
 export function DetailPanel() {
-  const { selectedItemId, isDetailOpen, toggleDetail, currentView } = useViewStore();
-  const { items, updateItem, softDeleteItem } = useItemStore();
+  const { selectedItemId, isDetailOpen, toggleDetail, currentView, activeHubId } = useViewStore();
+  const { items, updateItem, softDeleteItem, getByStatus, getByHub } = useItemStore();
+
+  // Current view's filtered items
+  const viewItems = useMemo(() => {
+    if (currentView === "hub" && activeHubId) {
+      return getByHub(activeHubId);
+    }
+    return getByStatus(currentView as Exclude<typeof currentView, "hub">);
+  }, [currentView, activeHubId, getByStatus, getByHub]);
 
   const item = items.find((i) => i.id === selectedItemId);
-  const currentIndex = items.findIndex((i) => i.id === selectedItemId);
+  const currentIndex = viewItems.findIndex((i) => i.id === selectedItemId);
 
   const [editingTitle, setEditingTitle] = useState(false);
   const [titleValue, setTitleValue] = useState("");
@@ -87,16 +95,16 @@ export function DetailPanel() {
   const goToPrev = useCallback(() => {
     if (currentIndex > 0) {
       const { selectItem } = useViewStore.getState();
-      selectItem(items[currentIndex - 1].id);
+      selectItem(viewItems[currentIndex - 1].id);
     }
-  }, [currentIndex, items]);
+  }, [currentIndex, viewItems]);
 
   const goToNext = useCallback(() => {
-    if (currentIndex < items.length - 1) {
+    if (currentIndex < viewItems.length - 1) {
       const { selectItem } = useViewStore.getState();
-      selectItem(items[currentIndex + 1].id);
+      selectItem(viewItems[currentIndex + 1].id);
     }
-  }, [currentIndex, items]);
+  }, [currentIndex, viewItems]);
 
   if (!isDetailOpen || !item) return null;
 
@@ -128,7 +136,7 @@ export function DetailPanel() {
         <div className="flex items-center gap-1">
           {/* Item counter */}
           <span className="text-[12px] leading-[16px] text-text-tertiary mr-2">
-            {currentIndex + 1}/{items.length}
+            {currentIndex + 1}/{viewItems.length}
           </span>
           {/* Prev */}
           <button
@@ -143,7 +151,7 @@ export function DetailPanel() {
           {/* Next */}
           <button
             onClick={goToNext}
-            disabled={currentIndex >= items.length - 1}
+            disabled={currentIndex >= viewItems.length - 1}
             className="p-1 text-text-secondary hover:text-text-primary disabled:text-text-disabled transition-colors"
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -171,12 +179,12 @@ export function DetailPanel() {
                   setEditingTitle(false);
                 }
               }}
-              className="w-full text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 bg-transparent outline-none border-b border-accent pb-1 text-text-primary"
+              className="w-full text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 bg-transparent outline-none border-b border-text-tertiary pb-1 text-text-primary"
             />
           ) : (
             <h1
               onClick={() => setEditingTitle(true)}
-              className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 cursor-text hover:border-b hover:border-border-default hover:pb-1 transition-all text-text-primary"
+              className="text-[24px] leading-[32px] tracking-[-0.02em] font-semibold mb-8 cursor-text border-b border-transparent hover:border-border-subtle pb-1 text-text-primary"
             >
               {item.title}
             </h1>
@@ -193,7 +201,12 @@ export function DetailPanel() {
 
         {/* Right sidebar — properties */}
         <div className="w-[280px] shrink-0 border-l border-border-default overflow-y-auto p-6">
-          <div className="space-y-4">
+          <div className="mb-3">
+            <span className="text-[11px] leading-[16px] tracking-[0.04em] uppercase text-text-tertiary font-medium">
+              속성
+            </span>
+          </div>
+          <div className="space-y-1">
             <PropertyRow label="상태">
               <StatusDropdown value={item.status} onChange={handleStatusChange} />
             </PropertyRow>
@@ -257,11 +270,13 @@ function PropertyRow({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-col gap-1.5">
-      <span className="text-[12px] leading-[16px] text-text-tertiary uppercase tracking-wider">
+    <div className="flex items-center justify-between h-8">
+      <span className="text-[13px] leading-[20px] text-text-tertiary shrink-0">
         {label}
       </span>
-      {children}
+      <div className="flex items-center">
+        {children}
+      </div>
     </div>
   );
 }

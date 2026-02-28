@@ -22,12 +22,16 @@ export function SidebarItem({
     <button
       onClick={onClick}
       className={cn(
-        "w-full h-8 flex items-center gap-2 px-3 rounded-md text-[13px] leading-[20px] transition-colors duration-100",
+        "relative w-full h-7 flex items-center gap-2 px-2.5 rounded-r-md text-[13px] leading-[20px] transition-colors duration-100",
         active
-          ? "bg-accent-muted text-accent"
-          : "text-text-secondary hover:bg-bg-elevated hover:text-text-primary"
+          ? "bg-bg-elevated text-accent"
+          : "text-text-secondary hover:bg-bg-surface hover:text-text-primary"
       )}
     >
+      {/* Left indicator bar (active state only) */}
+      {active && (
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-[60%] bg-accent rounded-r-full" />
+      )}
       <ViewIcon viewType={viewType} active={active} />
       <span className="flex-1 text-left">{label}</span>
       {count > 0 && (

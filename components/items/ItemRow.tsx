@@ -1,6 +1,6 @@
 "use client";
 
-import { forwardRef } from "react";
+import { forwardRef, useState } from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Item } from "@/types";
@@ -10,6 +10,7 @@ import { useViewStore } from "@/stores/viewStore";
 import { useHubStore } from "@/stores/hubStore";
 import { getHubColorHex } from "@/lib/hubColors";
 import { cn, timeAgo } from "@/lib/utils";
+import { ContextMenu } from "@/components/ui/ContextMenu";
 
 interface Props {
   item: Item;
@@ -66,40 +67,54 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
     const displayType = inferDisplayType(item);
     const isDone = item.status === "done";
 
+    const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+
+    const handleContextMenuOpen = (e: React.MouseEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setContextMenu({ x: e.clientX, y: e.clientY });
+    };
+
+    const handleContextMenuClose = () => {
+      setContextMenu(null);
+    };
+
     return (
-      <button
-        ref={ref}
-        onClick={() => selectItem(item.id)}
-        data-focused={isFocused || undefined}
-        style={style}
-        className={cn(
-          "w-full flex items-start gap-2 px-6 py-3 border-b border-border-subtle transition-colors duration-100 text-left group/row",
-          isSelected
-            ? "bg-accent-muted border-l-2 border-l-accent"
-            : isFocused
-              ? "bg-bg-elevated border-l-2 border-l-text-tertiary"
-              : "hover:bg-bg-elevated border-l-2 border-l-transparent",
-          isDone && "opacity-60"
-        )}
-      >
-        {/* Context menu (hover) */}
-        <div className="shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity mt-0.5">
-          <button
-            onClick={(e) => { e.stopPropagation(); }}
-            className="text-text-tertiary hover:text-text-secondary p-0.5"
-          >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
-              <circle cx="3" cy="7" r="1.2" />
-              <circle cx="7" cy="7" r="1.2" />
-              <circle cx="11" cy="7" r="1.2" />
-            </svg>
-          </button>
-        </div>
+      <>
+        <button
+          ref={ref}
+          onClick={() => selectItem(item.id)}
+          onContextMenu={handleContextMenuOpen}
+          data-focused={isFocused || undefined}
+          style={style}
+          className={cn(
+            "w-full flex items-center gap-2 px-4 py-[7px] border-b border-border-subtle transition-colors duration-100 text-left group/row",
+            isSelected
+              ? "bg-accent-muted border-l-2 border-l-accent"
+              : isFocused
+                ? "bg-bg-elevated border-l-2 border-l-text-tertiary"
+                : "hover:bg-bg-elevated border-l-2 border-l-transparent",
+            isDone && "opacity-60"
+          )}
+        >
+          {/* Context menu (hover) */}
+          <div className="shrink-0 opacity-0 group-hover/row:opacity-100 transition-opacity">
+            <button
+              onClick={handleContextMenuOpen}
+              className="text-text-tertiary hover:text-text-secondary p-0.5"
+            >
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="currentColor">
+                <circle cx="3" cy="7" r="1.2" />
+                <circle cx="7" cy="7" r="1.2" />
+                <circle cx="11" cy="7" r="1.2" />
+              </svg>
+            </button>
+          </div>
 
         {/* Drag Handle */}
         {dragHandleProps && (
           <div
-            className="mt-1 shrink-0 cursor-grab active:cursor-grabbing text-text-tertiary hover:text-text-secondary transition-colors"
+            className="shrink-0 cursor-grab active:cursor-grabbing text-text-tertiary hover:text-text-secondary transition-colors"
             {...dragHandleProps}
           >
             <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
@@ -114,25 +129,20 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
         )}
 
         {/* Status Icon */}
-        <div className="mt-0.5 shrink-0">
+        <div className="shrink-0">
           <ItemStatusIcon status={item.status} size={16} />
         </div>
 
         {/* Item ID */}
-        <span className="text-[11px] leading-[16px] text-text-tertiary shrink-0 font-mono mt-0.5">
+        <span className="text-[11px] leading-[16px] text-text-tertiary shrink-0 font-mono">
           {item.id.slice(0, 4).toUpperCase()}
         </span>
-
-        {/* Hub Color Dot */}
-        {item.hub_id && currentView !== "hub" && (
-          <HubColorDot hubId={item.hub_id} />
-        )}
 
         {/* Content */}
         <div className="flex-1 min-w-0">
           <span
             className={cn(
-              "text-[15px] leading-[22px] tracking-[-0.01em] font-medium truncate block",
+              "text-[13px] leading-[20px] tracking-[-0.01em] font-medium truncate block",
               isDone
                 ? "text-text-secondary line-through"
                 : "text-text-primary"
@@ -140,60 +150,85 @@ const ItemRowContent = forwardRef<HTMLButtonElement, ItemRowContentProps>(
           >
             {item.title}
           </span>
-          {/* 타임스탬프 서브라인 (note 프리뷰가 없을 때) */}
-          {displayType === "task" && (
-            <span className="text-[12px] leading-[16px] text-text-tertiary mt-0.5 block">
-              {timeAgo(item.updated_at)}
-            </span>
-          )}
           {/* Note preview */}
           {displayType === "note" && item.body_plain && (
-            <p className="text-[13px] leading-[20px] text-text-secondary mt-1 line-clamp-2">
+            <p className="text-[12px] leading-[18px] text-text-secondary mt-0.5 line-clamp-2">
               {item.body_plain}
             </p>
           )}
         </div>
 
-        {/* Meta */}
+        {/* Meta (right-aligned inline attributes) */}
         <div className="shrink-0 flex items-center gap-2">
+          {/* Project label with color dot */}
+          {item.hub_id && currentView !== "hub" && (
+            <HubLabel hubId={item.hub_id} />
+          )}
+
+          {/* Priority bar icon */}
           {item.priority !== "none" && (
-            <PriorityBadge priority={item.priority} />
+            <PriorityBarIcon priority={item.priority} />
           )}
-          {displayType === "note" && (
-            <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
-              {timeAgo(item.updated_at)}
-            </span>
-          )}
+
+          {/* Modified date (always show) */}
+          <span className="text-[11px] leading-[16px] tracking-[0.01em] text-text-tertiary whitespace-nowrap">
+            {timeAgo(item.updated_at)}
+          </span>
         </div>
       </button>
+
+      {/* Context Menu */}
+      {contextMenu && (
+        <ContextMenu
+          itemId={item.id}
+          x={contextMenu.x}
+          y={contextMenu.y}
+          onClose={handleContextMenuClose}
+        />
+      )}
+    </>
     );
   }
 );
 
-function HubColorDot({ hubId }: { hubId: string }) {
+function HubLabel({ hubId }: { hubId: string }) {
   const hub = useHubStore((s) => s.hubs.find((h) => h.id === hubId));
   if (!hub) return null;
   return (
-    <div className="mt-1 shrink-0" title={hub.name}>
+    <div className="flex items-center gap-1 shrink-0" title={hub.name}>
       <svg width="6" height="6" viewBox="0 0 6 6">
         <circle cx="3" cy="3" r="3" fill={getHubColorHex(hub.color)} />
       </svg>
+      <span className="text-[11px] leading-[16px] text-text-tertiary">
+        {hub.name}
+      </span>
     </div>
   );
 }
 
-function PriorityBadge({ priority }: { priority: string }) {
-  const config: Record<string, { label: string; color: string }> = {
-    urgent: { label: "!!!", color: "text-priority-urgent" },
-    high: { label: "!!", color: "text-priority-high" },
-    medium: { label: "!", color: "text-priority-medium" },
-    low: { label: "·", color: "text-priority-low" },
+function PriorityBarIcon({ priority }: { priority: string }) {
+  const config: Record<string, { bars: number; color: string }> = {
+    urgent: { bars: 4, color: "#FB8500" }, // Orange
+    high: { bars: 3, color: "#8338EC" }, // Purple
+    medium: { bars: 2, color: "#3A86FF" }, // Blue
+    low: { bars: 1, color: "#8D99AE" }, // Gray
   };
   const p = config[priority];
   if (!p) return null;
+
   return (
-    <span className={cn("text-[11px] leading-[16px] font-semibold", p.color)}>
-      {p.label}
-    </span>
+    <svg width="14" height="14" viewBox="0 0 14 14" className="shrink-0">
+      {Array.from({ length: p.bars }).map((_, i) => (
+        <rect
+          key={i}
+          x={2 + i * 3}
+          y={10 - i * 2}
+          width="2"
+          height={4 + i * 2}
+          fill={p.color}
+          rx="0.5"
+        />
+      ))}
+    </svg>
   );
 }

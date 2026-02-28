@@ -20,7 +20,7 @@ export function Sidebar() {
   return (
     <aside className="w-sidebar h-full bg-bg-secondary border-r border-border-subtle flex flex-col">
       {/* Header */}
-      <div className="h-12 flex items-center justify-between px-3">
+      <div className="h-11 flex items-center justify-between px-3">
         <span className="text-[14px] leading-[20px] tracking-[-0.006em] font-semibold text-text-primary">
           <span className="text-accent">✦</span> Plot
         </span>

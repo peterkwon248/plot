@@ -4,13 +4,12 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import { useViewStore } from "@/stores/viewStore";
 import { useItemStore } from "@/stores/itemStore";
 import { useHubStore } from "@/stores/hubStore";
-import { Search } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface CommandOption {
   id: string;
   label: string;
-  section: "Actions" | "Navigation" | "Items";
+  section: "작업" | "이동" | "항목";
   hint?: string;
   action: () => void;
 }
@@ -36,7 +35,7 @@ export function CommandBar() {
       {
         id: "create",
         label: "새 항목 만들기",
-        section: "Actions" as const,
+        section: "작업" as const,
         hint: "C",
         action: () => {
           const title = query.trim() || "Untitled";
@@ -47,7 +46,7 @@ export function CommandBar() {
       {
         id: "nav-inbox",
         label: "메모로 이동",
-        section: "Navigation" as const,
+        section: "이동" as const,
         hint: "1",
         action: () => {
           setView("inbox");
@@ -57,7 +56,7 @@ export function CommandBar() {
       {
         id: "nav-active",
         label: "진행으로 이동",
-        section: "Navigation" as const,
+        section: "이동" as const,
         hint: "2",
         action: () => {
           setView("active");
@@ -67,7 +66,7 @@ export function CommandBar() {
       {
         id: "nav-all",
         label: "전체로 이동",
-        section: "Navigation" as const,
+        section: "이동" as const,
         hint: "3",
         action: () => {
           setView("all");
@@ -77,7 +76,7 @@ export function CommandBar() {
       {
         id: "nav-done",
         label: "완료로 이동",
-        section: "Navigation" as const,
+        section: "이동" as const,
         hint: "4",
         action: () => {
           setView("done");
@@ -89,7 +88,7 @@ export function CommandBar() {
     const hubNav: CommandOption[] = hubs.map((hub) => ({
       id: `nav-hub-${hub.id}`,
       label: hub.name,
-      section: "Navigation" as const,
+      section: "이동" as const,
       action: () => {
         setActiveHub(hub.id);
         toggleCommandBar(false);
@@ -115,7 +114,7 @@ export function CommandBar() {
       .map((item) => ({
         id: `item-${item.id}`,
         label: item.title,
-        section: "Items" as const,
+        section: "항목" as const,
         action: () => {
           selectItem(item.id);
           toggleCommandBar(false);
@@ -175,7 +174,7 @@ export function CommandBar() {
   const sections = useMemo(() => {
     const groups: { section: string; items: (CommandOption & { globalIndex: number })[] }[] = [];
     let globalIdx = 0;
-    const sectionOrder = ["Actions", "Items", "Navigation"];
+    const sectionOrder = ["작업", "항목", "이동"];
 
     for (const sectionName of sectionOrder) {
       const sectionItems = filtered
@@ -212,7 +211,10 @@ export function CommandBar() {
       >
         {/* Input */}
         <div className="flex items-center gap-3 px-4 h-12 border-b border-border-subtle">
-          <Search size={16} className="text-text-tertiary shrink-0" />
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="text-text-tertiary shrink-0">
+            <circle cx="7" cy="7" r="4.5" stroke="currentColor" strokeWidth="1.5" />
+            <line x1="10.5" y1="10.5" x2="14" y2="14" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+          </svg>
           <input
             ref={inputRef}
             value={query}
